@@ -67,3 +67,28 @@ export const applyBackground = async (
   return undefined
 }
 
+const hexWithAlpha = (hex: string, alphaHex: string) => {
+  const normalized = hex.startsWith('#') && (hex.length === 7 || hex.length === 4) ? hex : ''
+  if (!normalized) return ''
+  if (hex.length === 4) {
+    const r = hex[1]
+    const g = hex[2]
+    const b = hex[3]
+    return `#${r}${r}${g}${g}${b}${b}${alphaHex}`
+  }
+  return `${hex}${alphaHex}`
+}
+
+export const applyPrimaryColor = (color: string) => {
+  const root = document.documentElement
+  if (!root) return
+  const fallback = '#667eea'
+  const base = color || fallback
+  const border = hexWithAlpha(base, '33') || 'rgba(255,255,255,0.25)'
+  const surface = hexWithAlpha(base, '1f') || 'rgba(255,255,255,0.12)'
+
+  root.style.setProperty('--primary-color', base)
+  root.style.setProperty('--primary-surface', surface)
+  root.style.setProperty('--primary-border', border)
+}
+

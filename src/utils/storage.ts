@@ -9,6 +9,7 @@ export interface HistoryItem {
 }
 
 export type BackgroundType = 'preset' | 'custom' | 'bing' | 'upload'
+export type PrimaryColorType = 'preset' | 'custom'
 
 export interface Settings {
   searchEngine: 'google' | 'bing' | 'baidu' | 'duckduckgo'
@@ -17,6 +18,8 @@ export interface Settings {
   backgroundType: BackgroundType
   backgroundColor: string
   backgroundImageUrl?: string
+  primaryColorType: PrimaryColorType
+  primaryColor: string
 }
 
 export interface QuickLink {
@@ -33,6 +36,8 @@ export const DEFAULT_SETTINGS: Settings = {
   backgroundType: 'preset',
   backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
   backgroundImageUrl: '',
+  primaryColorType: 'preset',
+  primaryColor: '#667eea',
 }
 
 export const PRESET_QUICK_LINKS: QuickLink[] = [

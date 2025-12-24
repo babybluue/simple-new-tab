@@ -29,7 +29,8 @@
       <div
         v-for="item in history"
         :key="item.domain || item.url"
-        class="group relative flex cursor-pointer items-center gap-4 rounded-2xl border border-white/20 bg-white/15 p-4 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-white/30 hover:bg-white/25 hover:shadow-xl md:gap-3 md:p-3.5 dark:border-white/30 dark:bg-white/85 dark:hover:border-white/40 dark:hover:bg-white/95 dark:hover:shadow-2xl"
+        class="group relative flex cursor-pointer items-center gap-4 rounded-2xl border p-4 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl md:gap-3 md:p-3.5"
+        :style="cardStyle"
         @click="handleClick(item)"
       >
         <div
@@ -93,10 +94,10 @@
 import { onMounted, ref } from 'vue'
 
 import { performSearch } from '@/utils/search'
-import { addQuickLink, getHistory, getSettings, removeHistoryItem, type HistoryItem } from '@/utils/storage'
+import { addQuickLink, getHistory, getSettings, removeHistoryItem, type HistoryItem, type Settings } from '@/utils/storage'
 
 const history = ref<HistoryItem[]>([])
-const settings = ref<{ searchEngine: string } | null>(null)
+const settings = ref<Settings | null>(null)
 const isCollapsed = ref(false)
 const MIN_VISIT_THRESHOLD = 2
 const faviconFallbackTried = ref<Record<string, boolean>>({})
@@ -171,6 +172,15 @@ const getGoogleFavicon = (item: HistoryItem): string | undefined => {
 const getFavicon = (item: HistoryItem): string => {
   return getGoogleFavicon(item) || getSiteFavicon(item) || ''
 }
+
+const cardStyle = computed(() => {
+  const bg = settings.value?.primaryColor ? 'var(--primary-surface, rgba(255,255,255,0.12))' : 'rgba(255,255,255,0.1)'
+  const border = settings.value?.primaryColor ? 'var(--primary-border, rgba(255,255,255,0.2))' : 'rgba(255,255,255,0.18)'
+  return {
+    background: bg,
+    borderColor: border,
+  }
+})
 
 const handleFaviconError = (item: HistoryItem, e: Event) => {
   const img = e.target as HTMLImageElement

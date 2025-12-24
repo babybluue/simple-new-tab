@@ -98,7 +98,8 @@
       <div
         v-for="link in quickLinks"
         :key="link.domain || link.url"
-        class="group relative flex cursor-pointer items-center gap-3 rounded-2xl border border-white/20 bg-white/15 p-3 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-white/30 hover:bg-white/25 hover:shadow-xl md:p-3 dark:border-white/30 dark:bg-white/85 dark:hover:border-white/40 dark:hover:bg-white/95 dark:hover:shadow-2xl"
+        class="group relative flex cursor-pointer items-center gap-3 rounded-2xl border p-3 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl md:p-3"
+        :style="cardStyle"
         @click="handleOpen(link)"
       >
         <div
@@ -221,6 +222,15 @@ const availablePresets = computed(() => {
     const domain = preset.domain || getDomainFromUrl(preset.url)
     return !domains.includes(domain) && !quickLinks.value.some(link => link.url === preset.url)
   })
+})
+
+const cardStyle = computed(() => {
+  const bg = settings.value?.primaryColor ? 'var(--primary-surface, rgba(255,255,255,0.12))' : 'rgba(255,255,255,0.1)'
+  const border = settings.value?.primaryColor ? 'var(--primary-border, rgba(255,255,255,0.2))' : 'rgba(255,255,255,0.18)'
+  return {
+    background: bg,
+    borderColor: border,
+  }
 })
 
 onMounted(async () => {
