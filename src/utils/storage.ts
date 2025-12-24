@@ -8,7 +8,7 @@ export interface HistoryItem {
   visitCount?: number
 }
 
-export type BackgroundType = 'preset' | 'custom' | 'bing'
+export type BackgroundType = 'preset' | 'custom' | 'bing' | 'upload'
 
 export interface Settings {
   searchEngine: 'google' | 'bing' | 'baidu' | 'duckduckgo'

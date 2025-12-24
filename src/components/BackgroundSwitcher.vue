@@ -19,34 +19,11 @@
     <Transition name="fade">
       <div
         v-if="open"
-        class="w-[320px] overflow-hidden rounded-2xl border border-white/15 bg-white/12 p-4 text-white shadow-2xl backdrop-blur-2xl ring-1 ring-white/20 dark:border-white/20 dark:bg-[#1f2937]/95 dark:text-white/90"
+        class="w-[320px] overflow-hidden rounded-2xl border border-white/15 bg-white/12 p-4 text-white shadow-2xl ring-1 ring-white/20 backdrop-blur-2xl dark:border-white/20 dark:bg-[#1f2937]/95 dark:text-white/90"
       >
-        <div class="flex items-center justify-between">
-          <div class="text-base font-semibold">背景</div>
-          <button
-            class="flex h-9 items-center gap-2 rounded-xl bg-white/20 px-3 text-xs font-medium text-white transition hover:bg-white/30 disabled:opacity-60"
-            :disabled="bingLoading || applying"
-            @click="useBing"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 4a1 1 0 011-1h5l2 3h6a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"
-              />
-            </svg>
-            Bing 壁纸
-          </button>
-        </div>
+        <div class="text-base font-semibold">背景</div>
 
-        <div class="mt-4 flex flex-wrap gap-2">
+        <div class="mt-4 flex flex-wrap items-center gap-2">
           <button
             v-for="bg in PRESET_BACKGROUNDS"
             :key="bg"
@@ -56,26 +33,71 @@
             :disabled="applying"
             @click="usePreset(bg)"
           />
-        </div>
-
-        <div class="mt-4 flex items-center gap-3 rounded-xl bg-white/10 p-3 backdrop-blur-sm">
-          <input
-            v-model="customColor"
-            type="color"
-            class="h-11 w-14 cursor-pointer rounded-lg border border-white/25 bg-transparent p-0 outline-none"
-            @input="useCustom"
-          />
-          <div class="min-w-[140px] flex-1 text-xs text-white/80">自定义色，立即生效</div>
           <button
-            class="rounded-lg bg-white/25 px-3 py-2 text-xs font-medium text-white transition hover:bg-white/35 disabled:opacity-60"
-            :disabled="applying"
+            class="relative h-10 w-10 overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+            :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPresetActive(customColor) }"
             @click="useCustom"
           >
-            应用
+            <input
+              v-model="customColor"
+              type="color"
+              class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              title="自定义色"
+              @input="useCustom"
+            />
+            <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <svg
+                class="h-5 w-5 text-white/85 drop-shadow"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 21v-3.5L14.5 6.9l3.6 3.6L6.6 21H3z" />
+                <path d="M14 7l3 3" />
+                <path d="M12.5 5.5l2-2a1.5 1.5 0 0 1 2.1 0l2.4 2.4a1.5 1.5 0 0 1 0 2.1l-2 2" />
+              </svg>
+            </div>
+          </button>
+
+          <button
+            class="relative h-10 w-10 overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+            :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': settings.backgroundType === 'upload' }"
+          >
+            <input
+              ref="fileInput"
+              type="file"
+              accept="image/*"
+              class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              title="上传图片"
+              @click.stop
+              @change="handleUpload"
+            />
+            <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <svg
+                class="h-5 w-5 text-white/85 drop-shadow"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 16v-6" />
+                <path d="M9 13l3-3 3 3" />
+                <path d="M4 17v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" />
+                <path d="M16 7h2a2 2 0 0 1 2 2v3" />
+                <path d="M4 12V9a2 2 0 0 1 2-2h2" />
+              </svg>
+            </div>
           </button>
         </div>
 
-        <div class="mt-3 flex items-center justify-between rounded-xl bg-white/10 p-3 text-xs text-white/80 backdrop-blur-sm">
+        <div
+          class="mt-3 flex items-center justify-between rounded-xl bg-white/10 p-3 text-xs text-white/80 backdrop-blur-sm"
+        >
           <span>刷新 Bing 壁纸</span>
           <button
             class="flex items-center gap-1 rounded-lg border border-white/25 px-3 py-2 text-xs font-medium text-white transition hover:bg-white/10 disabled:opacity-60"
@@ -107,9 +129,9 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 
-import { applyBackground, fetchBingImageUrl } from '@/utils/theme'
-import { DEFAULT_SETTINGS, getSettings, saveSettings } from '@/utils/storage'
 import type { Settings } from '@/utils/storage'
+import { DEFAULT_SETTINGS, getSettings, saveSettings } from '@/utils/storage'
+import { applyBackground, fetchBingImageUrl } from '@/utils/theme'
 
 const props = defineProps<{
   initialSettings?: Settings
@@ -118,10 +140,14 @@ const props = defineProps<{
 const PRESET_BACKGROUNDS = [
   'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
   'linear-gradient(135deg, #0ea5e9 0%, #2563eb 45%, #0f172a 100%)',
-  '#e2e8f0',
   'linear-gradient(135deg, #34d399 0%, #10b981 45%, #047857 100%)',
   'linear-gradient(135deg, #fbbf24 0%, #f97316 45%, #ef4444 100%)',
   '#0b1224',
+  'linear-gradient(135deg, #06b6d4 0%, #22d3ee 45%, #0ea5e9 100%)',
+  'linear-gradient(135deg, #ef4444 0%, #dc2626 45%, #991b1b 100%)',
+  'linear-gradient(135deg, #f472b6 0%, #ec4899 45%, #be185d 100%)',
+  'linear-gradient(135deg, #9a3412 0%, #7c2d12 50%, #4a1d0f 100%)',
+  'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)',
 ]
 
 const normalizeColorInput = (value: string) =>
@@ -132,6 +158,7 @@ const customColor = ref(normalizeColorInput(settings.value.backgroundColor))
 const applying = ref(false)
 const bingLoading = ref(false)
 const open = ref(false)
+const fileInput = ref<HTMLInputElement | null>(null)
 
 const ensureSettings = async () => {
   if (props.initialSettings) return
@@ -161,7 +188,7 @@ const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false
           merged.backgroundImageUrl = url
         }
       }
-    } else {
+    } else if (merged.backgroundType !== 'upload') {
       merged.backgroundImageUrl = ''
     }
 
@@ -185,24 +212,40 @@ const useCustom = async () => {
   await persistAndApply({ backgroundType: 'custom', backgroundColor: customColor.value })
 }
 
-const useBing = async () => {
-  bingLoading.value = true
-  await persistAndApply({ backgroundType: 'bing' }, true)
-}
-
 const refreshBing = async () => {
   bingLoading.value = true
   await persistAndApply({ backgroundType: 'bing', backgroundImageUrl: '' }, true)
 }
 
 const isPresetActive = (value: string) =>
-  settings.value.backgroundType !== 'bing' && settings.value.backgroundColor === value
+  settings.value.backgroundType !== 'bing' &&
+  settings.value.backgroundType !== 'upload' &&
+  settings.value.backgroundColor === value
+
+const handleUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = async e => {
+    const result = e.target?.result
+    if (typeof result === 'string') {
+      await persistAndApply({ backgroundType: 'upload', backgroundImageUrl: result })
+    }
+  }
+  reader.readAsDataURL(file)
+  // 允许选择同一文件时也能再次触发 change
+  target.value = ''
+}
 </script>
 
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 .fade-enter-from,
 .fade-leave-to {
@@ -210,4 +253,3 @@ const isPresetActive = (value: string) =>
   transform: translateY(-6px);
 }
 </style>
-

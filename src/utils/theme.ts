@@ -43,14 +43,18 @@ export const applyBackground = async (
   root.style.backgroundRepeat = 'no-repeat'
   root.style.backgroundPosition = 'center'
 
-  if (settings.backgroundType === 'bing') {
+  if (settings.backgroundType === 'bing' || settings.backgroundType === 'upload') {
     const imageUrl =
-      settings.backgroundImageUrl || (await fetchBingImageUrl(settings.backgroundImageUrl))
+      settings.backgroundType === 'bing'
+        ? settings.backgroundImageUrl || (await fetchBingImageUrl(settings.backgroundImageUrl))
+        : settings.backgroundImageUrl
+
     if (imageUrl) {
       root.style.backgroundImage = ''
       root.style.background = `center center / cover no-repeat fixed url(${imageUrl})`
       return imageUrl
     }
+
     root.style.backgroundImage = ''
     root.style.background = '#0b1224'
     root.style.backgroundColor = '#0b1224'
