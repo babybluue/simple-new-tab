@@ -207,7 +207,9 @@ const getDomainFromUrl = (url: string): string => {
 
 const buildPresetWithMeta = (preset: QuickLink): QuickLink => {
   const domain = preset.domain || getDomainFromUrl(preset.url)
-  const googleFavicon = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=64` : undefined
+  const googleFavicon = domain
+    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=64`
+    : undefined
   const siteFavicon = domain ? `https://${domain}/favicon.ico` : undefined
   const favicon = preset.favicon || googleFavicon || siteFavicon
   return { ...preset, domain, favicon }
@@ -336,7 +338,9 @@ const getSiteFavicon = (link: QuickLink): string | undefined => {
 
 const getGoogleFavicon = (link: QuickLink): string | undefined => {
   const domain = link.domain || getDomainFromUrl(link.url)
-  return domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=64` : undefined
+  return domain
+    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=64`
+    : undefined
 }
 
 const getFavicon = (link: QuickLink): string | undefined => {

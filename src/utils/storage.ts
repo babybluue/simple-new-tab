@@ -57,7 +57,9 @@ const normalizeHistoryItem = (item: HistoryItem): HistoryItem => {
 
 const normalizeQuickLink = (link: QuickLink): QuickLink => {
   const domain = link.domain || extractDomain(link.url)
-  const googleFavicon = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=64` : undefined
+  const googleFavicon = domain
+    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=64`
+    : undefined
   const favicon = link.favicon || googleFavicon
   return { ...link, domain, favicon }
 }

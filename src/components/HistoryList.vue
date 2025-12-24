@@ -40,11 +40,7 @@
             :src="getFavicon(item)"
             :alt="item.title"
             class="h-full w-full object-cover"
-            @error="
-              e => {
-                ;(e.target as HTMLImageElement).style.display = 'none'
-              }
-            "
+            @error="handleFaviconError(item, $event)"
           />
           <div
             v-else
@@ -65,14 +61,30 @@
             {{ item.domain || item.url }}
           </div>
         </div>
-        <button
-          class="absolute top-3 right-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-black/25 text-white/80 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-red-500/30 hover:text-white md:top-2.5 md:right-2.5 md:h-6 md:w-6 dark:bg-black/10 dark:text-[#213547]/70 dark:hover:bg-red-500/20 dark:hover:text-[#213547]/95"
-          @click="handleRemove($event, item)"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-4 w-4">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        <div class="absolute top-3 right-3 flex gap-2 opacity-0 transition-all duration-200 group-hover:opacity-100 md:top-2.5 md:right-2.5">
+          <button
+            class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-black/25 text-white/80 hover:scale-110 hover:bg-white/20 hover:text-white md:h-6 md:w-6 dark:bg-black/10 dark:text-[#213547]/70 dark:hover:bg-white/30 dark:hover:text-[#213547]/95"
+            @click="handlePin($event, item)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              class="h-4 w-4"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v18l7-5 7 5V3z" />
+            </svg>
+          </button>
+          <button
+            class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-black/25 text-white/80 hover:scale-110 hover:bg-red-500/30 hover:text-white md:h-6 md:w-6 dark:bg-black/10 dark:text-[#213547]/70 dark:hover:bg-red-500/20 dark:hover:text-[#213547]/95"
+            @click="handleRemove($event, item)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-4 w-4">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -81,13 +93,13 @@
 import { onMounted, ref } from 'vue'
 
 import { performSearch } from '@/utils/search'
-import { getHistory, type HistoryItem, removeHistoryItem } from '@/utils/storage'
-import { getSettings } from '@/utils/storage'
+import { addQuickLink, getHistory, getSettings, removeHistoryItem, type HistoryItem } from '@/utils/storage'
 
 const history = ref<HistoryItem[]>([])
 const settings = ref<{ searchEngine: string } | null>(null)
 const isCollapsed = ref(false)
 const MIN_VISIT_THRESHOLD = 2
+const faviconFallbackTried = ref<Record<string, boolean>>({})
 
 onMounted(async () => {
   settings.value = await getSettings()
@@ -125,15 +137,56 @@ const handleRemove = async (e: MouseEvent, item: HistoryItem) => {
   await loadHistory()
 }
 
-const getFavicon = (item: HistoryItem): string => {
+const handlePin = async (e: MouseEvent, item: HistoryItem) => {
+  e.stopPropagation()
+  await addQuickLink({
+    title: item.title,
+    url: item.url,
+    favicon: getGoogleFavicon(item),
+  })
+}
+
+const getDomain = (item: HistoryItem): string | null => {
+  const target = item.domain || item.url
   try {
-    const target = item.domain || item.url
     const urlObj = new URL(target.startsWith('http') ? target : `https://${target}`)
-    const domain = urlObj.hostname
-    return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
+    return urlObj.hostname
   } catch {
-    return ''
+    return null
   }
+}
+
+const getSiteFavicon = (item: HistoryItem): string | undefined => {
+  const domain = getDomain(item)
+  return domain ? `https://${domain}/favicon.ico` : undefined
+}
+
+const getGoogleFavicon = (item: HistoryItem): string | undefined => {
+  const domain = getDomain(item)
+  return domain
+    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=32`
+    : undefined
+}
+
+const getFavicon = (item: HistoryItem): string => {
+  return getGoogleFavicon(item) || getSiteFavicon(item) || ''
+}
+
+const handleFaviconError = (item: HistoryItem, e: Event) => {
+  const img = e.target as HTMLImageElement
+  const key = item.domain || item.url
+  if (faviconFallbackTried.value[key]) {
+    img.style.display = 'none'
+    return
+  }
+  const site = getSiteFavicon(item)
+  if (site && img.src !== site) {
+    faviconFallbackTried.value[key] = true
+    img.src = site
+    return
+  }
+  faviconFallbackTried.value[key] = true
+  img.style.display = 'none'
 }
 
 const toggleCollapse = () => {
