@@ -1,66 +1,3 @@
-<script lang="ts" setup>
-import { onMounted, ref } from 'vue'
-
-import { SEARCH_ENGINES } from '@/utils/search'
-import { clearHistory, getSettings, saveSettings, type Settings } from '@/utils/storage'
-
-defineProps<{
-  show: boolean
-}>()
-
-const emit = defineEmits<{
-  close: []
-}>()
-
-const settings = ref<Settings>({
-  searchEngine: 'google',
-  theme: 'auto',
-  maxHistoryItems: 10,
-})
-
-const loading = ref(false)
-
-onMounted(async () => {
-  settings.value = await getSettings()
-})
-
-const handleSave = async () => {
-  loading.value = true
-  try {
-    await saveSettings(settings.value)
-    // 应用主题
-    applyTheme(settings.value.theme)
-    emit('close')
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleClearHistory = async () => {
-  if (confirm('确定要清除所有访问历史吗？')) {
-    await clearHistory()
-    emit('close')
-  }
-}
-
-const applyTheme = (theme: string) => {
-  const root = document.documentElement
-  if (theme === 'light') {
-    root.classList.remove('dark')
-    root.classList.add('light')
-  } else if (theme === 'dark') {
-    root.classList.remove('light')
-    root.classList.add('dark')
-  } else {
-    root.classList.remove('light', 'dark')
-  }
-}
-
-const handleClose = () => {
-  emit('close')
-}
-</script>
-
 <template>
   <Teleport to="body">
     <Transition name="drawer">
@@ -155,6 +92,68 @@ const handleClose = () => {
     </Transition>
   </Teleport>
 </template>
+<script lang="ts" setup>
+import { onMounted, ref } from 'vue'
+
+import { SEARCH_ENGINES } from '@/utils/search'
+import { clearHistory, getSettings, saveSettings, type Settings } from '@/utils/storage'
+
+defineProps<{
+  show: boolean
+}>()
+
+const emit = defineEmits<{
+  close: []
+}>()
+
+const settings = ref<Settings>({
+  searchEngine: 'google',
+  theme: 'auto',
+  maxHistoryItems: 10,
+})
+
+const loading = ref(false)
+
+onMounted(async () => {
+  settings.value = await getSettings()
+})
+
+const handleSave = async () => {
+  loading.value = true
+  try {
+    await saveSettings(settings.value)
+    // 应用主题
+    applyTheme(settings.value.theme)
+    emit('close')
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleClearHistory = async () => {
+  if (confirm('确定要清除所有访问历史吗？')) {
+    await clearHistory()
+    emit('close')
+  }
+}
+
+const applyTheme = (theme: string) => {
+  const root = document.documentElement
+  if (theme === 'light') {
+    root.classList.remove('dark')
+    root.classList.add('light')
+  } else if (theme === 'dark') {
+    root.classList.remove('light')
+    root.classList.add('dark')
+  } else {
+    root.classList.remove('light', 'dark')
+  }
+}
+
+const handleClose = () => {
+  emit('close')
+}
+</script>
 
 <style scoped>
 /* 抽屉动画 */

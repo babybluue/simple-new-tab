@@ -1,31 +1,3 @@
-<script lang="ts" setup>
-import { onMounted, ref } from 'vue'
-
-import { performSearch } from '@/utils/search'
-import { getSettings, type Settings } from '@/utils/storage'
-
-const query = ref('')
-const settings = ref<Settings | null>(null)
-const searchInput = ref<HTMLInputElement | null>(null)
-
-onMounted(async () => {
-  settings.value = await getSettings()
-  // 自动聚焦搜索框
-  searchInput.value?.focus()
-})
-
-const handleSearch = () => {
-  if (!query.value.trim() || !settings.value) return
-  performSearch(query.value, settings.value.searchEngine)
-}
-
-const handleKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Enter') {
-    handleSearch()
-  }
-}
-</script>
-
 <template>
   <div class="mx-auto w-full max-w-[640px]">
     <div
@@ -61,3 +33,30 @@ const handleKeydown = (e: KeyboardEvent) => {
     </div>
   </div>
 </template>
+<script lang="ts" setup>
+import { onMounted, ref } from 'vue'
+
+import { performSearch } from '@/utils/search'
+import { getSettings, type Settings } from '@/utils/storage'
+
+const query = ref('')
+const settings = ref<Settings | null>(null)
+const searchInput = ref<HTMLInputElement | null>(null)
+
+onMounted(async () => {
+  settings.value = await getSettings()
+  // 自动聚焦搜索框
+  searchInput.value?.focus()
+})
+
+const handleSearch = () => {
+  if (!query.value.trim() || !settings.value) return
+  performSearch(query.value, settings.value.searchEngine)
+}
+
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Enter') {
+    handleSearch()
+  }
+}
+</script>
