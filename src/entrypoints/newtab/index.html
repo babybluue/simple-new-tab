@@ -4,6 +4,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>新标签页</title>
+    <script type="module">
+      const root = document.documentElement
+      const fallback = '#0b1224'
+      try {
+        const { settings } = await chrome.storage.local.get('settings')
+        const cfg = settings || {}
+
+        // 预先应用主题类，避免闪烁
+        if (cfg.theme === 'light') {
+          root.classList.add('light')
+          root.classList.remove('dark')
+        } else if (cfg.theme === 'dark') {
+          root.classList.add('dark')
+          root.classList.remove('light')
+        } else {
+          root.classList.remove('light', 'dark')
+        }
+
+        root.style.backgroundAttachment = 'fixed'
+        root.style.backgroundSize = 'cover'
+        root.style.backgroundRepeat = 'no-repeat'
+        root.style.backgroundPosition = 'center'
+
+        if (cfg.backgroundType === 'bing') {
+          root.style.background = fallback
+          root.style.backgroundColor = fallback
+          if (cfg.backgroundImageUrl) {
+            root.style.backgroundImage = `url(${cfg.backgroundImageUrl})`
+          }
+        } else if (cfg.backgroundColor) {
+          root.style.background = cfg.backgroundColor
+          root.style.backgroundColor = cfg.backgroundColor
+          root.style.backgroundImage = ''
+        } else {
+          root.style.background = fallback
+          root.style.backgroundColor = fallback
+        }
+      } catch (error) {
+        root.style.background = fallback
+        root.style.backgroundColor = fallback
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>

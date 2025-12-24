@@ -16,6 +16,9 @@ export default defineConfig({
     host_permissions: [
       'https://www.google.com/*',
       'https://api.bing.com/*',
+      'https://www.bing.com/*',
+      'https://cn.bing.com/*',
+      'https://bing.biturl.top/*',
       'https://suggestion.baidu.com/*',
       'https://duckduckgo.com/*',
     ],

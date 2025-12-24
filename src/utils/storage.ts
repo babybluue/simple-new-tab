@@ -8,10 +8,15 @@ export interface HistoryItem {
   visitCount?: number
 }
 
+export type BackgroundType = 'preset' | 'custom' | 'bing'
+
 export interface Settings {
   searchEngine: 'google' | 'bing' | 'baidu' | 'duckduckgo'
   theme: 'light' | 'dark' | 'auto'
   maxHistoryItems: number
+  backgroundType: BackgroundType
+  backgroundColor: string
+  backgroundImageUrl?: string
 }
 
 export interface QuickLink {
@@ -21,10 +26,13 @@ export interface QuickLink {
   domain?: string
 }
 
-const DEFAULT_SETTINGS: Settings = {
+export const DEFAULT_SETTINGS: Settings = {
   searchEngine: 'google',
   theme: 'auto',
   maxHistoryItems: 10,
+  backgroundType: 'preset',
+  backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+  backgroundImageUrl: '',
 }
 
 export const PRESET_QUICK_LINKS: QuickLink[] = [
@@ -75,8 +83,8 @@ const sortHistory = (items: HistoryItem[]): HistoryItem[] => {
 // 获取设置
 export async function getSettings(): Promise<Settings> {
   const result = await chrome.storage.local.get('settings')
-  const stored = result.settings as Settings | undefined
-  return stored ?? DEFAULT_SETTINGS
+  const stored = result.settings as Partial<Settings> | undefined
+  return { ...DEFAULT_SETTINGS, ...(stored || {}) }
 }
 
 // 保存设置
