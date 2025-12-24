@@ -1,15 +1,15 @@
 <template>
-  <div class="py-2">
-    <h1 class="mb-20 text-2xl">
+  <div class="mb-5 pt-2 text-center">
+    <h1 class="mb-2 text-5xl">
       {{ time }}
     </h1>
-    <p class="text-2xl font-light tracking-wide text-white/90 md:text-[1.2rem] dark:text-[#213547]/90">
+    <p class="text-2xl font-light tracking-wide text-white/90 md:text-[1.2rem]">
       {{ date }}
     </p>
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const time = ref('')
 const date = ref('')

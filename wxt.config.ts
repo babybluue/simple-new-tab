@@ -13,5 +13,11 @@ export default defineConfig({
       newtab: 'newtab.html',
     },
     permissions: ['storage', 'tabs'],
+    host_permissions: [
+      'https://www.google.com/*',
+      'https://api.bing.com/*',
+      'https://suggestion.baidu.com/*',
+      'https://duckduckgo.com/*',
+    ],
   },
 })

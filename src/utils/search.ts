@@ -2,24 +2,29 @@
 export interface SearchEngine {
   name: string
   url: string
+  icon: string
 }
 
 export const SEARCH_ENGINES: Record<string, SearchEngine> = {
   google: {
     name: 'Google',
     url: 'https://www.google.com/search?q=',
+    icon: 'https://www.google.com/favicon.ico',
   },
   bing: {
     name: 'Bing',
     url: 'https://www.bing.com/search?q=',
+    icon: 'https://www.bing.com/favicon.ico',
   },
   baidu: {
     name: '百度',
     url: 'https://www.baidu.com/s?wd=',
+    icon: 'https://www.baidu.com/favicon.ico',
   },
   duckduckgo: {
     name: 'DuckDuckGo',
     url: 'https://duckduckgo.com/?q=',
+    icon: 'https://duckduckgo.com/favicon.ico',
   },
 }
 
@@ -59,4 +64,76 @@ export function performSearch(query: string, searchEngine: string = 'google'): v
   const engine = SEARCH_ENGINES[searchEngine] || SEARCH_ENGINES.google
   const searchUrl = `${engine.url}${encodeURIComponent(trimmedQuery)}`
   chrome.tabs.update({ url: searchUrl })
+}
+
+// 获取搜索建议
+export async function getSearchSuggestions(query: string, searchEngine: string = 'google'): Promise<string[]> {
+  if (!query.trim()) return []
+
+  const trimmedQuery = query.trim()
+
+  try {
+    switch (searchEngine) {
+      case 'google': {
+        const response = await fetch(
+          `https://www.google.com/complete/search?client=chrome&q=${encodeURIComponent(trimmedQuery)}`
+        )
+        if (!response.ok) return []
+        const data = await response.json()
+        return Array.isArray(data) && data[1] ? data[1] : []
+      }
+      case 'baidu': {
+        try {
+          const callbackName = `baidu_suggest_${Date.now()}`
+          const url = `https://suggestion.baidu.com/su?wd=${encodeURIComponent(trimmedQuery)}&cb=${callbackName}&t=${Date.now()}&csor=1&ie=utf-8&oe=utf-8`
+
+          const response = await fetch(url)
+          if (!response.ok) return []
+
+          // 使用 UTF-8 文本解析（已显式指定 ie/oe=utf-8）
+          let text = (await response.text()).trim()
+
+          const startIndex = text.indexOf('{')
+          const endIndex = text.lastIndexOf('}')
+          if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) return []
+
+          // 提取对象部分并将未加引号的键名转为标准 JSON
+          let objStr = text.slice(startIndex, endIndex + 1)
+          objStr = objStr.replace(/([{,]\s*)([a-zA-Z_$][\w$]*)\s*:/g, '$1"$2":')
+
+          const obj = JSON.parse(objStr)
+          return Array.isArray(obj?.s) ? obj.s : []
+        } catch {
+          return []
+        }
+      }
+      case 'bing': {
+        const response = await fetch(
+          `https://api.bing.com/osjson.aspx?query=${encodeURIComponent(trimmedQuery)}&language=zh-CN`
+        )
+        if (!response.ok) return []
+        const data = await response.json()
+        return Array.isArray(data) && data[1] ? data[1] : []
+      }
+      case 'duckduckgo': {
+        const response = await fetch(`https://duckduckgo.com/ac/?q=${encodeURIComponent(trimmedQuery)}&kl=wt-wt`)
+        if (!response.ok) return []
+        const data = await response.json()
+        if (Array.isArray(data)) {
+          return data.map((item: any) => item.phrase || item).filter(Boolean)
+        }
+        return []
+      }
+      default: {
+        const response = await fetch(
+          `https://www.google.com/complete/search?client=chrome&q=${encodeURIComponent(trimmedQuery)}`
+        )
+        if (!response.ok) return []
+        const data = await response.json()
+        return Array.isArray(data) && data[1] ? data[1] : []
+      }
+    }
+  } catch {
+    return []
+  }
 }

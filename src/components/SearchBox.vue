@@ -1,26 +1,91 @@
 <template>
-  <div class="mx-auto w-full max-w-[640px]">
+  <div class="relative z-10 mx-auto w-full max-w-[640px]">
     <div
-      class="relative flex items-center rounded-3xl border border-white/30 bg-white/98 px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-300 focus-within:-translate-y-1 focus-within:scale-[1.02] focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.18)] dark:border-white/20 dark:bg-white/12 dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] dark:backdrop-blur-xl dark:focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.4)]"
+      class="relative flex items-center rounded-3xl border border-white/30 bg-white/98 px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-300 focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.18)] dark:border-white/20 dark:bg-white/12 dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] dark:backdrop-blur-xl dark:focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.4)]"
     >
-      <svg
-        class="mr-4 h-5 w-5 flex-shrink-0 text-gray-500 dark:text-white/60"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-      <input
-        ref="searchInput"
-        v-model="query"
-        type="text"
-        class="flex-1 border-none bg-transparent text-base font-normal text-gray-900 outline-none placeholder:text-gray-400 md:text-lg dark:text-white/95 dark:placeholder:text-white/50"
-        placeholder="搜索或输入网址..."
-        @keydown="handleKeydown"
-      />
+      <!-- 搜索引擎 logo 和下拉菜单 -->
+      <div class="relative mr-4 shrink-0">
+        <button
+          class="flex h-5 w-5 items-center justify-center rounded transition-all duration-200 hover:bg-gray-100/50 dark:hover:bg-white/10"
+          @click="toggleEngineMenu"
+        >
+          <img
+            v-if="currentEngine"
+            :src="currentEngine.icon"
+            :alt="currentEngine.name"
+            class="h-5 w-5 rounded"
+            @error="handleImageError"
+          />
+          <svg
+            v-else
+            class="h-5 w-5 text-gray-500 dark:text-white/60"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+        <!-- 搜索引擎选择下拉菜单 -->
+        <div
+          v-if="showEngineMenu"
+          data-engine-menu
+          class="absolute top-8 left-0 z-[500] min-w-[180px] rounded-lg border border-gray-200/80 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.2)] dark:border-white/30 dark:bg-[#1e1e1e] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] dark:backdrop-blur-xl"
+        >
+          <div
+            v-for="(engine, key) in SEARCH_ENGINES"
+            :key="key"
+            class="flex cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-white/15"
+            :class="{ 'bg-gray-100 dark:bg-white/15': settings?.searchEngine === key }"
+            @click="selectEngine(key)"
+          >
+            <img :src="engine.icon" :alt="engine.name" class="h-4 w-4 rounded" @error="handleImageError" />
+            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ engine.name }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="relative flex flex-1 items-center">
+        <input
+          ref="searchInput"
+          v-model="query"
+          type="text"
+          class="w-full border-none bg-transparent text-base font-normal text-gray-900 outline-none placeholder:text-gray-400 md:text-lg dark:text-white/95 dark:placeholder:text-white/50"
+          placeholder="搜索或输入网址..."
+          @keydown="handleKeydown"
+          @input="handleInput"
+          @focus="handleFocus"
+          @blur="handleBlur"
+        />
+        <!-- 搜索建议列表 -->
+        <div
+          v-if="showSuggestions && suggestions.length > 0"
+          data-suggestions-menu
+          class="absolute top-full left-0 z-[500] mt-2 w-full rounded-lg border border-gray-200/80 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.2)] dark:border-white/30 dark:bg-[#1e1e1e] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] dark:backdrop-blur-xl"
+        >
+          <div
+            v-for="(suggestion, index) in suggestions"
+            :key="index"
+            class="flex cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-white/15"
+            :class="{ 'bg-gray-100 dark:bg-white/15': selectedSuggestionIndex === index }"
+            @click="selectSuggestion(suggestion)"
+            @mouseenter="selectedSuggestionIndex = index"
+          >
+            <svg
+              class="h-4 w-4 text-gray-400 dark:text-white/70"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span class="flex-1 text-sm text-gray-900 dark:text-white">{{ suggestion }}</span>
+          </div>
+        </div>
+      </div>
       <button
         v-if="query"
         class="ml-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 text-gray-400 transition-all duration-200 hover:scale-110 hover:bg-gray-100/50 hover:text-gray-600 dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white/80"
@@ -34,29 +99,182 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
-import { performSearch } from '@/utils/search'
-import { getSettings, type Settings } from '@/utils/storage'
+import { getSearchSuggestions, performSearch, SEARCH_ENGINES, type SearchEngine } from '@/utils/search'
+import { getSettings, saveSettings, type Settings } from '@/utils/storage'
 
 const query = ref('')
 const settings = ref<Settings | null>(null)
 const searchInput = ref<HTMLInputElement | null>(null)
+const showEngineMenu = ref(false)
+const suggestions = ref<string[]>([])
+const showSuggestions = ref(false)
+const selectedSuggestionIndex = ref(-1)
+let suggestionTimer: ReturnType<typeof setTimeout> | null = null
+
+const currentEngine = computed<SearchEngine | null>(() => {
+  if (!settings.value) return null
+  return SEARCH_ENGINES[settings.value.searchEngine] || SEARCH_ENGINES.google
+})
 
 onMounted(async () => {
   settings.value = await getSettings()
   // 自动聚焦搜索框
   searchInput.value?.focus()
+
+  // 监听设置变化
+  chrome.storage.onChanged.addListener(changes => {
+    if (changes.settings) {
+      settings.value = (changes.settings.newValue as Settings) || settings.value
+    }
+  })
+
+  // 点击外部关闭菜单
+  document.addEventListener('click', handleClickOutside)
 })
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+  if (suggestionTimer) {
+    clearTimeout(suggestionTimer)
+  }
+})
+
+const toggleEngineMenu = () => {
+  showEngineMenu.value = !showEngineMenu.value
+  // 当显示搜索引擎菜单时，关闭搜索建议
+  if (showEngineMenu.value) {
+    showSuggestions.value = false
+  }
+}
+
+const handleClickOutside = (e: MouseEvent) => {
+  const target = e.target as HTMLElement
+  const searchBoxContainer = target.closest('.mx-auto')
+  if (!searchBoxContainer) {
+    showEngineMenu.value = false
+    showSuggestions.value = false
+    return
+  }
+  // 检查是否点击在搜索引擎菜单区域
+  const engineMenu = target.closest('[data-engine-menu]')
+  // 检查是否点击在搜索建议区域
+  const suggestionsMenu = target.closest('[data-suggestions-menu]')
+  // 检查是否点击在搜索引擎按钮上
+  const engineButton = target.closest('button')
+
+  if (!engineMenu && !suggestionsMenu && !engineButton) {
+    showEngineMenu.value = false
+    showSuggestions.value = false
+  }
+}
+
+const selectEngine = async (engineKey: string) => {
+  if (!settings.value) return
+  settings.value.searchEngine = engineKey as Settings['searchEngine']
+  await saveSettings(settings.value)
+  showEngineMenu.value = false
+  // 如果当前有查询，重新获取建议
+  if (query.value.trim()) {
+    loadSuggestions()
+  }
+}
+
+const handleImageError = (e: Event) => {
+  const img = e.target as HTMLImageElement
+  img.style.display = 'none'
+}
+
+const handleInput = () => {
+  if (suggestionTimer) {
+    clearTimeout(suggestionTimer)
+  }
+  selectedSuggestionIndex.value = -1
+  // 当输入时，关闭搜索引擎菜单
+  if (showEngineMenu.value) {
+    showEngineMenu.value = false
+  }
+  if (query.value.trim()) {
+    suggestionTimer = setTimeout(() => {
+      loadSuggestions()
+    }, 300)
+  } else {
+    suggestions.value = []
+    showSuggestions.value = false
+  }
+}
+
+const handleFocus = () => {
+  // 当聚焦搜索框时，关闭搜索引擎菜单
+  if (showEngineMenu.value) {
+    showEngineMenu.value = false
+  }
+  if (suggestions.value.length > 0) {
+    showSuggestions.value = true
+  }
+}
+
+const handleBlur = () => {
+  // 延迟关闭，以便点击建议项
+  setTimeout(() => {
+    showSuggestions.value = false
+  }, 200)
+}
+
+const loadSuggestions = async () => {
+  if (!query.value.trim() || !settings.value) {
+    suggestions.value = []
+    showSuggestions.value = false
+    return
+  }
+  try {
+    const results = await getSearchSuggestions(query.value, settings.value.searchEngine)
+    suggestions.value = results.slice(0, 8)
+    showSuggestions.value = results.length > 0
+  } catch {
+    // Failed to load suggestions
+    suggestions.value = []
+    showSuggestions.value = false
+  }
+}
+
+const selectSuggestion = (suggestion: string) => {
+  query.value = suggestion
+  showSuggestions.value = false
+  handleSearch()
+}
 
 const handleSearch = () => {
   if (!query.value.trim() || !settings.value) return
+  showSuggestions.value = false
   performSearch(query.value, settings.value.searchEngine)
 }
 
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === 'Enter') {
-    handleSearch()
+    if (selectedSuggestionIndex.value >= 0 && suggestions.value[selectedSuggestionIndex.value]) {
+      selectSuggestion(suggestions.value[selectedSuggestionIndex.value])
+    } else {
+      handleSearch()
+    }
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    if (selectedSuggestionIndex.value < suggestions.value.length - 1) {
+      selectedSuggestionIndex.value++
+    } else {
+      selectedSuggestionIndex.value = 0
+    }
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    if (selectedSuggestionIndex.value > 0) {
+      selectedSuggestionIndex.value--
+    } else {
+      selectedSuggestionIndex.value = suggestions.value.length - 1
+    }
+  } else if (e.key === 'Escape') {
+    showSuggestions.value = false
+    selectedSuggestionIndex.value = -1
   }
 }
 </script>

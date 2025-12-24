@@ -9,9 +9,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import 'tailwindcss'
-
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 
 import DateTime from '@/components/DateTime.vue'
 import HistoryList from '@/components/HistoryList.vue'
