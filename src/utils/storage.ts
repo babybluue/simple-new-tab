@@ -14,11 +14,29 @@ export interface Settings {
   maxHistoryItems: number
 }
 
+export interface QuickLink {
+  title: string
+  url: string
+  favicon?: string
+  domain?: string
+}
+
 const DEFAULT_SETTINGS: Settings = {
   searchEngine: 'google',
   theme: 'auto',
   maxHistoryItems: 10,
 }
+
+export const PRESET_QUICK_LINKS: QuickLink[] = [
+  { title: 'Github', url: 'https://github.com' },
+  { title: 'X', url: 'https://x.com' },
+  { title: '微博', url: 'https://weibo.com' },
+  { title: '小红书', url: 'https://www.xiaohongshu.com' },
+  { title: '淘宝', url: 'https://www.taobao.com' },
+  { title: '京东', url: 'https://www.jd.com' },
+  { title: '哔哩哔哩', url: 'https://www.bilibili.com' },
+  { title: 'Youtube', url: 'https://www.youtube.com' },
+]
 
 const extractDomain = (url: string): string => {
   try {
@@ -37,6 +55,13 @@ const normalizeHistoryItem = (item: HistoryItem): HistoryItem => {
   return { ...item, domain, visitCount, timestamp }
 }
 
+const normalizeQuickLink = (link: QuickLink): QuickLink => {
+  const domain = link.domain || extractDomain(link.url)
+  const googleFavicon = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=64` : undefined
+  const favicon = link.favicon || googleFavicon
+  return { ...link, domain, favicon }
+}
+
 const sortHistory = (items: HistoryItem[]): HistoryItem[] => {
   return [...items].sort((a, b) => {
     const countDiff = (b.visitCount ?? 1) - (a.visitCount ?? 1)
@@ -48,7 +73,8 @@ const sortHistory = (items: HistoryItem[]): HistoryItem[] => {
 // 获取设置
 export async function getSettings(): Promise<Settings> {
   const result = await chrome.storage.local.get('settings')
-  return result.settings || DEFAULT_SETTINGS
+  const stored = result.settings as Settings | undefined
+  return stored ?? DEFAULT_SETTINGS
 }
 
 // 保存设置
@@ -108,4 +134,52 @@ export async function removeHistoryItem(url: string): Promise<void> {
   const history = await getHistory()
   const filtered = history.filter(h => h.domain !== domain && h.url !== url)
   await chrome.storage.local.set({ history: filtered })
+}
+
+// 获取快速访问列表
+export async function getQuickLinks(): Promise<QuickLink[]> {
+  const result = await chrome.storage.local.get('quickLinks')
+  const stored = (result.quickLinks || []) as QuickLink[]
+  const normalized = (stored.length > 0 ? stored : PRESET_QUICK_LINKS).map(normalizeQuickLink)
+
+  // 如果之前没有存储，初始化存储默认列表，方便后续同步
+  if (!stored.length) {
+    await chrome.storage.local.set({ quickLinks: normalized })
+  }
+
+  return normalized
+}
+
+// 保存快速访问列表
+export async function saveQuickLinks(links: QuickLink[]): Promise<void> {
+  const normalized = links.map(normalizeQuickLink)
+  await chrome.storage.local.set({ quickLinks: normalized })
+}
+
+// 新增或更新快速访问站点（以域名/URL 去重）
+export async function addQuickLink(link: QuickLink): Promise<QuickLink[]> {
+  const links = await getQuickLinks()
+  const normalized = normalizeQuickLink(link)
+  const existingIndex = links.findIndex(item => item.domain === normalized.domain || item.url === normalized.url)
+
+  let updated: QuickLink[]
+  if (existingIndex !== -1) {
+    updated = [...links]
+    updated[existingIndex] = { ...links[existingIndex], ...normalized }
+  } else {
+    updated = [normalized, ...links]
+  }
+
+  const limited = updated.slice(0, 30)
+  await saveQuickLinks(limited)
+  return limited
+}
+
+// 删除快速访问站点
+export async function removeQuickLink(url: string): Promise<QuickLink[]> {
+  const domain = extractDomain(url)
+  const links = await getQuickLinks()
+  const filtered = links.filter(link => link.domain !== domain && link.url !== url)
+  await saveQuickLinks(filtered)
+  return filtered
 }

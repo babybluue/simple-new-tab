@@ -129,7 +129,8 @@ const getFavicon = (item: HistoryItem): string => {
   try {
     const target = item.domain || item.url
     const urlObj = new URL(target.startsWith('http') ? target : `https://${target}`)
-    return `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=32`
+    const domain = urlObj.hostname
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
   } catch {
     return ''
   }

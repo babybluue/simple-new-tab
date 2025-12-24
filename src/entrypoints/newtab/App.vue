@@ -5,6 +5,7 @@
     <div class="mb-8 w-full md:mb-6">
       <SearchBox />
     </div>
+    <QuickAccessList />
     <HistoryList />
   </div>
 </template>
@@ -13,6 +14,7 @@ import { onMounted } from 'vue'
 
 import DateTime from '@/components/DateTime.vue'
 import HistoryList from '@/components/HistoryList.vue'
+import QuickAccessList from '@/components/QuickAccessList.vue'
 import SearchBox from '@/components/SearchBox.vue'
 import Setting from '@/components/Setting.vue'
 import { getSettings } from '@/utils/storage'
