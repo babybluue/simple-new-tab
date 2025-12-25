@@ -1,11 +1,11 @@
 <template>
   <section v-if="history.length > 0" class="mx-auto mt-12 w-full max-w-7xl px-6 md:px-5" aria-label="最近访问">
     <header class="mb-6 flex items-center justify-between md:mb-5">
-      <h2 class="text-left text-xl font-semibold tracking-tight text-white/95 md:text-lg dark:text-[#213547]/95">
+      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">
         最近访问
       </h2>
       <button
-        class="flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
+        class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
         type="button"
         :aria-expanded="!isCollapsed"
         :aria-controls="'history-list'"
@@ -42,7 +42,7 @@
         >
           <template #actions>
             <button
-              class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-black/25 text-white/80 hover:scale-110 hover:bg-white/20 hover:text-white md:h-6 md:w-6 dark:bg-black/10 dark:text-[#213547]/70 dark:hover:bg-white/30 dark:hover:text-[#213547]/95"
+              class="text-app-secondary hover:text-app flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-app-overlay bg-app-overlay-hover hover:scale-110 md:h-6 md:w-6"
               type="button"
               @click.stop="handlePin(item)"
             >
@@ -57,7 +57,7 @@
               </svg>
             </button>
             <button
-              class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-black/25 text-white/80 hover:scale-110 hover:bg-red-500/30 hover:text-white md:h-6 md:w-6 dark:bg-black/10 dark:text-[#213547]/70 dark:hover:bg-red-500/20 dark:hover:text-[#213547]/95"
+              class="text-app-secondary hover:text-app flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-app-overlay bg-app-overlay-hover hover:scale-110 hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20"
               type="button"
               @click.stop="handleRemove(item)"
             >

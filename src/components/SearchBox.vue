@@ -1,13 +1,13 @@
 <template>
   <section ref="searchBoxRef" class="relative z-10 mx-auto w-full max-w-[640px]" role="search" aria-label="站内搜索">
     <form
-      class="relative flex items-center rounded-3xl border border-white/30 bg-white/98 px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-300 focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.18)] dark:border-white/20 dark:bg-white/12 dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] dark:backdrop-blur-xl dark:focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.4)]"
+      class="border-app bg-app-overlay relative flex items-center rounded-3xl border px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl transition-all duration-300 focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] dark:focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.4)]"
       role="search"
       @submit.prevent="handleSubmit"
     >
       <div class="relative mr-4 shrink-0">
         <button
-          class="flex h-5 w-5 cursor-pointer items-center justify-center rounded transition-all duration-200 hover:bg-gray-100/50 dark:hover:bg-white/10"
+          class="flex h-5 w-5 cursor-pointer items-center justify-center rounded bg-app-overlay-hover transition-all duration-200"
           type="button"
           :aria-expanded="isEngineMenuOpen"
           aria-haspopup="listbox"
@@ -22,7 +22,7 @@
           />
           <svg
             v-else
-            class="h-5 w-5 text-gray-500 dark:text-white/60"
+            class="text-app-tertiary h-5 w-5"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -35,20 +35,20 @@
         <div
           v-if="isEngineMenuOpen"
           data-engine-menu
-          class="absolute top-8 left-0 z-500 min-w-[180px] rounded-lg border border-gray-200/80 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.2)] dark:border-white/30 dark:bg-[#1e1e1e] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] dark:backdrop-blur-xl"
+          class="border-app menu-app absolute top-8 left-0 z-500 min-w-[180px] rounded-lg border shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
           role="listbox"
           aria-label="选择搜索引擎"
         >
           <button
             v-for="(engine, key) in SEARCH_ENGINES"
             :key="key"
-            class="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-white/15"
-            :class="{ 'bg-gray-100 dark:bg-white/15': settings?.searchEngine === key }"
+            class="menu-item-app flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors duration-200"
+            :class="{ 'menu-item-app-active': settings?.searchEngine === key }"
             type="button"
             @click="selectEngine(key)"
           >
             <img :src="engine.icon" :alt="engine.name" class="h-4 w-4 rounded" @error="handleImageError" />
-            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ engine.name }}</span>
+            <span class="text-sm font-medium">{{ engine.name }}</span>
           </button>
         </div>
       </div>
@@ -57,7 +57,7 @@
           ref="searchInput"
           v-model="query"
           type="text"
-          class="w-full border-none bg-transparent text-base font-normal text-gray-900 outline-none placeholder:text-gray-400 md:text-lg dark:text-white/95 dark:placeholder:text-white/50"
+          class="text-app placeholder:text-app-tertiary w-full border-none bg-transparent text-base font-normal outline-none md:text-lg"
           placeholder="搜索或输入网址..."
           autocomplete="off"
           aria-label="搜索框"
@@ -72,22 +72,22 @@
           v-if="isSuggestionListVisible && suggestions.length > 0"
           id="search-suggestions"
           data-suggestions-menu
-          class="absolute top-full left-0 z-500 mt-2 w-full rounded-lg border border-gray-200/80 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.2)] dark:border-white/30 dark:bg-[#1e1e1e] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] dark:backdrop-blur-xl"
+          class="border-app menu-app absolute top-full left-0 z-500 mt-2 w-full rounded-lg border shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
           role="listbox"
         >
           <ul>
             <li
               v-for="(suggestion, index) in suggestions"
               :key="index"
-              class="flex cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-white/15"
-              :class="{ 'bg-gray-100 dark:bg-white/15': selectedSuggestionIndex === index }"
+              class="menu-item-app flex cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors duration-200"
+              :class="{ 'menu-item-app-active': selectedSuggestionIndex === index }"
               role="option"
               :aria-selected="selectedSuggestionIndex === index"
               @click="selectSuggestion(suggestion)"
               @mouseenter="selectedSuggestionIndex = index"
             >
               <svg
-                class="h-4 w-4 text-gray-400 dark:text-white/70"
+                class="text-app-tertiary h-4 w-4"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -96,14 +96,14 @@
               >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <span class="flex-1 text-sm text-gray-900 dark:text-white">{{ suggestion }}</span>
+              <span class="text-app flex-1 text-sm">{{ suggestion }}</span>
             </li>
           </ul>
         </div>
       </div>
       <button
         v-if="query"
-        class="ml-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 text-gray-400 transition-all duration-200 hover:scale-110 hover:bg-gray-100/50 hover:text-gray-600 dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white/80"
+        class="text-app-tertiary hover:text-app ml-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none bg-transparent bg-app-overlay-hover p-0 transition-all duration-200 hover:scale-110"
         type="button"
         aria-label="清除搜索内容"
         @click="query = ''"

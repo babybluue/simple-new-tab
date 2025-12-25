@@ -38,8 +38,12 @@
           root.style.backgroundColor = cfg.backgroundColor
           root.style.backgroundImage = ''
         } else {
-          root.style.background = fallback
-          root.style.backgroundColor = fallback
+          // 如果没有设置，根据系统偏好设置默认背景
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const defaultBg = prefersDark ? '#0f172a' : '#f5f5f5'
+          root.style.background = defaultBg
+          root.style.backgroundColor = defaultBg
+          root.style.backgroundImage = ''
         }
       } catch (error) {
         root.style.background = fallback

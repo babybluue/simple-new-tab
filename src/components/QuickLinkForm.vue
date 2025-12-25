@@ -1,21 +1,21 @@
 <template>
   <form
     v-if="visible"
-    class="mb-4 grid grid-cols-1 gap-3 rounded-2xl border border-white/20 bg-white/10 p-4 shadow-lg backdrop-blur-xl md:grid-cols-[1.1fr_1.5fr_1.2fr_auto] md:items-center md:gap-3 md:p-3 dark:border-white/30 dark:bg-white/85"
+    class="border-app bg-app-overlay mb-4 grid grid-cols-1 gap-3 rounded-2xl border p-4 shadow-lg backdrop-blur-xl md:grid-cols-[1.1fr_1.5fr_1.2fr_auto] md:items-center md:gap-3 md:p-3"
     aria-label="添加快速访问"
     @submit.prevent="handleSubmit"
   >
     <input
       v-model="formData.title"
       type="text"
-      class="w-full rounded-xl border border-white/20 bg-white/70 px-3 py-2 text-sm text-[#1f2937] placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none dark:border-white/40 dark:bg-white/95"
+      class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none"
       placeholder="网站名称（可选）"
       name="title"
     />
     <input
       v-model="formData.url"
       type="text"
-      class="w-full rounded-xl border border-white/20 bg-white/70 px-3 py-2 text-sm text-[#1f2937] placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none dark:border-white/40 dark:bg-white/95"
+      class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none"
       placeholder="网站链接，例如 https://example.com"
       required
       name="url"
@@ -23,7 +23,7 @@
     <input
       v-model="formData.icon"
       type="text"
-      class="w-full rounded-xl border border-white/20 bg-white/70 px-3 py-2 text-sm text-[#1f2937] placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none dark:border-white/40 dark:bg-white/95"
+      class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none"
       placeholder="自定义图标 URL（可选）"
       name="icon"
     />
@@ -38,7 +38,7 @@
       <button
         v-if="isEditing"
         type="button"
-        class="h-10 cursor-pointer rounded-xl border border-white/30 bg-transparent px-4 text-sm font-medium text-white/80 transition hover:border-white/50 hover:text-white md:h-9 dark:border-[#213547]/40 dark:text-[#213547]/80 dark:hover:border-[#213547]/60 dark:hover:text-[#213547]"
+        class="border-app text-app-secondary hover:text-app h-10 cursor-pointer rounded-xl border bg-transparent bg-app-overlay-hover px-4 text-sm font-medium transition md:h-9"
         @click="$emit('cancel')"
       >
         取消

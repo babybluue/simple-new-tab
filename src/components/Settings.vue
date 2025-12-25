@@ -1,7 +1,7 @@
 <template>
   <aside class="fixed top-6 right-6 z-50 flex flex-col items-end gap-3 md:right-5" aria-label="外观设置">
     <button
-      class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-white/90 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:rotate-90 hover:bg-white/25 hover:text-white hover:shadow-xl dark:border-white/30 dark:bg-white/85 dark:text-[#213547]/80 dark:hover:bg-white/95 dark:hover:text-[#213547]/95"
+      class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl border shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:rotate-90 hover:shadow-xl"
       title="设置"
       type="button"
       :aria-expanded="open"
@@ -23,26 +23,69 @@
       <section
         v-if="open"
         id="settings-panel"
-        class="max-h-[calc(100vh-8rem)] w-[320px] overflow-y-auto rounded-2xl border border-white/15 bg-white/12 p-4 text-white shadow-2xl ring-1 ring-white/20 backdrop-blur-2xl dark:border-white/20 dark:bg-[#1f2937]/95 dark:text-white/90"
+        class="border-app bg-app-overlay text-app-secondary ring-app-border max-h-[calc(100vh-8rem)] w-[320px] overflow-y-auto rounded-2xl border p-4 shadow-2xl ring-1 backdrop-blur-2xl"
+        style="--tw-ring-color: var(--app-border-color)"
         aria-label="背景与配色设置"
       >
         <div>
+          <div class="mb-4 text-base font-semibold">主题</div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              v-for="themeOption in THEME_OPTIONS"
+              :key="themeOption.value"
+              class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-2 text-sm transition focus:outline-none disabled:opacity-60"
+              :class="{
+                'ring-2 ring-offset-2': settings.theme === themeOption.value,
+              }"
+              :style="
+                settings.theme === themeOption.value
+                  ? {
+                      '--tw-ring-color': 'var(--app-border-color-hover)',
+                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                    }
+                  : {}
+              "
+              type="button"
+              :disabled="applying"
+              @click="useTheme(themeOption.value)"
+            >
+              <span>{{ themeOption.label }}</span>
+            </button>
+          </div>
+        </div>
+        <div class="mt-4">
           <div class="text-base font-semibold">背景</div>
 
           <div class="mt-4 flex flex-wrap items-center gap-2">
             <button
               v-for="bg in PRESET_BACKGROUNDS"
               :key="bg"
-              class="h-10 w-10 cursor-pointer rounded-xl border border-white/30 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
-              :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPresetActive(bg) }"
-              :style="{ background: bg }"
+              class="border-app h-10 w-10 cursor-pointer rounded-xl border shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+              :class="{ 'ring-2': isPresetActive(bg) }"
+              :style="{
+                background: bg,
+                ...(isPresetActive(bg)
+                  ? {
+                      '--tw-ring-color': 'var(--app-border-color-hover)',
+                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                    }
+                  : {}),
+              }"
               type="button"
               :disabled="applying"
               @click="usePreset(bg)"
             />
             <button
-              class="relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
-              :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isCustomActive }"
+              class="border-app bg-app-overlay relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+              :class="{ 'ring-2': isCustomActive() }"
+              :style="
+                isCustomActive()
+                  ? {
+                      '--tw-ring-color': 'var(--app-border-color-hover)',
+                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                    }
+                  : {}
+              "
               type="button"
             >
               <input
@@ -54,7 +97,7 @@
               />
               <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <svg
-                  class="h-5 w-5 text-white/85 drop-shadow"
+                  class="text-app-secondary h-5 w-5 drop-shadow"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -70,10 +113,16 @@
             </button>
 
             <button
-              class="relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
-              :class="{
-                'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': settings.backgroundType === 'upload',
-              }"
+              class="border-app bg-app-overlay relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+              :class="{ 'ring-2': settings.backgroundType === 'upload' }"
+              :style="
+                settings.backgroundType === 'upload'
+                  ? {
+                      '--tw-ring-color': 'var(--app-border-color-hover)',
+                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                    }
+                  : {}
+              "
               type="button"
             >
               <input
@@ -87,7 +136,7 @@
               />
               <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <svg
-                  class="h-5 w-5 text-white/85 drop-shadow"
+                  class="text-app-secondary h-5 w-5 drop-shadow"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -106,11 +155,11 @@
           </div>
 
           <div
-            class="mt-3 flex items-center justify-between rounded-xl bg-white/10 p-3 text-xs text-white/80 backdrop-blur-sm"
+            class="bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl p-3 text-xs backdrop-blur-sm"
           >
             <span>刷新 Bing 壁纸</span>
             <button
-              class="flex cursor-pointer items-center gap-1 rounded-lg border border-white/25 px-3 py-2 text-xs font-medium text-white transition hover:bg-white/10 disabled:opacity-60"
+              class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
               type="button"
               :disabled="bingLoading || applying"
               @click="refreshBing"
@@ -140,18 +189,32 @@
             <button
               v-for="color in PRIMARY_PRESETS"
               :key="color"
-              class="h-10 w-10 cursor-pointer rounded-xl border border-white/30 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
-              :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPrimaryActive(color) }"
-              :style="{ background: color }"
+              class="border-app h-10 w-10 cursor-pointer rounded-xl border shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+              :class="{ 'ring-2': isPrimaryActive(color) }"
+              :style="{
+                background: color,
+                ...(isPrimaryActive(color)
+                  ? {
+                      '--tw-ring-color': 'var(--app-border-color-hover)',
+                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                    }
+                  : {}),
+              }"
               type="button"
               :disabled="applying"
               @click="usePrimaryPreset(color)"
             />
             <button
-              class="relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
-              :class="{
-                'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPrimaryActive(primaryCustomColor),
-              }"
+              class="border-app bg-app-overlay relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+              :class="{ 'ring-2': isPrimaryActive(primaryCustomColor) }"
+              :style="
+                isPrimaryActive(primaryCustomColor)
+                  ? {
+                      '--tw-ring-color': 'var(--app-border-color-hover)',
+                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                    }
+                  : {}
+              "
               type="button"
               @click="usePrimaryCustom"
             >
@@ -164,7 +227,7 @@
               />
               <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <svg
-                  class="h-5 w-5 text-white/85 drop-shadow"
+                  class="text-app-secondary h-5 w-5 drop-shadow"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -185,52 +248,64 @@
           <div class="mb-4 text-base font-semibold">控制</div>
           <div class="space-y-3">
             <label
-              class="flex cursor-pointer items-center justify-between rounded-xl bg-white/10 p-3 text-sm text-white/90 backdrop-blur-sm transition hover:bg-white/15"
+              class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
             >
               <span>时间</span>
               <button
                 type="button"
                 class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
-                :class="settings.showDateTime ? 'bg-white/30' : 'bg-white/10'"
+                :class="settings.showDateTime ? 'bg-app-overlay-hover' : 'bg-app-overlay'"
+                :style="
+                  settings.showDateTime
+                    ? { backgroundColor: 'var(--app-bg-overlay-hover)' }
+                    : { backgroundColor: 'var(--app-bg-overlay)' }
+                "
                 :disabled="applying"
                 @click="toggleVisibility('showDateTime')"
               >
                 <span
-                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform"
+                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-sm transition-transform"
+                  style="background-color: var(--app-text-color)"
                   :class="settings.showDateTime ? 'translate-x-5' : 'translate-x-0'"
                 />
               </button>
             </label>
             <label
-              class="flex cursor-pointer items-center justify-between rounded-xl bg-white/10 p-3 text-sm text-white/90 backdrop-blur-sm transition hover:bg-white/15"
+              class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
             >
               <span>快速访问</span>
               <button
                 type="button"
                 class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
-                :class="settings.showQuickAccess ? 'bg-white/30' : 'bg-white/10'"
+                :style="{
+                  backgroundColor: settings.showQuickAccess ? 'var(--app-bg-overlay-hover)' : 'var(--app-bg-overlay)',
+                }"
                 :disabled="applying"
                 @click="toggleVisibility('showQuickAccess')"
               >
                 <span
-                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform"
+                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-sm transition-transform"
+                  style="background-color: var(--app-text-color)"
                   :class="settings.showQuickAccess ? 'translate-x-5' : 'translate-x-0'"
                 />
               </button>
             </label>
             <label
-              class="flex cursor-pointer items-center justify-between rounded-xl bg-white/10 p-3 text-sm text-white/90 backdrop-blur-sm transition hover:bg-white/15"
+              class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
             >
               <span>最近访问</span>
               <button
                 type="button"
                 class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
-                :class="settings.showHistory ? 'bg-white/30' : 'bg-white/10'"
+                :style="{
+                  backgroundColor: settings.showHistory ? 'var(--app-bg-overlay-hover)' : 'var(--app-bg-overlay)',
+                }"
                 :disabled="applying"
                 @click="toggleVisibility('showHistory')"
               >
                 <span
-                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform"
+                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-sm transition-transform"
+                  style="background-color: var(--app-text-color)"
                   :class="settings.showHistory ? 'translate-x-5' : 'translate-x-0'"
                 />
               </button>
@@ -247,7 +322,14 @@ import { onMounted, ref } from 'vue'
 
 import type { Settings } from '@/utils/storage'
 import { DEFAULT_SETTINGS, getSettings, saveSettings } from '@/utils/storage'
-import { applyBackground, applyPrimaryColor, fetchBingImageUrl } from '@/utils/theme'
+import {
+  applyBackground,
+  applyPrimaryColor,
+  applyTheme,
+  fetchBingImageUrl,
+  THEME_DARK_BG,
+  THEME_LIGHT_BG,
+} from '@/utils/theme'
 
 const props = defineProps<{
   initialSettings?: Settings
@@ -257,7 +339,11 @@ const emit = defineEmits<{
   'settings-updated': [settings: Settings]
 }>()
 
+// 使用从 theme.ts 导入的常量
+
 const PRESET_BACKGROUNDS = [
+  THEME_LIGHT_BG,
+  THEME_DARK_BG,
   'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
   'linear-gradient(135deg, #0ea5e9 0%, #2563eb 45%, #0f172a 100%)',
   'linear-gradient(135deg, #34d399 0%, #10b981 45%, #047857 100%)',
@@ -282,6 +368,8 @@ const open = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const PRIMARY_PRESETS = [
+  THEME_LIGHT_BG,
+  THEME_DARK_BG,
   '#6200ea', // Deep Purple 500
   '#2962ff', // Blue A700
   '#00c853', // Green A700
@@ -291,6 +379,12 @@ const PRIMARY_PRESETS = [
   '#8bc34a', // Light Green 500
   '#ffc107', // Amber 500
 ]
+
+const THEME_OPTIONS = [
+  { value: 'light', label: '浅色' },
+  { value: 'dark', label: '深色' },
+  { value: 'auto', label: '自动' },
+] as const
 
 const ensureSettings = async () => {
   if (props.initialSettings) {
@@ -305,6 +399,7 @@ const ensureSettings = async () => {
   primaryCustomColor.value = stored.primaryColor || '#667eea'
   await applyBackground(stored)
   applyPrimaryColor(stored.primaryColor || '#667eea')
+  applyTheme(stored.theme)
   emit('settings-updated', stored)
 }
 
@@ -332,7 +427,9 @@ const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false
       merged.backgroundImageUrl = ''
     }
 
-    settings.value = merged
+    // 先更新 settings.value，确保响应式更新
+    settings.value = { ...merged }
+    applyTheme(merged.theme)
     const fetched = await applyBackground(merged)
     if (fetched) {
       settings.value.backgroundImageUrl = fetched
@@ -398,6 +495,30 @@ const handleUpload = (event: Event) => {
 
 const toggleVisibility = async (key: 'showDateTime' | 'showQuickAccess' | 'showHistory') => {
   await persistAndApply({ [key]: !settings.value[key] })
+}
+
+const useTheme = async (theme: Settings['theme']) => {
+  // 根据新主题自动切换到对应的背景色和主色
+  const newBg =
+    theme === 'light'
+      ? THEME_LIGHT_BG
+      : theme === 'dark'
+        ? THEME_DARK_BG
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? THEME_DARK_BG
+          : THEME_LIGHT_BG
+
+  // 主色也联动到对应的主题背景色（PRIMARY_PRESETS 的前两个）
+  const newPrimary = newBg
+
+  // 更新主题、背景和主色，确保类型都是 preset
+  await persistAndApply({
+    theme,
+    backgroundType: 'preset',
+    backgroundColor: newBg,
+    primaryColorType: 'preset',
+    primaryColor: newPrimary,
+  })
 }
 </script>
 

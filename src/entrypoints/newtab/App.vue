@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
-    <main class="relative flex min-h-screen w-full flex-col items-center px-6 py-12 md:px-5 md:py-8" role="main">
+    <main
+      class="app-main relative flex min-h-screen w-full flex-col items-center px-6 py-12 md:px-5 md:py-8"
+      role="main"
+    >
       <Settings :initial-settings="initialSettings" @settings-updated="handleSettingsUpdate" />
       <header v-if="displaySettings.showDateTime" class="mb-2">
         <DateTime />
@@ -36,8 +39,11 @@ const displaySettings = computed(() => ({
   showHistory: settings.value?.showHistory ?? true,
 }))
 
-const handleSettingsUpdate = (updatedSettings: SettingsModel) => {
+const handleSettingsUpdate = async (updatedSettings: SettingsModel) => {
   settings.value = updatedSettings
+  applyTheme(updatedSettings.theme)
+  await applyBackground(updatedSettings)
+  applyPrimaryColor(updatedSettings.primaryColor || '#667eea')
 }
 
 onMounted(async () => {

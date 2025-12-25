@@ -41,3 +41,101 @@ body {
     background-attachment: fixed;
   }
 }
+
+/* 主题文字颜色 CSS 变量 - 默认 dark 模式 */
+:root {
+  --app-text-color: rgba(255, 255, 255, 0.95);
+  --app-text-color-secondary: rgba(255, 255, 255, 0.8);
+  --app-text-color-tertiary: rgba(255, 255, 255, 0.65);
+  --app-text-muted: rgba(255, 255, 255, 0.6);
+
+  /* 背景和边框颜色变量 */
+  --app-bg-overlay: #1f2937;
+  --app-bg-overlay-hover: #374151;
+  --app-border-color: rgba(255, 255, 255, 0.15);
+  --app-border-color-hover: rgba(255, 255, 255, 0.3);
+}
+
+/* Light 模式变量 */
+.light {
+  --app-text-color: rgba(33, 53, 71, 0.95);
+  --app-text-color-secondary: rgba(33, 53, 71, 0.8);
+  --app-text-color-tertiary: rgba(33, 53, 71, 0.65);
+  --app-text-muted: rgba(33, 53, 71, 0.6);
+
+  --app-bg-overlay: rgba(255, 255, 255, 0.85);
+  --app-bg-overlay-hover: rgba(255, 255, 255, 0.95);
+  --app-border-color: rgba(33, 53, 71, 0.25);
+  --app-border-color-hover: rgba(33, 53, 71, 0.35);
+}
+
+/* Dark 模式变量 */
+.dark {
+  --app-text-color: rgba(255, 255, 255, 0.95);
+  --app-text-color-secondary: rgba(255, 255, 255, 0.8);
+  --app-text-color-tertiary: rgba(255, 255, 255, 0.65);
+  --app-text-muted: rgba(255, 255, 255, 0.6);
+
+  --app-bg-overlay: #1f2937;
+  --app-bg-overlay-hover: #374151;
+  --app-border-color: rgba(255, 255, 255, 0.15);
+  --app-border-color-hover: rgba(255, 255, 255, 0.3);
+}
+
+/* 主题只影响 App.vue 中的字体颜色，不影响背景色 */
+.app-main {
+  color: var(--app-text-color);
+}
+
+/* 工具类：使用 CSS 变量的文本颜色 */
+.text-app {
+  color: var(--app-text-color);
+}
+
+.text-app-secondary {
+  color: var(--app-text-color-secondary);
+}
+
+.text-app-tertiary {
+  color: var(--app-text-color-tertiary);
+}
+
+.text-app-muted {
+  color: var(--app-text-muted);
+}
+
+/* 工具类：使用 CSS 变量的背景和边框 */
+.bg-app-overlay {
+  background-color: var(--app-bg-overlay);
+}
+
+.bg-app-overlay-hover:hover {
+  background-color: var(--app-bg-overlay-hover);
+}
+
+.border-app {
+  border-color: var(--app-border-color);
+}
+
+.border-app-hover:hover {
+  border-color: var(--app-border-color-hover);
+}
+
+/* 下拉菜单和弹窗样式 */
+.menu-app {
+  background-color: var(--app-bg-overlay);
+  border-color: var(--app-border-color);
+  color: var(--app-text-color);
+}
+
+.menu-item-app {
+  color: var(--app-text-color);
+}
+
+.menu-item-app:hover {
+  background-color: var(--app-bg-overlay-hover);
+}
+
+.menu-item-app-active {
+  background-color: var(--app-bg-overlay-hover);
+}

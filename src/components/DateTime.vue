@@ -3,7 +3,7 @@
     <h1 class="mb-2 text-5xl">
       {{ time }}
     </h1>
-    <p class="text-2xl font-light tracking-wide text-white/90 md:text-[1.2rem]">
+    <p class="text-2xl font-light tracking-wide md:text-[1.2rem]" style="color: var(--app-text-color-secondary);">
       {{ date }}
     </p>
   </div>

@@ -1,5 +1,6 @@
 // 存储工具函数
 import { getGoogleFavicon } from './favicon'
+import { THEME_DARK_BG, THEME_LIGHT_BG } from './theme'
 import type { QuickLink } from './types'
 import { extractDomainFromUrl } from './url'
 
@@ -80,7 +81,15 @@ const sortHistory = (items: HistoryItem[]): HistoryItem[] => {
 export async function getSettings(): Promise<Settings> {
   const result = await chrome.storage.local.get('settings')
   const stored = result.settings as Partial<Settings> | undefined
-  return { ...DEFAULT_SETTINGS, ...(stored || {}) }
+
+  // 如果是首次加载（没有存储的设置），根据系统偏好设置默认背景
+  if (!stored) {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const defaultBg = prefersDark ? THEME_DARK_BG : THEME_LIGHT_BG
+    return { ...DEFAULT_SETTINGS, backgroundColor: defaultBg }
+  }
+
+  return { ...DEFAULT_SETTINGS, ...stored }
 }
 
 // 保存设置

@@ -5,7 +5,8 @@
     @click="$emit('select')"
   >
     <figure
-      class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white/20 shadow-md ring-2 ring-white/10 md:h-11 md:w-11 dark:bg-white/15 dark:ring-white/20"
+      class="bg-app-overlay border-app flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border shadow-md ring-2 md:h-11 md:w-11"
+      style="--tw-ring-color: var(--app-border-color);"
       :aria-label="`${title} 图标`"
     >
       <img
@@ -17,19 +18,19 @@
       />
       <div
         v-else
-        class="flex h-full w-full items-center justify-center text-lg font-bold text-white/90 md:text-base dark:text-[#213547]/90"
+        class="text-app-secondary flex h-full w-full items-center justify-center text-lg font-bold md:text-base"
       >
         {{ fallbackChar }}
       </div>
     </figure>
     <div class="min-w-0 flex-1">
       <h4
-        class="mb-1.5 overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap text-white/95 md:mb-1 md:text-[13px] dark:text-[#213547]/95"
+        class="text-app mb-1.5 overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap md:mb-1 md:text-[13px]"
       >
         {{ title }}
       </h4>
       <p
-        class="mb-1 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-white/65 md:mb-0.5 md:text-[11px] dark:text-[#213547]/65"
+        class="text-app-tertiary mb-1 overflow-hidden text-xs text-ellipsis whitespace-nowrap md:mb-0.5 md:text-[11px]"
       >
         {{ subtitle }}
       </p>
