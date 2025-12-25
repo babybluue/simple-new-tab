@@ -1,12 +1,16 @@
 <template>
-  <div class="relative z-10 mx-auto w-full max-w-[640px]">
-    <div
+  <section ref="searchBoxRef" class="relative z-10 mx-auto w-full max-w-[640px]" role="search" aria-label="站内搜索">
+    <form
       class="relative flex items-center rounded-3xl border border-white/30 bg-white/98 px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-300 focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.18)] dark:border-white/20 dark:bg-white/12 dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] dark:backdrop-blur-xl dark:focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.4)]"
+      role="search"
+      @submit.prevent="handleSubmit"
     >
-      <!-- 搜索引擎 logo 和下拉菜单 -->
       <div class="relative mr-4 shrink-0">
         <button
           class="flex h-5 w-5 items-center justify-center rounded transition-all duration-200 hover:bg-gray-100/50 dark:hover:bg-white/10"
+          type="button"
+          :aria-expanded="isEngineMenuOpen"
+          aria-haspopup="listbox"
           @click="toggleEngineMenu"
         >
           <img
@@ -28,22 +32,24 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </button>
-        <!-- 搜索引擎选择下拉菜单 -->
         <div
-          v-if="showEngineMenu"
+          v-if="isEngineMenuOpen"
           data-engine-menu
-          class="absolute top-8 left-0 z-[500] min-w-[180px] rounded-lg border border-gray-200/80 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.2)] dark:border-white/30 dark:bg-[#1e1e1e] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] dark:backdrop-blur-xl"
+          class="absolute top-8 left-0 z-500 min-w-[180px] rounded-lg border border-gray-200/80 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.2)] dark:border-white/30 dark:bg-[#1e1e1e] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] dark:backdrop-blur-xl"
+          role="listbox"
+          aria-label="选择搜索引擎"
         >
-          <div
+          <button
             v-for="(engine, key) in SEARCH_ENGINES"
             :key="key"
-            class="flex cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-white/15"
+            class="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-white/15"
             :class="{ 'bg-gray-100 dark:bg-white/15': settings?.searchEngine === key }"
+            type="button"
             @click="selectEngine(key)"
           >
             <img :src="engine.icon" :alt="engine.name" class="h-4 w-4 rounded" @error="handleImageError" />
             <span class="text-sm font-medium text-gray-900 dark:text-white">{{ engine.name }}</span>
-          </div>
+          </button>
         </div>
       </div>
       <div class="relative flex flex-1 items-center">
@@ -53,50 +59,61 @@
           type="text"
           class="w-full border-none bg-transparent text-base font-normal text-gray-900 outline-none placeholder:text-gray-400 md:text-lg dark:text-white/95 dark:placeholder:text-white/50"
           placeholder="搜索或输入网址..."
+          autocomplete="off"
+          aria-label="搜索框"
+          :aria-expanded="isSuggestionListVisible"
+          aria-controls="search-suggestions"
           @keydown="handleKeydown"
           @input="handleInput"
           @focus="handleFocus"
           @blur="handleBlur"
         />
-        <!-- 搜索建议列表 -->
         <div
-          v-if="showSuggestions && suggestions.length > 0"
+          v-if="isSuggestionListVisible && suggestions.length > 0"
+          id="search-suggestions"
           data-suggestions-menu
-          class="absolute top-full left-0 z-[500] mt-2 w-full rounded-lg border border-gray-200/80 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.2)] dark:border-white/30 dark:bg-[#1e1e1e] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] dark:backdrop-blur-xl"
+          class="absolute top-full left-0 z-500 mt-2 w-full rounded-lg border border-gray-200/80 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.2)] dark:border-white/30 dark:bg-[#1e1e1e] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] dark:backdrop-blur-xl"
+          role="listbox"
         >
-          <div
-            v-for="(suggestion, index) in suggestions"
-            :key="index"
-            class="flex cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-white/15"
-            :class="{ 'bg-gray-100 dark:bg-white/15': selectedSuggestionIndex === index }"
-            @click="selectSuggestion(suggestion)"
-            @mouseenter="selectedSuggestionIndex = index"
-          >
-            <svg
-              class="h-4 w-4 text-gray-400 dark:text-white/70"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
+          <ul>
+            <li
+              v-for="(suggestion, index) in suggestions"
+              :key="index"
+              class="flex cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-white/15"
+              :class="{ 'bg-gray-100 dark:bg-white/15': selectedSuggestionIndex === index }"
+              role="option"
+              :aria-selected="selectedSuggestionIndex === index"
+              @click="selectSuggestion(suggestion)"
+              @mouseenter="selectedSuggestionIndex = index"
             >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <span class="flex-1 text-sm text-gray-900 dark:text-white">{{ suggestion }}</span>
-          </div>
+              <svg
+                class="h-4 w-4 text-gray-400 dark:text-white/70"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span class="flex-1 text-sm text-gray-900 dark:text-white">{{ suggestion }}</span>
+            </li>
+          </ul>
         </div>
       </div>
       <button
         v-if="query"
         class="ml-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 text-gray-400 transition-all duration-200 hover:scale-110 hover:bg-gray-100/50 hover:text-gray-600 dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white/80"
+        type="button"
+        aria-label="清除搜索内容"
         @click="query = ''"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-5 w-5">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-    </div>
-  </div>
+    </form>
+  </section>
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
@@ -107,9 +124,10 @@ import { getSettings, saveSettings, type Settings } from '@/utils/storage'
 const query = ref('')
 const settings = ref<Settings | null>(null)
 const searchInput = ref<HTMLInputElement | null>(null)
-const showEngineMenu = ref(false)
+const searchBoxRef = ref<HTMLElement | null>(null)
+const isEngineMenuOpen = ref(false)
 const suggestions = ref<string[]>([])
-const showSuggestions = ref(false)
+const isSuggestionListVisible = ref(false)
 const selectedSuggestionIndex = ref(-1)
 let suggestionTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -142,19 +160,18 @@ onUnmounted(() => {
 })
 
 const toggleEngineMenu = () => {
-  showEngineMenu.value = !showEngineMenu.value
+  isEngineMenuOpen.value = !isEngineMenuOpen.value
   // 当显示搜索引擎菜单时，关闭搜索建议
-  if (showEngineMenu.value) {
-    showSuggestions.value = false
+  if (isEngineMenuOpen.value) {
+    isSuggestionListVisible.value = false
   }
 }
 
 const handleClickOutside = (e: MouseEvent) => {
   const target = e.target as HTMLElement
-  const searchBoxContainer = target.closest('.mx-auto')
-  if (!searchBoxContainer) {
-    showEngineMenu.value = false
-    showSuggestions.value = false
+  if (searchBoxRef.value && !searchBoxRef.value.contains(target)) {
+    isEngineMenuOpen.value = false
+    isSuggestionListVisible.value = false
     return
   }
   // 检查是否点击在搜索引擎菜单区域
@@ -165,8 +182,8 @@ const handleClickOutside = (e: MouseEvent) => {
   const engineButton = target.closest('button')
 
   if (!engineMenu && !suggestionsMenu && !engineButton) {
-    showEngineMenu.value = false
-    showSuggestions.value = false
+    isEngineMenuOpen.value = false
+    isSuggestionListVisible.value = false
   }
 }
 
@@ -174,7 +191,7 @@ const selectEngine = async (engineKey: string) => {
   if (!settings.value) return
   settings.value.searchEngine = engineKey as Settings['searchEngine']
   await saveSettings(settings.value)
-  showEngineMenu.value = false
+  isEngineMenuOpen.value = false
   // 如果当前有查询，重新获取建议
   if (query.value.trim()) {
     loadSuggestions()
@@ -192,8 +209,8 @@ const handleInput = () => {
   }
   selectedSuggestionIndex.value = -1
   // 当输入时，关闭搜索引擎菜单
-  if (showEngineMenu.value) {
-    showEngineMenu.value = false
+  if (isEngineMenuOpen.value) {
+    isEngineMenuOpen.value = false
   }
   if (query.value.trim()) {
     suggestionTimer = setTimeout(() => {
@@ -201,64 +218,58 @@ const handleInput = () => {
     }, 300)
   } else {
     suggestions.value = []
-    showSuggestions.value = false
+    isSuggestionListVisible.value = false
   }
 }
 
 const handleFocus = () => {
   // 当聚焦搜索框时，关闭搜索引擎菜单
-  if (showEngineMenu.value) {
-    showEngineMenu.value = false
+  if (isEngineMenuOpen.value) {
+    isEngineMenuOpen.value = false
   }
   if (suggestions.value.length > 0) {
-    showSuggestions.value = true
+    isSuggestionListVisible.value = true
   }
 }
 
 const handleBlur = () => {
   // 延迟关闭，以便点击建议项
   setTimeout(() => {
-    showSuggestions.value = false
+    isSuggestionListVisible.value = false
   }, 200)
 }
 
 const loadSuggestions = async () => {
   if (!query.value.trim() || !settings.value) {
     suggestions.value = []
-    showSuggestions.value = false
+    isSuggestionListVisible.value = false
     return
   }
   try {
     const results = await getSearchSuggestions(query.value, settings.value.searchEngine)
     suggestions.value = results.slice(0, 8)
-    showSuggestions.value = results.length > 0
+    isSuggestionListVisible.value = results.length > 0
   } catch {
     // Failed to load suggestions
     suggestions.value = []
-    showSuggestions.value = false
+    isSuggestionListVisible.value = false
   }
 }
 
 const selectSuggestion = (suggestion: string) => {
   query.value = suggestion
-  showSuggestions.value = false
+  isSuggestionListVisible.value = false
   handleSearch()
 }
 
 const handleSearch = () => {
   if (!query.value.trim() || !settings.value) return
-  showSuggestions.value = false
+  isSuggestionListVisible.value = false
   performSearch(query.value, settings.value.searchEngine)
 }
 
 const handleKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Enter') {
-    if (selectedSuggestionIndex.value >= 0 && suggestions.value[selectedSuggestionIndex.value]) {
-      selectSuggestion(suggestions.value[selectedSuggestionIndex.value])
-    } else {
-      handleSearch()
-    }
-  } else if (e.key === 'ArrowDown') {
+  if (e.key === 'ArrowDown') {
     e.preventDefault()
     if (selectedSuggestionIndex.value < suggestions.value.length - 1) {
       selectedSuggestionIndex.value++
@@ -273,8 +284,16 @@ const handleKeydown = (e: KeyboardEvent) => {
       selectedSuggestionIndex.value = suggestions.value.length - 1
     }
   } else if (e.key === 'Escape') {
-    showSuggestions.value = false
+    isSuggestionListVisible.value = false
     selectedSuggestionIndex.value = -1
   }
+}
+
+const handleSubmit = () => {
+  if (selectedSuggestionIndex.value >= 0 && suggestions.value[selectedSuggestionIndex.value]) {
+    selectSuggestion(suggestions.value[selectedSuggestionIndex.value])
+    return
+  }
+  handleSearch()
 }
 </script>

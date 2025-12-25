@@ -1,8 +1,11 @@
 <template>
-  <div class="fixed top-6 right-6 z-50 flex flex-col items-end gap-3 md:right-5">
+  <aside class="fixed top-6 right-6 z-50 flex flex-col items-end gap-3 md:right-5" aria-label="外观设置">
     <button
       class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-white/90 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:rotate-90 hover:bg-white/25 hover:text-white hover:shadow-xl dark:border-white/30 dark:bg-white/85 dark:text-[#213547]/80 dark:hover:bg-white/95 dark:hover:text-[#213547]/95"
       title="设置"
+      type="button"
+      :aria-expanded="open"
+      aria-controls="settings-panel"
       @click="toggle"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -17,9 +20,11 @@
     </button>
 
     <Transition name="fade">
-      <div
+      <section
         v-if="open"
+        id="settings-panel"
         class="w-[320px] overflow-hidden rounded-2xl border border-white/15 bg-white/12 p-4 text-white shadow-2xl ring-1 ring-white/20 backdrop-blur-2xl dark:border-white/20 dark:bg-[#1f2937]/95 dark:text-white/90"
+        aria-label="背景与配色设置"
       >
         <div>
           <div class="text-base font-semibold">背景</div>
@@ -31,12 +36,14 @@
               class="h-10 w-10 rounded-xl border border-white/30 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
               :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPresetActive(bg) }"
               :style="{ background: bg }"
+              type="button"
               :disabled="applying"
               @click="usePreset(bg)"
             />
             <button
               class="relative h-10 w-10 overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
               :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPresetActive(customColor) }"
+              type="button"
               @click="useCustom"
             >
               <input
@@ -68,6 +75,7 @@
               :class="{
                 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': settings.backgroundType === 'upload',
               }"
+              type="button"
             >
               <input
                 ref="fileInput"
@@ -104,6 +112,7 @@
             <span>刷新 Bing 壁纸</span>
             <button
               class="flex items-center gap-1 rounded-lg border border-white/25 px-3 py-2 text-xs font-medium text-white transition hover:bg-white/10 disabled:opacity-60"
+              type="button"
               :disabled="bingLoading || applying"
               @click="refreshBing"
             >
@@ -135,6 +144,7 @@
               class="h-10 w-10 rounded-xl border border-white/30 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
               :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPrimaryActive(color) }"
               :style="{ background: color }"
+              type="button"
               :disabled="applying"
               @click="usePrimaryPreset(color)"
             />
@@ -143,6 +153,7 @@
               :class="{
                 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPrimaryActive(primaryCustomColor),
               }"
+              type="button"
               @click="usePrimaryCustom"
             >
               <input
@@ -170,9 +181,9 @@
             </button>
           </div>
         </div>
-      </div>
+      </section>
     </Transition>
-  </div>
+  </aside>
 </template>
 
 <script lang="ts" setup>

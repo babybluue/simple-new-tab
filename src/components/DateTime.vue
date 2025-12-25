@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-5 pt-2 text-center">
+  <div class="pt-2 text-center">
     <h1 class="mb-2 text-5xl">
       {{ time }}
     </h1>

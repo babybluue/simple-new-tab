@@ -1,14 +1,16 @@
 <template>
-  <div class="relative flex min-h-screen w-full flex-col items-center px-6 py-12 md:px-5 md:py-8">
+  <main class="relative flex min-h-screen w-full flex-col items-center px-6 py-12 md:px-5 md:py-8" role="main">
     <Settings :initial-settings="initialSettings" />
-    <DateTime />
+    <header class="mb-2">
+      <DateTime />
+    </header>
 
-    <div class="mt-6 mb-8 w-full md:mb-6">
+    <section class="mt-6 mb-8 w-full md:mb-6" aria-label="搜索">
       <SearchBox />
-    </div>
+    </section>
     <QuickAccessList />
     <HistoryList />
-  </div>
+  </main>
 </template>
 <script lang="ts" setup>
 import { onMounted } from 'vue'

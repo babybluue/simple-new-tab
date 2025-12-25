@@ -1,14 +1,16 @@
 <template>
-  <div class="mx-auto mt-8 w-full max-w-7xl px-6 md:mt-6 md:px-5">
-    <div class="mb-4 flex flex-col gap-3 md:mb-3 md:flex-row md:items-center md:justify-between">
-      <h3 class="text-left text-xl font-semibold tracking-tight text-white/95 md:text-lg dark:text-[#213547]/95">
+  <section class="mx-auto mt-8 w-full max-w-7xl px-6 md:mt-6 md:px-5" aria-label="快速访问">
+    <header class="mb-4 flex flex-col gap-3 md:mb-3 md:flex-row md:items-center md:justify-between">
+      <h2 class="text-left text-xl font-semibold tracking-tight text-white/95 md:text-lg dark:text-[#213547]/95">
         快速访问
-      </h3>
+      </h2>
       <div class="flex flex-wrap items-center gap-2">
         <div class="relative">
           <button
             data-quick-access-toggle
             class="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
+            type="button"
+            :aria-expanded="isPresetMenuOpen"
             @click.stop="togglePresetMenu"
           >
             <span>添加预设</span>
@@ -23,7 +25,7 @@
             </svg>
           </button>
           <div
-            v-if="showPresetMenu && availablePresets.length"
+            v-if="isPresetMenuOpen && availablePresets.length"
             data-quick-access-preset
             class="absolute right-0 z-50 mt-2 w-48 rounded-lg border border-white/15 bg-white/95 p-1 shadow-xl dark:border-[#213547]/25 dark:bg-[#f6f7fb]"
           >
@@ -41,16 +43,19 @@
         </div>
         <button
           class="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
+          type="button"
+          :aria-expanded="isFormVisible"
           @click="handleToggleForm"
         >
-          <span>{{ showForm ? '收起表单' : '添加自定义' }}</span>
+          <span>{{ isFormVisible ? '收起表单' : '添加自定义' }}</span>
         </button>
       </div>
-    </div>
+    </header>
 
     <form
-      v-if="showForm"
+      v-if="isFormVisible"
       class="mb-4 grid grid-cols-1 gap-3 rounded-2xl border border-white/20 bg-white/10 p-4 shadow-lg backdrop-blur-xl md:grid-cols-[1.1fr_1.5fr_1.2fr_auto] md:items-center md:gap-3 md:p-3 dark:border-white/30 dark:bg-white/85"
+      aria-label="添加快速访问"
       @submit.prevent="handleSubmit"
     >
       <input
@@ -58,6 +63,7 @@
         type="text"
         class="w-full rounded-xl border border-white/20 bg-white/70 px-3 py-2 text-sm text-[#1f2937] placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none dark:border-white/40 dark:bg-white/95"
         placeholder="网站名称（可选）"
+        name="title"
       />
       <input
         v-model="form.url"
@@ -65,12 +71,14 @@
         class="w-full rounded-xl border border-white/20 bg-white/70 px-3 py-2 text-sm text-[#1f2937] placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none dark:border-white/40 dark:bg-white/95"
         placeholder="网站链接，例如 https://example.com"
         required
+        name="url"
       />
       <input
         v-model="form.icon"
         type="text"
         class="w-full rounded-xl border border-white/20 bg-white/70 px-3 py-2 text-sm text-[#1f2937] placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none dark:border-white/40 dark:bg-white/95"
         placeholder="自定义图标 URL（可选）"
+        name="icon"
       />
       <div class="flex items-center gap-2">
         <button
@@ -91,88 +99,68 @@
       </div>
     </form>
 
-    <div
+    <ul
       v-if="quickLinks.length > 0"
       class="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(220px,1fr))]"
+      role="list"
     >
-      <div
-        v-for="link in quickLinks"
-        :key="link.domain || link.url"
-        class="group relative flex cursor-pointer items-center gap-3 rounded-2xl border p-3 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl md:p-3"
-        :style="cardStyle"
-        @click="handleOpen(link)"
-      >
-        <div
-          class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-md ring-2 ring-white/10 md:h-9 md:w-9 dark:ring-white/20"
+      <li v-for="link in quickLinks" :key="link.domain || link.url">
+        <LinkCard
+          :title="link.title"
+          :subtitle="link.domain || link.url"
+          :favicon="getFavicon(link)"
+          :fallback-char="link.title.charAt(0).toUpperCase()"
+          :card-style="cardStyle"
+          @select="handleQuickLinkSelect(link)"
+          @icon-error="handleFaviconError(link, $event)"
         >
-          <img
-            v-if="getFavicon(link)"
-            :src="getFavicon(link)"
-            :alt="link.title"
-            class="h-full w-full object-cover"
-            @error="handleFaviconError(link, $event)"
-          />
-          <div
-            v-else
-            class="flex h-full w-full items-center justify-center text-base font-bold text-white/90 md:text-sm dark:text-[#213547]/90"
-          >
-            {{ link.title.charAt(0).toUpperCase() }}
-          </div>
-        </div>
-        <div class="min-w-0 flex-1">
-          <div
-            class="mb-0.5 overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap text-white/95 dark:text-[#213547]/95"
-          >
-            {{ link.title }}
-          </div>
-          <div class="overflow-hidden text-xs text-ellipsis whitespace-nowrap text-white/65 dark:text-[#213547]/65">
-            {{ link.domain || link.url }}
-          </div>
-        </div>
-        <div class="absolute top-2 right-2 flex gap-2 opacity-0 transition-all duration-200 group-hover:opacity-100">
-          <button
-            class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-black/25 text-white/80 hover:scale-110 hover:bg-white/20 hover:text-white md:h-6 md:w-6 dark:bg-black/10 dark:text-[#213547]/70 dark:hover:bg-white/30 dark:hover:text-[#213547]/95"
-            @click.stop="startEdit(link)"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              class="h-4 w-4"
+          <template #actions>
+            <button
+              class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-black/25 text-white/80 hover:scale-110 hover:bg-white/20 hover:text-white md:h-6 md:w-6 dark:bg-black/10 dark:text-[#213547]/70 dark:hover:bg-white/30 dark:hover:text-[#213547]/95"
+              type="button"
+              @click.stop="startEdit(link)"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15.232 5.232l3.536 3.536M4 20h4l10.5-10.5a1.5 1.5 0 000-2.121l-2.879-2.879a1.5 1.5 0 00-2.121 0L4 15v5z"
-              />
-            </svg>
-          </button>
-          <button
-            class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-black/25 text-white/80 hover:scale-110 hover:bg-red-500/30 hover:text-white md:h-6 md:w-6 dark:bg-black/10 dark:text-[#213547]/70 dark:hover:bg-red-500/20 dark:hover:text-[#213547]/95"
-            @click.stop="handleRemove(link)"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              class="h-4 w-4"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                class="h-4 w-4"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15.232 5.232l3.536 3.536M4 20h4l10.5-10.5a1.5 1.5 0 000-2.121l-2.879-2.879a1.5 1.5 0 00-2.121 0L4 15v5z"
+                />
+              </svg>
+            </button>
+            <button
+              class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-black/25 text-white/80 hover:scale-110 hover:bg-red-500/30 hover:text-white md:h-6 md:w-6 dark:bg-black/10 dark:text-[#213547]/70 dark:hover:bg-red-500/20 dark:hover:text-[#213547]/95"
+              type="button"
+              @click.stop="handleRemove(link)"
             >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                class="h-4 w-4"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </template>
+        </LinkCard>
+      </li>
+    </ul>
+    <p
       v-else
       class="flex flex-col items-center justify-center rounded-2xl border border-white/15 bg-white/10 py-8 text-sm text-white/70 dark:border-white/30 dark:bg-white/85 dark:text-[#213547]/70"
     >
       暂无快速访问站点，点击上方按钮添加一个吧～
-    </div>
-  </div>
+    </p>
+  </section>
 </template>
 
 <script lang="ts" setup>
@@ -188,11 +176,13 @@ import {
   removeQuickLink,
   type Settings,
 } from '@/utils/storage'
+import { buildPrimarySurfaceStyle } from '@/utils/theme'
+import LinkCard from './LinkCard.vue'
 
 const quickLinks = ref<QuickLink[]>([])
 const settings = ref<Settings | null>(null)
-const showForm = ref(false)
-const showPresetMenu = ref(false)
+const isFormVisible = ref(false)
+const isPresetMenuOpen = ref(false)
 const form = ref<{ title: string; url: string; icon: string }>({ title: '', url: '', icon: '' })
 const isEditing = ref(false)
 const editingKey = ref<string | null>(null)
@@ -225,12 +215,7 @@ const availablePresets = computed(() => {
 })
 
 const cardStyle = computed(() => {
-  const bg = settings.value?.primaryColor ? 'var(--primary-surface, rgba(255,255,255,0.12))' : 'rgba(255,255,255,0.1)'
-  const border = settings.value?.primaryColor ? 'var(--primary-border, rgba(255,255,255,0.2))' : 'rgba(255,255,255,0.18)'
-  return {
-    background: bg,
-    borderColor: border,
-  }
+  return buildPrimarySurfaceStyle(settings.value?.primaryColor)
 })
 
 onMounted(async () => {
@@ -260,7 +245,7 @@ const handleOutsideClick = (e: MouseEvent) => {
   const menu = target.closest('[data-quick-access-preset]')
   const toggle = target.closest('[data-quick-access-toggle]')
   if (!menu && !toggle) {
-    showPresetMenu.value = false
+    isPresetMenuOpen.value = false
   }
 }
 
@@ -268,7 +253,7 @@ const loadQuickLinks = async () => {
   quickLinks.value = await getQuickLinks()
 }
 
-const handleOpen = async (link: QuickLink) => {
+const handleQuickLinkSelect = async (link: QuickLink) => {
   const engine = settings.value?.searchEngine ?? 'google'
   performSearch(link.url, engine)
   await addQuickLink(link) // 让最近使用的站点排前
@@ -280,7 +265,7 @@ const handleRemove = async (link: QuickLink) => {
 }
 
 const handleAddPreset = async (preset: QuickLink) => {
-  showPresetMenu.value = false
+  isPresetMenuOpen.value = false
   quickLinks.value = await addQuickLink(preset)
 }
 
@@ -323,14 +308,14 @@ const getTitleFromUrl = (url: string): string => {
 }
 
 const togglePresetMenu = () => {
-  showPresetMenu.value = !showPresetMenu.value
+  isPresetMenuOpen.value = !isPresetMenuOpen.value
 }
 
 const handleToggleForm = () => {
-  if (showForm.value) {
+  if (isFormVisible.value) {
     resetForm()
   } else {
-    showForm.value = true
+    isFormVisible.value = true
   }
 }
 
@@ -338,7 +323,7 @@ const resetForm = () => {
   form.value = { title: '', url: '', icon: '' }
   isEditing.value = false
   editingKey.value = null
-  showForm.value = false
+  isFormVisible.value = false
 }
 
 const getSiteFavicon = (link: QuickLink): string | undefined => {
