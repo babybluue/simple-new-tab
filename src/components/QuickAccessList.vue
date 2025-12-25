@@ -7,8 +7,9 @@
       <div class="flex flex-wrap items-center gap-2">
         <div class="relative">
           <button
+            ref="presetToggleRef"
             data-quick-access-toggle
-          class="flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
+            class="flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
             type="button"
             :aria-expanded="isPresetMenuOpen"
             @click.stop="togglePresetMenu"
@@ -24,22 +25,65 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          <div
-            v-if="isPresetMenuOpen && availablePresets.length"
-            data-quick-access-preset
-            class="absolute right-0 z-50 mt-2 w-48 rounded-lg border border-white/15 bg-white/95 p-1 shadow-xl dark:border-[#213547]/25 dark:bg-[#f6f7fb]"
-          >
+
+          <Teleport to="body">
             <div
-              v-for="preset in availablePresets"
-              :key="preset.url"
-              class="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-[#1f2937] transition hover:bg-black/5"
-              @click="handleAddPreset(preset)"
+              v-if="isPresetMenuOpen"
+              data-quick-access-preset
+              class="fixed z-50 w-72 overflow-hidden rounded-lg border border-white/15 bg-white/95 shadow-xl backdrop-blur-sm dark:border-[#213547]/25 dark:bg-[#f6f7fb]"
+              :style="{
+                top: `${menuPosition.top}px`,
+                left: `${menuPosition.left}px`,
+                maxHeight: `${menuPosition.maxHeight}px`,
+              }"
             >
-              <img v-if="preset.favicon" :src="preset.favicon" :alt="preset.title" class="h-4 w-4 rounded" />
-              <span class="flex-1 truncate">{{ preset.title }}</span>
+              <div class="flex items-center justify-between px-3 py-2 text-[11px] text-gray-500">
+                <span>选择常用网站</span>
+                <span>{{ hasAvailablePresets ? '点击即可添加' : '已全部添加' }}</span>
+              </div>
+              <div class="px-3 pb-2">
+                <input
+                  v-model="presetSearch"
+                  type="search"
+                  autocomplete="off"
+                  class="h-8 w-full rounded-md border border-black/5 bg-white/80 px-2 text-xs text-[#1f2937] outline-none placeholder:text-gray-400 focus:border-indigo-300 focus:ring-0 dark:border-[#213547]/20 dark:bg-white"
+                  placeholder="搜索或输入关键词筛选"
+                />
+              </div>
+              <div
+                class="overflow-auto p-1"
+                :style="{ maxHeight: `${Math.max(menuPosition.maxHeight - 92, 160)}px` }"
+              >
+                <button
+                  v-for="preset in filteredPresetOptions"
+                  :key="preset.url"
+                  type="button"
+                  class="group flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-[#1f2937] transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
+                  :disabled="preset.added"
+                  @click="handleAddPreset(preset)"
+                >
+                  <img
+                    v-if="preset.favicon"
+                    :src="preset.favicon"
+                    :alt="preset.title"
+                    class="h-5 w-5 rounded transition group-hover:scale-105"
+                  />
+                  <div class="min-w-0 flex-1 text-left">
+                    <div class="flex items-center gap-2">
+                      <span class="truncate">{{ preset.title }}</span>
+                      <span v-if="preset.added" class="text-[11px] text-gray-400">已添加</span>
+                    </div>
+                    <p class="truncate text-[11px] text-gray-500">{{ preset.domain }}</p>
+                  </div>
+                  <span v-if="!preset.added" class="text-[11px] text-indigo-500">添加</span>
+                </button>
+                <div v-if="!filteredPresetOptions.length" class="px-3 py-6 text-center text-[12px] text-gray-500">
+                  未找到匹配的站点
+                </div>
+              </div>
+              <div v-if="!hasAvailablePresets" class="px-3 pb-3 text-[11px] text-gray-500">常用网站已全部添加</div>
             </div>
-            <div v-if="!availablePresets.length" class="px-3 py-2 text-xs text-gray-500">预设已全部添加</div>
-          </div>
+          </Teleport>
         </div>
         <button
           class="flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
@@ -164,7 +208,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 
 import { normalizeURL, performSearch } from '@/utils/search'
 import {
@@ -179,6 +223,8 @@ import {
 import { buildPrimarySurfaceStyle } from '@/utils/theme'
 import LinkCard from './LinkCard.vue'
 
+type PresetOption = QuickLink & { added?: boolean }
+
 const quickLinks = ref<QuickLink[]>([])
 const settings = ref<Settings | null>(null)
 const isFormVisible = ref(false)
@@ -187,6 +233,9 @@ const form = ref<{ title: string; url: string; icon: string }>({ title: '', url:
 const isEditing = ref(false)
 const editingKey = ref<string | null>(null)
 const faviconFallbackTried = ref<Record<string, boolean>>({})
+const presetToggleRef = ref<HTMLElement | null>(null)
+const menuPosition = ref<{ top: number; left: number; maxHeight: number }>({ top: 0, left: 0, maxHeight: 420 })
+const presetSearch = ref('')
 
 const getDomainFromUrl = (url: string): string => {
   try {
@@ -206,17 +255,45 @@ const buildPresetWithMeta = (preset: QuickLink): QuickLink => {
   return { ...preset, domain, favicon }
 }
 
-const availablePresets = computed(() => {
+const presetOptions = computed<PresetOption[]>(() => {
   const domains = quickLinks.value.map(link => link.domain || getDomainFromUrl(link.url))
-  return PRESET_QUICK_LINKS.map(buildPresetWithMeta).filter(preset => {
+  return PRESET_QUICK_LINKS.map(buildPresetWithMeta).map(preset => {
     const domain = preset.domain || getDomainFromUrl(preset.url)
-    return !domains.includes(domain) && !quickLinks.value.some(link => link.url === preset.url)
+    const added = domains.includes(domain) || quickLinks.value.some(link => link.url === preset.url)
+    return { ...preset, added }
   })
 })
+
+const filteredPresetOptions = computed(() => {
+  const keyword = presetSearch.value.trim().toLowerCase()
+  if (!keyword) return presetOptions.value
+  return presetOptions.value.filter(preset => {
+    const title = preset.title.toLowerCase()
+    const domain = (preset.domain || '').toLowerCase()
+    return title.includes(keyword) || domain.includes(keyword)
+  })
+})
+
+const hasAvailablePresets = computed(() => presetOptions.value.some(preset => !preset.added))
 
 const cardStyle = computed(() => {
   return buildPrimarySurfaceStyle(settings.value?.primaryColor)
 })
+
+const updateMenuPosition = () => {
+  const el = presetToggleRef.value
+  if (!el) return
+  const rect = el.getBoundingClientRect()
+  const menuWidth = 288 // w-72
+  const margin = 12
+  const gap = 8
+  let left = rect.right - menuWidth
+  left = Math.min(Math.max(left, margin), window.innerWidth - menuWidth - margin)
+  const top = Math.min(rect.bottom + gap, window.innerHeight - margin)
+  const available = Math.max(window.innerHeight - top - margin, 200)
+  const maxHeight = Math.min(window.innerHeight * 0.7, available)
+  menuPosition.value = { top, left, maxHeight }
+}
 
 onMounted(async () => {
   settings.value = await getSettings()
@@ -224,11 +301,13 @@ onMounted(async () => {
 
   chrome.storage.onChanged.addListener(handleStorageChange)
   document.addEventListener('click', handleOutsideClick)
+  window.addEventListener('resize', updateMenuPosition)
 })
 
 onUnmounted(() => {
   chrome.storage.onChanged.removeListener(handleStorageChange)
   document.removeEventListener('click', handleOutsideClick)
+  window.removeEventListener('resize', updateMenuPosition)
 })
 
 const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
@@ -264,7 +343,11 @@ const handleRemove = async (link: QuickLink) => {
   quickLinks.value = await removeQuickLink(link.url)
 }
 
-const handleAddPreset = async (preset: QuickLink) => {
+const handleAddPreset = async (preset: PresetOption) => {
+  if (preset.added) {
+    isPresetMenuOpen.value = false
+    return
+  }
   isPresetMenuOpen.value = false
   quickLinks.value = await addQuickLink(preset)
 }
@@ -307,8 +390,13 @@ const getTitleFromUrl = (url: string): string => {
   }
 }
 
-const togglePresetMenu = () => {
+const togglePresetMenu = async () => {
   isPresetMenuOpen.value = !isPresetMenuOpen.value
+  if (isPresetMenuOpen.value) {
+    presetSearch.value = ''
+    await nextTick()
+    updateMenuPosition()
+  }
 }
 
 const handleToggleForm = () => {

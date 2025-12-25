@@ -1,4 +1,7 @@
 // 存储工具函数
+import type { QuickLink } from './types'
+export type { QuickLink } from './types'
+
 export interface HistoryItem {
   url: string
   title: string
@@ -22,13 +25,6 @@ export interface Settings {
   primaryColor: string
 }
 
-export interface QuickLink {
-  title: string
-  url: string
-  favicon?: string
-  domain?: string
-}
-
 export const DEFAULT_SETTINGS: Settings = {
   searchEngine: 'google',
   theme: 'auto',
@@ -40,15 +36,15 @@ export const DEFAULT_SETTINGS: Settings = {
   primaryColor: '#667eea',
 }
 
-export const PRESET_QUICK_LINKS: QuickLink[] = [
+export { PRESET_QUICK_LINKS } from './presets'
+
+export const DEFAULT_QUICK_LINKS: QuickLink[] = [
+  { title: 'Google', url: 'https://www.google.com' },
   { title: 'Github', url: 'https://github.com' },
-  { title: 'X', url: 'https://x.com' },
-  { title: '微博', url: 'https://weibo.com' },
-  { title: '小红书', url: 'https://www.xiaohongshu.com' },
-  { title: '淘宝', url: 'https://www.taobao.com' },
-  { title: '京东', url: 'https://www.jd.com' },
   { title: '哔哩哔哩', url: 'https://www.bilibili.com' },
   { title: 'Youtube', url: 'https://www.youtube.com' },
+  { title: '百度', url: 'https://www.baidu.com' },
+  { title: 'Stack Overflow', url: 'https://stackoverflow.com' },
 ]
 
 const extractDomain = (url: string): string => {
@@ -155,7 +151,7 @@ export async function removeHistoryItem(url: string): Promise<void> {
 export async function getQuickLinks(): Promise<QuickLink[]> {
   const result = await chrome.storage.local.get('quickLinks')
   const stored = (result.quickLinks || []) as QuickLink[]
-  const normalized = (stored.length > 0 ? stored : PRESET_QUICK_LINKS).map(normalizeQuickLink)
+  const normalized = (stored.length > 0 ? stored : DEFAULT_QUICK_LINKS).map(normalizeQuickLink)
 
   // 如果之前没有存储，初始化存储默认列表，方便后续同步
   if (!stored.length) {
