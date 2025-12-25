@@ -1,6 +1,7 @@
 // 存储工具函数
+import { getGoogleFavicon } from './favicon'
 import type { QuickLink } from './types'
-export type { QuickLink } from './types'
+import { extractDomainFromUrl } from './url'
 
 export interface HistoryItem {
   url: string
@@ -42,7 +43,6 @@ export const DEFAULT_SETTINGS: Settings = {
   showHistory: true,
 }
 
-export { PRESET_QUICK_LINKS } from './presets'
 
 export const DEFAULT_QUICK_LINKS: QuickLink[] = [
   { title: 'Google', url: 'https://www.google.com' },
@@ -53,17 +53,8 @@ export const DEFAULT_QUICK_LINKS: QuickLink[] = [
   { title: 'Stack Overflow', url: 'https://stackoverflow.com' },
 ]
 
-const extractDomain = (url: string): string => {
-  try {
-    const normalized = url.startsWith('http') ? url : `https://${url}`
-    return new URL(normalized).hostname || url
-  } catch {
-    return url
-  }
-}
-
 const normalizeHistoryItem = (item: HistoryItem): HistoryItem => {
-  const domain = item.domain || extractDomain(item.url)
+  const domain = item.domain || extractDomainFromUrl(item.url)
   const visitCount = item.visitCount ?? 1
   const timestamp = item.timestamp || Date.now()
 
@@ -71,10 +62,8 @@ const normalizeHistoryItem = (item: HistoryItem): HistoryItem => {
 }
 
 const normalizeQuickLink = (link: QuickLink): QuickLink => {
-  const domain = link.domain || extractDomain(link.url)
-  const googleFavicon = domain
-    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=64`
-    : undefined
+  const domain = link.domain || extractDomainFromUrl(link.url)
+  const googleFavicon = getGoogleFavicon({ domain, url: link.url })
   const favicon = link.favicon || googleFavicon
   return { ...link, domain, favicon }
 }
@@ -147,7 +136,7 @@ export async function clearHistory(): Promise<void> {
 
 // 删除单个历史记录
 export async function removeHistoryItem(url: string): Promise<void> {
-  const domain = extractDomain(url)
+  const domain = extractDomainFromUrl(url)
   const history = await getHistory()
   const filtered = history.filter(h => h.domain !== domain && h.url !== url)
   await chrome.storage.local.set({ history: filtered })
@@ -194,7 +183,7 @@ export async function addQuickLink(link: QuickLink): Promise<QuickLink[]> {
 
 // 删除快速访问站点
 export async function removeQuickLink(url: string): Promise<QuickLink[]> {
-  const domain = extractDomain(url)
+  const domain = extractDomainFromUrl(url)
   const links = await getQuickLinks()
   const filtered = links.filter(link => link.domain !== domain && link.url !== url)
   await saveQuickLinks(filtered)

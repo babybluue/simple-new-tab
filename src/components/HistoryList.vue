@@ -34,11 +34,11 @@
         <LinkCard
           :title="item.title"
           :subtitle="item.domain || item.url"
-          :favicon="getFavicon(item)"
+          :favicon="getFavicon(item as FaviconItem)"
           :fallback-char="item.title.charAt(0).toUpperCase()"
           :card-style="cardStyle"
           @select="handleSelect(item)"
-          @icon-error="handleFaviconError(item, $event)"
+          @icon-error="handleFaviconErrorWrapper(item, $event)"
         >
           <template #actions>
             <button
@@ -80,6 +80,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
 
+import { type FaviconItem, getFavicon, handleFaviconError } from '@/utils/favicon'
 import { performSearch } from '@/utils/search'
 import {
   addQuickLink,
@@ -90,6 +91,7 @@ import {
   type Settings,
 } from '@/utils/storage'
 import { buildPrimarySurfaceStyle } from '@/utils/theme'
+import { extractDomainFromUrl } from '@/utils/url'
 
 import LinkCard from './LinkCard.vue'
 
@@ -119,7 +121,7 @@ const deduplicateByDomain = (items: HistoryItem[]): HistoryItem[] => {
   const domainMap = new Map<string, HistoryItem>()
 
   for (const item of items) {
-    const domain = item.domain || getDomain(item) || item.url
+    const domain = item.domain || extractDomainFromUrl(item.url) || item.url
     const existing = domainMap.get(domain)
 
     if (!existing) {
@@ -162,58 +164,20 @@ const handleRemove = async (item: HistoryItem) => {
 }
 
 const handlePin = async (item: HistoryItem) => {
+  const { getGoogleFavicon } = await import('@/utils/favicon')
   await addQuickLink({
     title: item.title,
     url: item.url,
-    favicon: getGoogleFavicon(item),
+    favicon: getGoogleFavicon(item as FaviconItem),
   })
-}
-
-const getDomain = (item: HistoryItem): string | null => {
-  const target = item.domain || item.url
-  try {
-    const urlObj = new URL(target.startsWith('http') ? target : `https://${target}`)
-    return urlObj.hostname
-  } catch {
-    return null
-  }
-}
-
-const getSiteFavicon = (item: HistoryItem): string | undefined => {
-  const domain = getDomain(item)
-  return domain ? `https://${domain}/favicon.ico` : undefined
-}
-
-const getGoogleFavicon = (item: HistoryItem): string | undefined => {
-  const domain = getDomain(item)
-  return domain
-    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=64`
-    : undefined
-}
-
-const getFavicon = (item: HistoryItem): string => {
-  return getGoogleFavicon(item) || getSiteFavicon(item) || ''
 }
 
 const cardStyle = computed(() => {
   return buildPrimarySurfaceStyle(settings.value?.primaryColor)
 })
 
-const handleFaviconError = (item: HistoryItem, e: Event) => {
-  const img = e.target as HTMLImageElement
-  const key = item.domain || item.url
-  if (faviconFallbackTried.value[key]) {
-    img.style.display = 'none'
-    return
-  }
-  const site = getSiteFavicon(item)
-  if (site && img.src !== site) {
-    faviconFallbackTried.value[key] = true
-    img.src = site
-    return
-  }
-  faviconFallbackTried.value[key] = true
-  img.style.display = 'none'
+const handleFaviconErrorWrapper = (item: HistoryItem, e: Event) => {
+  handleFaviconError(item as FaviconItem, e, faviconFallbackTried.value)
 }
 
 const toggleCollapse = () => {

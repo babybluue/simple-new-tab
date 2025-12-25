@@ -25,62 +25,12 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-
-          <Teleport to="body">
-            <div
-              v-if="isPresetMenuOpen"
-              data-quick-access-preset
-              class="fixed z-50 w-72 overflow-hidden rounded-lg border border-white/15 bg-white/95 shadow-xl backdrop-blur-sm dark:border-[#213547]/25 dark:bg-[#f6f7fb]"
-              :style="{
-                top: `${menuPosition.top}px`,
-                left: `${menuPosition.left}px`,
-                maxHeight: `${menuPosition.maxHeight}px`,
-              }"
-            >
-              <div class="flex items-center justify-between px-3 py-2 text-[11px] text-gray-500">
-                <span>选择常用网站</span>
-                <span>{{ hasAvailablePresets ? '点击即可添加' : '已全部添加' }}</span>
-              </div>
-              <div class="px-3 pb-2">
-                <input
-                  v-model="presetSearch"
-                  type="search"
-                  autocomplete="off"
-                  class="h-8 w-full rounded-md border border-black/5 bg-white/80 px-2 text-xs text-[#1f2937] outline-none placeholder:text-gray-400 focus:border-indigo-300 focus:ring-0 dark:border-[#213547]/20 dark:bg-white"
-                  placeholder="搜索或输入关键词筛选"
-                />
-              </div>
-              <div class="overflow-auto p-1" :style="{ maxHeight: `${Math.max(menuPosition.maxHeight - 92, 160)}px` }">
-                <button
-                  v-for="preset in filteredPresetOptions"
-                  :key="preset.url"
-                  type="button"
-                  class="group flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-[#1f2937] transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
-                  :disabled="preset.added"
-                  @click.stop="handleAddPreset(preset)"
-                >
-                  <img
-                    v-if="preset.favicon"
-                    :src="preset.favicon"
-                    :alt="preset.title"
-                    class="h-5 w-5 rounded transition group-hover:scale-105"
-                  />
-                  <div class="min-w-0 flex-1 text-left">
-                    <div class="flex items-center gap-2">
-                      <span class="truncate">{{ preset.title }}</span>
-                      <span v-if="preset.added" class="text-[11px] text-gray-400">已添加</span>
-                    </div>
-                    <p class="truncate text-[11px] text-gray-500">{{ preset.domain }}</p>
-                  </div>
-                  <span v-if="!preset.added" class="text-[11px] text-indigo-500">添加</span>
-                </button>
-                <div v-if="!filteredPresetOptions.length" class="px-3 py-6 text-center text-[12px] text-gray-500">
-                  未找到匹配的站点
-                </div>
-              </div>
-              <div v-if="!hasAvailablePresets" class="px-3 pb-3 text-[11px] text-gray-500">常用网站已全部添加</div>
-            </div>
-          </Teleport>
+          <PresetMenu
+            :open="isPresetMenuOpen"
+            :presets="presetOptions"
+            :position="menuPosition"
+            @select="handleAddPreset"
+          />
         </div>
         <button
           class="flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
@@ -93,52 +43,12 @@
       </div>
     </header>
 
-    <form
-      v-if="isFormVisible"
-      class="mb-4 grid grid-cols-1 gap-3 rounded-2xl border border-white/20 bg-white/10 p-4 shadow-lg backdrop-blur-xl md:grid-cols-[1.1fr_1.5fr_1.2fr_auto] md:items-center md:gap-3 md:p-3 dark:border-white/30 dark:bg-white/85"
-      aria-label="添加快速访问"
-      @submit.prevent="handleSubmit"
-    >
-      <input
-        v-model="form.title"
-        type="text"
-        class="w-full rounded-xl border border-white/20 bg-white/70 px-3 py-2 text-sm text-[#1f2937] placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none dark:border-white/40 dark:bg-white/95"
-        placeholder="网站名称（可选）"
-        name="title"
-      />
-      <input
-        v-model="form.url"
-        type="text"
-        class="w-full rounded-xl border border-white/20 bg-white/70 px-3 py-2 text-sm text-[#1f2937] placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none dark:border-white/40 dark:bg-white/95"
-        placeholder="网站链接，例如 https://example.com"
-        required
-        name="url"
-      />
-      <input
-        v-model="form.icon"
-        type="text"
-        class="w-full rounded-xl border border-white/20 bg-white/70 px-3 py-2 text-sm text-[#1f2937] placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none dark:border-white/40 dark:bg-white/95"
-        placeholder="自定义图标 URL（可选）"
-        name="icon"
-      />
-      <div class="flex items-center gap-2">
-        <button
-          type="submit"
-          class="h-10 cursor-pointer rounded-xl bg-indigo-500 px-4 text-sm font-medium text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-300 md:h-9"
-          :disabled="!form.url.trim()"
-        >
-          {{ isEditing ? '保存' : '添加' }}
-        </button>
-        <button
-          v-if="isEditing"
-          type="button"
-          class="h-10 cursor-pointer rounded-xl border border-white/30 bg-transparent px-4 text-sm font-medium text-white/80 transition hover:border-white/50 hover:text-white md:h-9 dark:border-[#213547]/40 dark:text-[#213547]/80 dark:hover:border-[#213547]/60 dark:hover:text-[#213547]"
-          @click="resetForm"
-        >
-          取消
-        </button>
-      </div>
-    </form>
+    <QuickLinkForm
+      :visible="isFormVisible"
+      :editing-link="editingLink"
+      @submit="handleFormSubmit"
+      @cancel="resetForm"
+    />
 
     <ul
       v-if="quickLinks.length > 0"
@@ -149,11 +59,11 @@
         <LinkCard
           :title="link.title"
           :subtitle="link.domain || link.url"
-          :favicon="getFavicon(link)"
+          :favicon="getFavicon(link as FaviconItem)"
           :fallback-char="link.title.charAt(0).toUpperCase()"
           :card-style="cardStyle"
           @select="handleQuickLinkSelect(link)"
-          @icon-error="handleFaviconError(link, $event)"
+          @icon-error="handleFaviconErrorWrapper(link, $event)"
         >
           <template #actions>
             <button
@@ -207,72 +117,42 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 
-import { normalizeURL, performSearch } from '@/utils/search'
-import {
-  addQuickLink,
-  getQuickLinks,
-  getSettings,
-  PRESET_QUICK_LINKS,
-  type QuickLink,
-  removeQuickLink,
-  type Settings,
-} from '@/utils/storage'
+import { type FaviconItem, getFavicon, getGoogleFavicon, getSiteFavicon, handleFaviconError } from '@/utils/favicon'
+import { PRESET_QUICK_LINKS } from '@/utils/presets'
+import { performSearch } from '@/utils/search'
+import { addQuickLink, getQuickLinks, getSettings, removeQuickLink, type Settings } from '@/utils/storage'
 import { buildPrimarySurfaceStyle } from '@/utils/theme'
+import type { QuickLink } from '@/utils/types'
+import { extractDomainFromUrl } from '@/utils/url'
 
 import LinkCard from './LinkCard.vue'
-
-type PresetOption = QuickLink & { added?: boolean }
+import PresetMenu, { type PresetOption } from './PresetMenu.vue'
+import QuickLinkForm from './QuickLinkForm.vue'
 
 const quickLinks = ref<QuickLink[]>([])
 const settings = ref<Settings | null>(null)
 const isFormVisible = ref(false)
 const isPresetMenuOpen = ref(false)
-const form = ref<{ title: string; url: string; icon: string }>({ title: '', url: '', icon: '' })
-const isEditing = ref(false)
-const editingKey = ref<string | null>(null)
+const editingLink = ref<QuickLink | null>(null)
 const faviconFallbackTried = ref<Record<string, boolean>>({})
 const presetToggleRef = ref<HTMLElement | null>(null)
 const menuPosition = ref<{ top: number; left: number; maxHeight: number }>({ top: 0, left: 0, maxHeight: 420 })
-const presetSearch = ref('')
-
-const getDomainFromUrl = (url: string): string => {
-  try {
-    return new URL(url.startsWith('http') ? url : `https://${url}`).hostname
-  } catch {
-    return url
-  }
-}
 
 const buildPresetWithMeta = (preset: QuickLink): QuickLink => {
-  const domain = preset.domain || getDomainFromUrl(preset.url)
-  const googleFavicon = domain
-    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=64`
-    : undefined
-  const siteFavicon = domain ? `https://${domain}/favicon.ico` : undefined
-  const favicon = preset.favicon || googleFavicon || siteFavicon
+  const domain = preset.domain || extractDomainFromUrl(preset.url)
+  const favicon =
+    preset.favicon || getGoogleFavicon({ domain, url: preset.url }) || getSiteFavicon({ domain, url: preset.url })
   return { ...preset, domain, favicon }
 }
 
 const presetOptions = computed<PresetOption[]>(() => {
-  const domains = quickLinks.value.map(link => link.domain || getDomainFromUrl(link.url))
+  const domains = quickLinks.value.map(link => link.domain || extractDomainFromUrl(link.url))
   return PRESET_QUICK_LINKS.map(buildPresetWithMeta).map(preset => {
-    const domain = preset.domain || getDomainFromUrl(preset.url)
+    const domain = preset.domain || extractDomainFromUrl(preset.url)
     const added = domains.includes(domain) || quickLinks.value.some(link => link.url === preset.url)
     return { ...preset, added }
   })
 })
-
-const filteredPresetOptions = computed(() => {
-  const keyword = presetSearch.value.trim().toLowerCase()
-  if (!keyword) return presetOptions.value
-  return presetOptions.value.filter(preset => {
-    const title = preset.title.toLowerCase()
-    const domain = (preset.domain || '').toLowerCase()
-    return title.includes(keyword) || domain.includes(keyword)
-  })
-})
-
-const hasAvailablePresets = computed(() => presetOptions.value.some(preset => !preset.added))
 
 const cardStyle = computed(() => {
   return buildPrimarySurfaceStyle(settings.value?.primaryColor)
@@ -321,7 +201,7 @@ const handleOutsideClick = (e: MouseEvent) => {
   const target = e.target as HTMLElement
   const menu = target.closest('[data-quick-access-preset]')
   const toggle = target.closest('[data-quick-access-toggle]')
-  if (!menu && !toggle) {
+  if (!menu && !toggle && isPresetMenuOpen.value) {
     isPresetMenuOpen.value = false
   }
 }
@@ -350,47 +230,26 @@ const handleAddPreset = async (preset: PresetOption) => {
 }
 
 const startEdit = (link: QuickLink) => {
-  form.value = {
-    title: link.title,
-    url: link.url,
-    icon: link.favicon || '',
-  }
-  isEditing.value = true
-  editingKey.value = link.url
+  editingLink.value = link
   isFormVisible.value = true
 }
 
-const handleSubmit = async () => {
-  if (!form.value.url.trim()) return
+const handleFormSubmit = async (data: { title: string; url: string; favicon?: string }) => {
+  const originalKey = editingLink.value?.url
+  const originalDomain = originalKey ? extractDomainFromUrl(originalKey) : null
+  const nextDomain = extractDomainFromUrl(data.url)
 
-  const normalizedUrl = normalizeURL(form.value.url.trim())
-  const title = form.value.title.trim() || getTitleFromUrl(normalizedUrl)
-  const favicon = form.value.icon.trim() || undefined
-  const originalKey = editingKey.value
-  const originalDomain = originalKey ? getDomainFromUrl(originalKey) : null
-  const nextDomain = getDomainFromUrl(normalizedUrl)
-
-  if (isEditing.value && originalKey && (originalKey !== normalizedUrl || originalDomain !== nextDomain)) {
+  if (editingLink.value && originalKey && (originalKey !== data.url || originalDomain !== nextDomain)) {
     await removeQuickLink(originalKey)
   }
 
-  quickLinks.value = await addQuickLink({ title, url: normalizedUrl, favicon })
+  quickLinks.value = await addQuickLink(data)
   resetForm()
-}
-
-const getTitleFromUrl = (url: string): string => {
-  try {
-    const host = new URL(url).hostname.replace(/^www\./, '')
-    return host || url
-  } catch {
-    return url
-  }
 }
 
 const togglePresetMenu = async () => {
   isPresetMenuOpen.value = !isPresetMenuOpen.value
   if (isPresetMenuOpen.value) {
-    presetSearch.value = ''
     await nextTick()
     updateMenuPosition()
   }
@@ -405,46 +264,11 @@ const handleToggleForm = () => {
 }
 
 const resetForm = () => {
-  form.value = { title: '', url: '', icon: '' }
-  isEditing.value = false
-  editingKey.value = null
+  editingLink.value = null
   isFormVisible.value = false
 }
 
-const getSiteFavicon = (link: QuickLink): string | undefined => {
-  const domain = link.domain || getDomainFromUrl(link.url)
-  return domain ? `https://${domain}/favicon.ico` : undefined
-}
-
-const getGoogleFavicon = (link: QuickLink): string | undefined => {
-  const domain = link.domain || getDomainFromUrl(link.url)
-  return domain
-    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=64`
-    : undefined
-}
-
-const getFavicon = (link: QuickLink): string | undefined => {
-  const google = getGoogleFavicon(link)
-  const site = getSiteFavicon(link)
-  return link.favicon || google || site
-}
-
-const handleFaviconError = (link: QuickLink, e: Event) => {
-  const img = e.target as HTMLImageElement
-  const key = link.domain || link.url
-  if (faviconFallbackTried.value[key]) {
-    img.style.display = 'none'
-    return
-  }
-
-  const site = getSiteFavicon(link)
-  if (site && img.src !== site) {
-    faviconFallbackTried.value[key] = true
-    img.src = site
-    return
-  }
-
-  faviconFallbackTried.value[key] = true
-  img.style.display = 'none'
+const handleFaviconErrorWrapper = (link: QuickLink, e: Event) => {
+  handleFaviconError(link as FaviconItem, e, faviconFallbackTried.value)
 }
 </script>

@@ -61,4 +61,3 @@ defineEmits<{
 
 const resolvedStyle = computed(() => props.cardStyle || {})
 </script>
-
