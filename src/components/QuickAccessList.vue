@@ -8,7 +8,7 @@
         <div class="relative">
           <button
             data-quick-access-toggle
-            class="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
+          class="flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
             type="button"
             :aria-expanded="isPresetMenuOpen"
             @click.stop="togglePresetMenu"
@@ -42,7 +42,7 @@
           </div>
         </div>
         <button
-          class="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
+          class="flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/25 hover:bg-white/20 hover:text-white md:text-xs dark:border-[#213547]/25 dark:bg-white/80 dark:text-[#213547]/80 dark:hover:border-[#213547]/35 dark:hover:bg-white/90 dark:hover:text-[#213547]"
           type="button"
           :aria-expanded="isFormVisible"
           @click="handleToggleForm"
@@ -83,7 +83,7 @@
       <div class="flex items-center gap-2">
         <button
           type="submit"
-          class="h-10 rounded-xl bg-indigo-500 px-4 text-sm font-medium text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-300 md:h-9"
+          class="h-10 cursor-pointer rounded-xl bg-indigo-500 px-4 text-sm font-medium text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-300 md:h-9"
           :disabled="!form.url.trim()"
         >
           {{ isEditing ? '保存' : '添加' }}
@@ -91,7 +91,7 @@
         <button
           v-if="isEditing"
           type="button"
-          class="h-10 rounded-xl border border-white/30 bg-transparent px-4 text-sm font-medium text-white/80 transition hover:border-white/50 hover:text-white md:h-9 dark:border-[#213547]/40 dark:text-[#213547]/80 dark:hover:border-[#213547]/60 dark:hover:text-[#213547]"
+          class="h-10 cursor-pointer rounded-xl border border-white/30 bg-transparent px-4 text-sm font-medium text-white/80 transition hover:border-white/50 hover:text-white md:h-9 dark:border-[#213547]/40 dark:text-[#213547]/80 dark:hover:border-[#213547]/60 dark:hover:text-[#213547]"
           @click="resetForm"
         >
           取消
@@ -277,7 +277,7 @@ const startEdit = (link: QuickLink) => {
   }
   isEditing.value = true
   editingKey.value = link.url
-  showForm.value = true
+  isFormVisible.value = true
 }
 
 const handleSubmit = async () => {

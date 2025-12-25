@@ -33,7 +33,7 @@
             <button
               v-for="bg in PRESET_BACKGROUNDS"
               :key="bg"
-              class="h-10 w-10 rounded-xl border border-white/30 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+              class="h-10 w-10 cursor-pointer rounded-xl border border-white/30 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
               :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPresetActive(bg) }"
               :style="{ background: bg }"
               type="button"
@@ -41,7 +41,7 @@
               @click="usePreset(bg)"
             />
             <button
-              class="relative h-10 w-10 overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+              class="relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
               :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPresetActive(customColor) }"
               type="button"
               @click="useCustom"
@@ -71,7 +71,7 @@
             </button>
 
             <button
-              class="relative h-10 w-10 overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+              class="relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
               :class="{
                 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': settings.backgroundType === 'upload',
               }"
@@ -111,7 +111,7 @@
           >
             <span>刷新 Bing 壁纸</span>
             <button
-              class="flex items-center gap-1 rounded-lg border border-white/25 px-3 py-2 text-xs font-medium text-white transition hover:bg-white/10 disabled:opacity-60"
+              class="flex cursor-pointer items-center gap-1 rounded-lg border border-white/25 px-3 py-2 text-xs font-medium text-white transition hover:bg-white/10 disabled:opacity-60"
               type="button"
               :disabled="bingLoading || applying"
               @click="refreshBing"
@@ -141,7 +141,7 @@
             <button
               v-for="color in PRIMARY_PRESETS"
               :key="color"
-              class="h-10 w-10 rounded-xl border border-white/30 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+              class="h-10 w-10 cursor-pointer rounded-xl border border-white/30 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
               :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPrimaryActive(color) }"
               :style="{ background: color }"
               type="button"
@@ -149,7 +149,7 @@
               @click="usePrimaryPreset(color)"
             />
             <button
-              class="relative h-10 w-10 overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
+              class="relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
               :class="{
                 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPrimaryActive(primaryCustomColor),
               }"

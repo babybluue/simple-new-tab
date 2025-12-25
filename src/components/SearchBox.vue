@@ -7,7 +7,7 @@
     >
       <div class="relative mr-4 shrink-0">
         <button
-          class="flex h-5 w-5 items-center justify-center rounded transition-all duration-200 hover:bg-gray-100/50 dark:hover:bg-white/10"
+          class="flex h-5 w-5 cursor-pointer items-center justify-center rounded transition-all duration-200 hover:bg-gray-100/50 dark:hover:bg-white/10"
           type="button"
           :aria-expanded="isEngineMenuOpen"
           aria-haspopup="listbox"
