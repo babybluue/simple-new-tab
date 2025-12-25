@@ -23,7 +23,7 @@
       <section
         v-if="open"
         id="settings-panel"
-        class="w-[320px] overflow-hidden rounded-2xl border border-white/15 bg-white/12 p-4 text-white shadow-2xl ring-1 ring-white/20 backdrop-blur-2xl dark:border-white/20 dark:bg-[#1f2937]/95 dark:text-white/90"
+        class="max-h-[calc(100vh-8rem)] w-[320px] overflow-y-auto rounded-2xl border border-white/15 bg-white/12 p-4 text-white shadow-2xl ring-1 ring-white/20 backdrop-blur-2xl dark:border-white/20 dark:bg-[#1f2937]/95 dark:text-white/90"
         aria-label="背景与配色设置"
       >
         <div>
@@ -180,6 +180,63 @@
             </button>
           </div>
         </div>
+
+        <div class="mt-4">
+          <div class="mb-4 text-base font-semibold">控制</div>
+          <div class="space-y-3">
+            <label
+              class="flex cursor-pointer items-center justify-between rounded-xl bg-white/10 p-3 text-sm text-white/90 backdrop-blur-sm transition hover:bg-white/15"
+            >
+              <span>时间</span>
+              <button
+                type="button"
+                class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
+                :class="settings.showDateTime ? 'bg-white/30' : 'bg-white/10'"
+                :disabled="applying"
+                @click="toggleVisibility('showDateTime')"
+              >
+                <span
+                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform"
+                  :class="settings.showDateTime ? 'translate-x-5' : 'translate-x-0'"
+                />
+              </button>
+            </label>
+            <label
+              class="flex cursor-pointer items-center justify-between rounded-xl bg-white/10 p-3 text-sm text-white/90 backdrop-blur-sm transition hover:bg-white/15"
+            >
+              <span>快速访问</span>
+              <button
+                type="button"
+                class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
+                :class="settings.showQuickAccess ? 'bg-white/30' : 'bg-white/10'"
+                :disabled="applying"
+                @click="toggleVisibility('showQuickAccess')"
+              >
+                <span
+                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform"
+                  :class="settings.showQuickAccess ? 'translate-x-5' : 'translate-x-0'"
+                />
+              </button>
+            </label>
+            <label
+              class="flex cursor-pointer items-center justify-between rounded-xl bg-white/10 p-3 text-sm text-white/90 backdrop-blur-sm transition hover:bg-white/15"
+            >
+              <span>最近访问</span>
+              <button
+                type="button"
+                class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
+                :class="settings.showHistory ? 'bg-white/30' : 'bg-white/10'"
+                :disabled="applying"
+                @click="toggleVisibility('showHistory')"
+              >
+                <span
+                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform"
+                  :class="settings.showHistory ? 'translate-x-5' : 'translate-x-0'"
+                />
+              </button>
+            </label>
+          </div>
+        </div>
       </section>
     </Transition>
   </aside>
@@ -194,6 +251,10 @@ import { applyBackground, applyPrimaryColor, fetchBingImageUrl } from '@/utils/t
 
 const props = defineProps<{
   initialSettings?: Settings
+}>()
+
+const emit = defineEmits<{
+  'settings-updated': [settings: Settings]
 }>()
 
 const PRESET_BACKGROUNDS = [
@@ -232,7 +293,10 @@ const PRIMARY_PRESETS = [
 ]
 
 const ensureSettings = async () => {
-  if (props.initialSettings) return
+  if (props.initialSettings) {
+    emit('settings-updated', settings.value)
+    return
+  }
   const stored = await getSettings()
   settings.value = stored
   // 如果是自定义颜色，直接使用存储的值；否则使用 normalizeColorInput 转换
@@ -241,6 +305,7 @@ const ensureSettings = async () => {
   primaryCustomColor.value = stored.primaryColor || '#667eea'
   await applyBackground(stored)
   applyPrimaryColor(stored.primaryColor || '#667eea')
+  emit('settings-updated', stored)
 }
 
 onMounted(async () => {
@@ -274,6 +339,7 @@ const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false
     }
     applyPrimaryColor(settings.value.primaryColor || '#667eea')
     await saveSettings(settings.value)
+    emit('settings-updated', settings.value)
   } finally {
     applying.value = false
     bingLoading.value = false
@@ -328,6 +394,10 @@ const handleUpload = (event: Event) => {
   reader.readAsDataURL(file)
   // 允许选择同一文件时也能再次触发 change
   target.value = ''
+}
+
+const toggleVisibility = async (key: 'showDateTime' | 'showQuickAccess' | 'showHistory') => {
+  await persistAndApply({ [key]: !settings.value[key] })
 }
 </script>
 

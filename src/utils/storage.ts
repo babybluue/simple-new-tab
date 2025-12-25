@@ -23,6 +23,9 @@ export interface Settings {
   backgroundImageUrl?: string
   primaryColorType: PrimaryColorType
   primaryColor: string
+  showDateTime: boolean
+  showQuickAccess: boolean
+  showHistory: boolean
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -34,6 +37,9 @@ export const DEFAULT_SETTINGS: Settings = {
   backgroundImageUrl: '',
   primaryColorType: 'preset',
   primaryColor: '#667eea',
+  showDateTime: true,
+  showQuickAccess: true,
+  showHistory: true,
 }
 
 export { PRESET_QUICK_LINKS } from './presets'

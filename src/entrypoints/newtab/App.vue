@@ -1,21 +1,21 @@
 <template>
   <div class="app-container">
     <main class="relative flex min-h-screen w-full flex-col items-center px-6 py-12 md:px-5 md:py-8" role="main">
-      <Settings :initial-settings="initialSettings" />
-      <header class="mb-2">
+      <Settings :initial-settings="initialSettings" @settings-updated="handleSettingsUpdate" />
+      <header v-if="displaySettings.showDateTime" class="mb-2">
         <DateTime />
       </header>
 
       <section class="mt-6 mb-8 w-full md:mb-6" aria-label="搜索">
         <SearchBox />
       </section>
-      <QuickAccessList />
-      <HistoryList />
+      <QuickAccessList v-if="displaySettings.showQuickAccess" />
+      <HistoryList v-if="displaySettings.showHistory" />
     </main>
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import DateTime from '@/components/DateTime.vue'
 import HistoryList from '@/components/HistoryList.vue'
@@ -28,12 +28,25 @@ import { applyBackground, applyPrimaryColor, applyTheme } from '@/utils/theme'
 const props = defineProps<{ initialSettings?: SettingsModel }>()
 const initialSettings = props.initialSettings
 
+const settings = ref<SettingsModel | null>(props.initialSettings || null)
+
+const displaySettings = computed(() => ({
+  showDateTime: settings.value?.showDateTime ?? true,
+  showQuickAccess: settings.value?.showQuickAccess ?? true,
+  showHistory: settings.value?.showHistory ?? true,
+}))
+
+const handleSettingsUpdate = (updatedSettings: SettingsModel) => {
+  settings.value = updatedSettings
+}
+
 onMounted(async () => {
   if (!props.initialSettings) {
-    const settings = await getSettings()
-    applyTheme(settings.theme)
-    await applyBackground(settings)
-    applyPrimaryColor(settings.primaryColor)
+    const loadedSettings = await getSettings()
+    settings.value = loadedSettings
+    applyTheme(loadedSettings.theme)
+    await applyBackground(loadedSettings)
+    applyPrimaryColor(loadedSettings.primaryColor)
   }
 })
 </script>
