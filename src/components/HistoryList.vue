@@ -115,10 +115,37 @@ onMounted(async () => {
   })
 })
 
+const deduplicateByDomain = (items: HistoryItem[]): HistoryItem[] => {
+  const domainMap = new Map<string, HistoryItem>()
+
+  for (const item of items) {
+    const domain = item.domain || getDomain(item) || item.url
+    const existing = domainMap.get(domain)
+
+    if (!existing) {
+      domainMap.set(domain, item)
+    } else {
+      // 保留访问次数最多的，如果访问次数相同则保留最近访问的
+      const existingCount = existing.visitCount ?? 1
+      const currentCount = item.visitCount ?? 1
+      const existingTimestamp = existing.timestamp || 0
+      const currentTimestamp = item.timestamp || 0
+
+      if (currentCount > existingCount || (currentCount === existingCount && currentTimestamp > existingTimestamp)) {
+        domainMap.set(domain, item)
+      }
+    }
+  }
+
+  return Array.from(domainMap.values())
+}
+
 const loadHistory = async () => {
   const allHistory = await getHistory()
   const frequentSites = allHistory.filter(item => (item.visitCount ?? 1) >= MIN_VISIT_THRESHOLD)
-  history.value = frequentSites.length > 0 ? frequentSites : allHistory
+  const filtered = frequentSites.length > 0 ? frequentSites : allHistory
+  // 对相同域名的记录进行去重
+  history.value = deduplicateByDomain(filtered)
 }
 
 const handleSelect = async (item: HistoryItem) => {
@@ -160,7 +187,7 @@ const getSiteFavicon = (item: HistoryItem): string | undefined => {
 const getGoogleFavicon = (item: HistoryItem): string | undefined => {
   const domain = getDomain(item)
   return domain
-    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=32`
+    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=64`
     : undefined
 }
 

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 * {
   box-sizing: border-box;
@@ -21,20 +21,17 @@
 
 html,
 body {
-  min-height: 100%;
-  overflow-x: hidden;
-}
-
-body {
   margin: 0;
-  min-width: 100%;
-  background: transparent;
-  color: inherit;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  /* 彻底禁用系统滚动条，由 App.vue 容器处理 */
 }
 
 #app {
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
 }
 
 @media (prefers-color-scheme: light) {

@@ -50,17 +50,14 @@
                   placeholder="搜索或输入关键词筛选"
                 />
               </div>
-              <div
-                class="overflow-auto p-1"
-                :style="{ maxHeight: `${Math.max(menuPosition.maxHeight - 92, 160)}px` }"
-              >
+              <div class="overflow-auto p-1" :style="{ maxHeight: `${Math.max(menuPosition.maxHeight - 92, 160)}px` }">
                 <button
                   v-for="preset in filteredPresetOptions"
                   :key="preset.url"
                   type="button"
                   class="group flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-[#1f2937] transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
                   :disabled="preset.added"
-                  @click="handleAddPreset(preset)"
+                  @click.stop="handleAddPreset(preset)"
                 >
                   <img
                     v-if="preset.favicon"
@@ -221,6 +218,7 @@ import {
   type Settings,
 } from '@/utils/storage'
 import { buildPrimarySurfaceStyle } from '@/utils/theme'
+
 import LinkCard from './LinkCard.vue'
 
 type PresetOption = QuickLink & { added?: boolean }
@@ -348,7 +346,6 @@ const handleAddPreset = async (preset: PresetOption) => {
     isPresetMenuOpen.value = false
     return
   }
-  isPresetMenuOpen.value = false
   quickLinks.value = await addQuickLink(preset)
 }
 

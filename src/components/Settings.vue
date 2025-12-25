@@ -42,16 +42,15 @@
             />
             <button
               class="relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border border-white/30 bg-white/5 shadow-sm transition hover:scale-[1.04] hover:shadow-lg focus:outline-none disabled:opacity-60"
-              :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isPresetActive(customColor) }"
+              :class="{ 'ring-2 ring-white/80 ring-offset-2 ring-offset-white/10': isCustomActive }"
               type="button"
-              @click="useCustom"
             >
               <input
                 v-model="customColor"
                 type="color"
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 title="自定义色"
-                @input="useCustom"
+                @input="handleCustomColorInput"
               />
               <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <svg
@@ -236,7 +235,9 @@ const ensureSettings = async () => {
   if (props.initialSettings) return
   const stored = await getSettings()
   settings.value = stored
-  customColor.value = normalizeColorInput(stored.backgroundColor)
+  // 如果是自定义颜色，直接使用存储的值；否则使用 normalizeColorInput 转换
+  customColor.value =
+    stored.backgroundType === 'custom' ? stored.backgroundColor : normalizeColorInput(stored.backgroundColor)
   primaryCustomColor.value = stored.primaryColor || '#667eea'
   await applyBackground(stored)
   applyPrimaryColor(stored.primaryColor || '#667eea')
@@ -283,8 +284,11 @@ const usePreset = async (value: string) => {
   await persistAndApply({ backgroundType: 'preset', backgroundColor: value })
 }
 
-const useCustom = async () => {
-  await persistAndApply({ backgroundType: 'custom', backgroundColor: customColor.value })
+const handleCustomColorInput = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  // 确保使用最新的颜色值
+  customColor.value = target.value
+  await persistAndApply({ backgroundType: 'custom', backgroundColor: target.value })
 }
 
 const usePrimaryPreset = async (value: string) => {
@@ -301,9 +305,10 @@ const refreshBing = async () => {
 }
 
 const isPresetActive = (value: string) =>
-  settings.value.backgroundType !== 'bing' &&
-  settings.value.backgroundType !== 'upload' &&
-  settings.value.backgroundColor === value
+  settings.value.backgroundType === 'preset' && settings.value.backgroundColor === value
+
+const isCustomActive = () =>
+  settings.value.backgroundType === 'custom' && settings.value.backgroundColor === customColor.value
 
 const isPrimaryActive = (value: string) =>
   settings.value.primaryColorType === 'preset' && settings.value.primaryColor === value
