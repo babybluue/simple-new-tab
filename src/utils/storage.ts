@@ -41,10 +41,11 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: 'auto',
   maxHistoryItems: 10,
   backgroundType: 'preset',
-  backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+  // 默认背景色和主色会在 getSettings() 中根据系统主题动态设置
+  backgroundColor: THEME_LIGHT_BG,
   backgroundImageUrl: '',
   primaryColorType: 'preset',
-  primaryColor: '#667eea',
+  primaryColor: THEME_LIGHT_BG,
   showDateTime: true,
   showQuickAccess: true,
   showHistory: true,
@@ -99,14 +100,42 @@ export async function getSettings(): Promise<Settings> {
   const result = await chrome.storage.local.get('settings')
   const stored = result.settings as Partial<Settings> | undefined
 
-  // 如果是首次加载（没有存储的设置），根据系统偏好设置默认背景
+  // 获取当前系统主题偏好
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  const systemThemeBg = prefersDark ? THEME_DARK_BG : THEME_LIGHT_BG
+
+  // 如果是首次加载（没有存储的设置），根据系统偏好设置默认背景和主色
   if (!stored) {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const defaultBg = prefersDark ? THEME_DARK_BG : THEME_LIGHT_BG
-    return { ...DEFAULT_SETTINGS, backgroundColor: defaultBg }
+    return {
+      ...DEFAULT_SETTINGS,
+      backgroundColor: systemThemeBg,
+      primaryColor: systemThemeBg,
+    }
   }
 
-  return { ...DEFAULT_SETTINGS, ...stored }
+  // 合并存储的设置
+  const merged = { ...DEFAULT_SETTINGS, ...stored }
+
+  // 如果主题是 'auto'，且背景色/主色还是旧的默认值（渐变），
+  // 则根据当前系统偏好更新它们，确保与主题模式一致
+  if (merged.theme === 'auto') {
+    const oldDefaultBg = 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)'
+    const oldDefaultPrimary = '#667eea'
+
+    // 如果背景色是旧的默认渐变值，更新为系统主题对应的背景色
+    if (merged.backgroundColor === oldDefaultBg) {
+      merged.backgroundColor = systemThemeBg
+      merged.backgroundType = 'preset'
+    }
+
+    // 如果主色是旧的默认值，更新为系统主题对应的主色
+    if (merged.primaryColor === oldDefaultPrimary) {
+      merged.primaryColor = systemThemeBg
+      merged.primaryColorType = 'preset'
+    }
+  }
+
+  return merged
 }
 
 // 保存设置
