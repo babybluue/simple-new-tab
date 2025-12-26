@@ -1,5 +1,6 @@
 // 存储工具函数
 import { getUnavatarFavicon } from './favicon'
+import { PRESET_QUICK_LINKS } from './presets'
 import { THEME_DARK_BG, THEME_LIGHT_BG } from './theme'
 import type { QuickLink } from './types'
 import { extractDomainFromUrl } from './url'
@@ -52,14 +53,23 @@ export const DEFAULT_SETTINGS: Settings = {
   language: undefined, // 默认根据浏览器语言自动选择
 }
 
-export const DEFAULT_QUICK_LINKS: QuickLink[] = [
+const FALLBACK_DEFAULT_QUICK_LINKS: QuickLink[] = [
   { title: 'Google', url: 'https://www.google.com' },
-  { title: 'Github', url: 'https://github.com' },
-  { title: '哔哩哔哩', url: 'https://www.bilibili.com' },
-  { title: 'Youtube', url: 'https://www.youtube.com' },
-  { title: '百度', url: 'https://www.baidu.com' },
+  { title: 'GitHub', url: 'https://github.com' },
+  { title: 'YouTube', url: 'https://www.youtube.com' },
   { title: 'Stack Overflow', url: 'https://stackoverflow.com' },
 ]
+
+export const DEFAULT_QUICK_LINKS: QuickLink[] = (() => {
+  // 默认快速访问站点来自预设模板中标记了 default: true 的条目
+  const defaultsFromPresets = PRESET_QUICK_LINKS.filter(link => link.default).map(link => {
+    // 不把 default 字段写入 quickLinks 存储，避免后续把它当成“用户自定义字段”
+    const { title, url, favicon, domain, category } = link
+    return { title, url, favicon, domain, category }
+  })
+
+  return defaultsFromPresets.length ? defaultsFromPresets : FALLBACK_DEFAULT_QUICK_LINKS
+})()
 
 const normalizeHistoryItem = (item: HistoryItem): HistoryItem => {
   const domain = item.domain || extractDomainFromUrl(item.url)

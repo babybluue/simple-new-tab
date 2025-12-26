@@ -4,4 +4,5 @@ export interface QuickLink {
   favicon?: string
   domain?: string
   category?: string
+  default?: boolean
 }
