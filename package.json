@@ -2,7 +2,7 @@
   "name": "simple-new-tab",
   "description": "一个简洁美观的新标签页浏览器插件",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "scripts": {
     "dev": "wxt",
