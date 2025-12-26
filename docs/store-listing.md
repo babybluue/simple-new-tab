@@ -39,19 +39,19 @@
 
 ### Short description
 
-A clean, beautiful, customizable new tab page with search, quick links, frequent sites, and themes/wallpapers.
+A clean, customizable new tab page with search, quick links, frequent sites, and beautiful themes.
 
 ### Long description
 
-`Simple New Tab` replaces your browser’s new tab page with a minimal layout designed for everyday speed: instant search, one‑click quick access, an automatically generated frequent‑sites list, plus theme and background customization (including Bing wallpaper or your own image).
+Tablite replaces your new tab with a calm, practical dashboard—built for fast searching, quick access to what you use most, and a look that fits your style.
 
 #### Highlights
 
-- **Multiple search engines**: Google / Bing / Baidu / DuckDuckGo, with search suggestions.
-- **Quick Access**: Add, edit, remove sites; optional “icon‑only” minimalist mode.
-- **Frequent Sites**: Automatically builds a list based on pages you open (stored locally).
-- **Appearance**: Light/Dark/Auto; preset backgrounds, custom colors, Bing wallpaper, image upload; configurable accent color.
-- **Polished UX**: Smooth animations and a clean, focused layout.
+- **Fast search**: Choose your preferred search engine, with suggestions.
+- **Quick Links**: Pin your favorite sites for one‑click access (supports an icon‑only layout).
+- **Frequent Sites**: Automatically surfaces the sites you visit most, stored locally.
+- **Themes & backgrounds**: Light/Dark/Auto, accent colors, preset backgrounds, Bing wallpaper, or your own image.
+- **Clean design**: Minimal layout, smooth motion, and a distraction‑free experience.
 
 ### Permissions & privacy
 
