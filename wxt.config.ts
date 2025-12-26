@@ -1,5 +1,25 @@
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'wxt'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const pkg = JSON.parse(readFileSync(join(__dirname, 'package.json'), 'utf8')) as {
+  version: string
+}
+
+// Chrome/Firefox extension "version" must be numeric dot-separated (no "-beta" etc.).
+// We keep the full semver in version_name.
+function toExtensionVersion(version: string): string {
+  const m = version.match(/^(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/)
+  if (!m) throw new Error(`Invalid package.json version: "${version}"`)
+  const [, major, minor, patch, build] = m
+  return [major, minor, patch, build].filter(Boolean).join('.')
+}
+
+const extensionVersion = toExtensionVersion(pkg.version)
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
@@ -18,6 +38,8 @@ export default defineConfig({
     },
   }),
   manifest: {
+    version: extensionVersion,
+    version_name: pkg.version,
     chrome_url_overrides: {
       newtab: 'newtab.html',
     },

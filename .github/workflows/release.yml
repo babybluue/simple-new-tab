@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build zip (Chrome)
+        run: pnpm zip
+
+      - name: Build zip (Firefox)
+        run: pnpm zip:firefox
+
+      - name: Read version
+        id: version
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release (if not exists)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.tag }}"
+
+          if [[ "${VERSION}" == "0.0.0" ]]; then
+            echo "package.json version is 0.0.0; skipping release."
+            exit 0
+          fi
+
+          if [[ "$TAG" != "v${VERSION}" ]]; then
+            echo "Tag (${TAG}) does not match package.json version (v${VERSION}). Aborting."
+            exit 1
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; skipping."
+            exit 0
+          fi
+
+          # Find WXT zip artifacts (location can vary by WXT version)
+          mapfile -t FILES < <(find . -type f -name "*.zip" | sort)
+          if [[ "${#FILES[@]}" -eq 0 ]]; then
+            echo "No .zip artifacts found. Aborting."
+            exit 1
+          fi
+
+          echo "Creating release $TAG with files:"
+          printf '%s\n' "${FILES[@]}"
+
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --generate-notes \
+            "${FILES[@]}"
+
+
