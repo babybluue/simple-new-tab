@@ -1,9 +1,7 @@
 <template>
   <section class="mx-auto mt-8 w-full max-w-7xl px-6 md:mt-6 md:px-5" aria-label="快速访问">
     <header class="mb-4 flex flex-col gap-3 md:mb-3 md:flex-row md:items-center md:justify-between">
-      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">
-        快速访问
-      </h2>
+      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">快速访问</h2>
       <div class="flex flex-wrap items-center gap-2">
         <div class="relative">
           <button
@@ -67,7 +65,7 @@
         >
           <template #actions>
             <button
-              class="text-app-secondary hover:text-app flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-app-overlay bg-app-overlay-hover hover:scale-110 md:h-6 md:w-6"
+              class="text-app-secondary hover:text-app bg-app-overlay bg-app-overlay-hover flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none hover:scale-110 md:h-6 md:w-6"
               type="button"
               @click.stop="startEdit(link)"
             >
@@ -87,7 +85,7 @@
               </svg>
             </button>
             <button
-              class="text-app-secondary hover:text-app flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-app-overlay bg-app-overlay-hover hover:scale-110 hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20"
+              class="text-app-secondary hover:text-app bg-app-overlay bg-app-overlay-hover flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none hover:scale-110 hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20"
               type="button"
               @click.stop="handleRemove(link)"
             >
@@ -117,7 +115,7 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 
-import { type FaviconItem, getFavicon, getGoogleFavicon, getSiteFavicon, handleFaviconError } from '@/utils/favicon'
+import { type FaviconItem, getFavicon, getSiteFavicon, getUnavatarFavicon, handleFaviconError } from '@/utils/favicon'
 import { PRESET_QUICK_LINKS } from '@/utils/presets'
 import { performSearch } from '@/utils/search'
 import { addQuickLink, getQuickLinks, getSettings, removeQuickLink, type Settings } from '@/utils/storage'
@@ -141,7 +139,7 @@ const menuPosition = ref<{ top: number; left: number; maxHeight: number }>({ top
 const buildPresetWithMeta = (preset: QuickLink): QuickLink => {
   const domain = preset.domain || extractDomainFromUrl(preset.url)
   const favicon =
-    preset.favicon || getGoogleFavicon({ domain, url: preset.url }) || getSiteFavicon({ domain, url: preset.url })
+    preset.favicon || getUnavatarFavicon({ domain, url: preset.url }) || getSiteFavicon({ domain, url: preset.url })
   return { ...preset, domain, favicon }
 }
 

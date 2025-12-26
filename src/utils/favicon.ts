@@ -1,6 +1,4 @@
 // Favicon 工具函数
-import type { HistoryItem } from './storage'
-import type { QuickLink } from './types'
 
 export interface FaviconItem {
   domain?: string
@@ -30,30 +28,24 @@ export function getSiteFavicon(item: FaviconItem): string | undefined {
 }
 
 /**
- * 获取 Google favicon 服务 URL
+ * 获取 Unavatar favicon 服务 URL
  */
-export function getGoogleFavicon(item: FaviconItem): string | undefined {
+export function getUnavatarFavicon(item: FaviconItem): string | undefined {
   const domain = extractDomain(item)
-  return domain
-    ? `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=64`
-    : undefined
+  return domain ? `https://unavatar.io/${domain}` : undefined
 }
 
 /**
- * 获取 favicon，按优先级：自定义 > Google > 站点
+ * 获取 favicon，按优先级：自定义 > Unavatar > 站点
  */
 export function getFavicon(item: FaviconItem): string {
-  return item.favicon || getGoogleFavicon(item) || getSiteFavicon(item) || ''
+  return item.favicon || getUnavatarFavicon(item) || getSiteFavicon(item) || ''
 }
 
 /**
  * 处理 favicon 加载错误，尝试回退到站点 favicon
  */
-export function handleFaviconError(
-  item: FaviconItem,
-  event: Event,
-  fallbackTried: Record<string, boolean>
-): void {
+export function handleFaviconError(item: FaviconItem, event: Event, fallbackTried: Record<string, boolean>): void {
   const img = event.target as HTMLImageElement
   const key = item.domain || item.url
 
@@ -72,4 +64,3 @@ export function handleFaviconError(
   fallbackTried[key] = true
   img.style.display = 'none'
 }
-

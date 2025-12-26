@@ -1,5 +1,5 @@
 // 存储工具函数
-import { getGoogleFavicon } from './favicon'
+import { getUnavatarFavicon } from './favicon'
 import { THEME_DARK_BG, THEME_LIGHT_BG } from './theme'
 import type { QuickLink } from './types'
 import { extractDomainFromUrl } from './url'
@@ -64,8 +64,8 @@ const normalizeHistoryItem = (item: HistoryItem): HistoryItem => {
 
 const normalizeQuickLink = (link: QuickLink): QuickLink => {
   const domain = link.domain || extractDomainFromUrl(link.url)
-  const googleFavicon = getGoogleFavicon({ domain, url: link.url })
-  const favicon = link.favicon || googleFavicon
+  const unavatarFavicon = getUnavatarFavicon({ domain, url: link.url })
+  const favicon = link.favicon || unavatarFavicon
   return { ...link, domain, favicon }
 }
 

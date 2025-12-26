@@ -1,9 +1,7 @@
 <template>
   <section v-if="history.length > 0" class="mx-auto mt-12 w-full max-w-7xl px-6 md:px-5" aria-label="最近访问">
     <header class="mb-6 flex items-center justify-between md:mb-5">
-      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">
-        最近访问
-      </h2>
+      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">最近访问</h2>
       <button
         class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
         type="button"
@@ -42,7 +40,7 @@
         >
           <template #actions>
             <button
-              class="text-app-secondary hover:text-app flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-app-overlay bg-app-overlay-hover hover:scale-110 md:h-6 md:w-6"
+              class="text-app-secondary hover:text-app bg-app-overlay bg-app-overlay-hover flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none hover:scale-110 md:h-6 md:w-6"
               type="button"
               @click.stop="handlePin(item)"
             >
@@ -57,7 +55,7 @@
               </svg>
             </button>
             <button
-              class="text-app-secondary hover:text-app flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none bg-app-overlay bg-app-overlay-hover hover:scale-110 hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20"
+              class="text-app-secondary hover:text-app bg-app-overlay bg-app-overlay-hover flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none hover:scale-110 hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20"
               type="button"
               @click.stop="handleRemove(item)"
             >
@@ -164,11 +162,11 @@ const handleRemove = async (item: HistoryItem) => {
 }
 
 const handlePin = async (item: HistoryItem) => {
-  const { getGoogleFavicon } = await import('@/utils/favicon')
+  const { getUnavatarFavicon } = await import('@/utils/favicon')
   await addQuickLink({
     title: item.title,
     url: item.url,
-    favicon: getGoogleFavicon(item as FaviconItem),
+    favicon: getUnavatarFavicon(item as FaviconItem),
   })
 }
 
