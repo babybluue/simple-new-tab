@@ -1,6 +1,8 @@
-import { computed, inject, provide, type InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
+import { computed, inject, provide } from 'vue'
 
-import { getLocale, setLocale, t, type SupportedLocale } from './index'
+import type { SupportedLocale } from './index'
+import { getLocale, setLocale, t } from './index'
 
 const I18nKey: InjectionKey<{
   locale: SupportedLocale
@@ -46,4 +48,3 @@ export function useI18n() {
     setLocale: i18n.setLocale,
   }
 }
-

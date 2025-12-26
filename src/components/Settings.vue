@@ -1,8 +1,8 @@
 <template>
-  <aside class="fixed top-6 right-6 z-50 flex flex-col items-end gap-3 md:right-5" :aria-label="$t('settings.title')">
+  <aside class="fixed top-6 right-6 z-50 flex flex-col items-end gap-3 md:right-5" :aria-label="tFn('settings.title')">
     <button
       class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl border shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:rotate-90 hover:shadow-xl"
-      :title="$t('common.settings')"
+      :title="tFn('common.settings')"
       type="button"
       :aria-expanded="open"
       aria-controls="settings-panel"
@@ -25,10 +25,10 @@
         id="settings-panel"
         class="border-app bg-app-overlay text-app-secondary ring-app-border max-h-[calc(100vh-8rem)] w-[320px] overflow-y-auto rounded-2xl border p-4 shadow-2xl ring-1 backdrop-blur-2xl"
         style="--tw-ring-color: var(--app-border-color)"
-        :aria-label="$t('settings.title')"
+        :aria-label="tFn('settings.title')"
       >
         <div>
-          <div class="mb-4 text-base font-semibold">{{ $t('settings.theme') }}</div>
+          <div class="mb-4 text-base font-semibold">{{ tFn('settings.theme') }}</div>
           <div class="flex flex-wrap items-center gap-2">
             <button
               v-for="themeOption in THEME_OPTIONS"
@@ -54,7 +54,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <div class="text-base font-semibold">{{ $t('settings.background') }}</div>
+          <div class="text-base font-semibold">{{ tFn('settings.background') }}</div>
 
           <div class="mt-4 flex flex-wrap items-center gap-2">
             <button
@@ -92,7 +92,7 @@
                 v-model="customColor"
                 type="color"
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                :title="$t('settings.customColor')"
+                :title="tFn('settings.customColor')"
                 @input="handleCustomColorInput"
               />
               <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -130,7 +130,7 @@
                 type="file"
                 accept="image/*"
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                :title="$t('settings.uploadImage')"
+                :title="tFn('settings.uploadImage')"
                 @click.stop
                 @change="handleUpload"
               />
@@ -157,7 +157,7 @@
           <div
             class="bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl p-3 text-xs backdrop-blur-sm"
           >
-            <span>{{ $t('settings.refreshBingWallpaper') }}</span>
+            <span>{{ tFn('settings.refreshBingWallpaper') }}</span>
             <button
               class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
               type="button"
@@ -178,13 +178,13 @@
                   d="M4 4v6h6M20 20v-6h-6M5 19A9 9 0 0118 6l1-1M19 5l-1 1"
                 />
               </svg>
-              {{ $t('common.refresh') }}
+              {{ tFn('common.refresh') }}
             </button>
           </div>
         </div>
 
         <div class="mt-4">
-          <div class="mb-4 text-base font-semibold">{{ $t('settings.primaryColor') }}</div>
+          <div class="mb-4 text-base font-semibold">{{ tFn('settings.primaryColor') }}</div>
           <div class="flex flex-wrap items-center gap-2">
             <button
               v-for="color in PRIMARY_PRESETS"
@@ -222,7 +222,7 @@
                 v-model="primaryCustomColor"
                 type="color"
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                :title="$t('settings.primaryColorCustom')"
+                :title="tFn('settings.primaryColorCustom')"
                 @input="usePrimaryCustom"
               />
               <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -245,12 +245,12 @@
         </div>
 
         <div class="mt-4">
-          <div class="mb-4 text-base font-semibold">{{ $t('settings.controls') }}</div>
+          <div class="mb-4 text-base font-semibold">{{ tFn('settings.controls') }}</div>
           <div class="space-y-3">
             <label
               class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
             >
-              <span>{{ $t('settings.dateTime') }}</span>
+              <span>{{ tFn('settings.dateTime') }}</span>
               <button
                 type="button"
                 class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
@@ -273,7 +273,7 @@
             <label
               class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
             >
-              <span>{{ $t('settings.quickAccess') }}</span>
+              <span>{{ tFn('settings.quickAccess') }}</span>
               <button
                 type="button"
                 class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
@@ -293,7 +293,7 @@
             <label
               class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
             >
-              <span>{{ $t('settings.recentVisits') }}</span>
+              <span>{{ tFn('settings.recentVisits') }}</span>
               <button
                 type="button"
                 class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
@@ -314,7 +314,7 @@
         </div>
 
         <div class="mt-4">
-          <div class="mb-4 text-base font-semibold">{{ $t('settings.language') }}</div>
+          <div class="mb-4 text-base font-semibold">{{ tFn('settings.language') }}</div>
           <div class="flex flex-wrap items-center gap-2">
             <button
               v-for="langOption in LANGUAGE_OPTIONS"
@@ -345,9 +345,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, getCurrentInstance, onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
-import { getLocale, setLocale, t, type SupportedLocale } from '@/i18n'
+import type { SupportedLocale } from '@/i18n'
+import { getLocale, setLocale, t } from '@/i18n'
+import { useI18n } from '@/i18n/composable'
 import type { Settings } from '@/utils/storage'
 import { DEFAULT_SETTINGS, getSettings, saveSettings } from '@/utils/storage'
 import {
@@ -359,6 +361,8 @@ import {
   THEME_DARK_BG,
   THEME_LIGHT_BG,
 } from '@/utils/theme'
+
+const { t: tFn } = useI18n()
 
 const props = defineProps<{
   initialSettings?: Settings

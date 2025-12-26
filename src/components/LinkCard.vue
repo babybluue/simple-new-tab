@@ -7,12 +7,12 @@
     <figure
       class="bg-app-overlay border-app flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border shadow-md ring-2 md:h-11 md:w-11"
       style="--tw-ring-color: var(--app-border-color)"
-      :aria-label="`${title} ${$t('common.icon')}`"
+      :aria-label="`${title} ${t('common.icon')}`"
     >
       <img
         v-if="favicon"
         :src="favicon"
-        :alt="`${title} ${$t('common.icon')}`"
+        :alt="`${title} ${t('common.icon')}`"
         class="h-full w-full object-cover"
         @error="$emit('icon-error', $event)"
       />
@@ -46,6 +46,10 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
+
+import { useI18n } from '@/i18n/composable'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   title: string

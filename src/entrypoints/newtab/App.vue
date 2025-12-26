@@ -9,7 +9,7 @@
         <DateTime />
       </header>
 
-      <section class="mt-6 mb-8 w-full md:mb-6" :aria-label="$t('search.siteSearch')">
+      <section class="mt-6 mb-8 w-full md:mb-6" :aria-label="t('search.siteSearch')">
         <SearchBox />
       </section>
       <QuickAccessList v-if="displaySettings.showQuickAccess" />
@@ -25,8 +25,11 @@ import HistoryList from '@/components/HistoryList.vue'
 import QuickAccessList from '@/components/QuickAccessList.vue'
 import SearchBox from '@/components/SearchBox.vue'
 import Settings from '@/components/Settings.vue'
+import { useI18n } from '@/i18n/composable'
 import { getSettings, type Settings as SettingsModel } from '@/utils/storage'
 import { applyBackground, applyPrimaryColor, applyTheme } from '@/utils/theme'
+
+const { t } = useI18n()
 
 const props = defineProps<{ initialSettings?: SettingsModel }>()
 const initialSettings = props.initialSettings

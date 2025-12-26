@@ -1,7 +1,7 @@
 <template>
-  <section class="mx-auto mt-8 w-full max-w-7xl px-6 md:mt-6 md:px-5" :aria-label="$t('quickAccess.title')">
+  <section class="mx-auto mt-8 w-full max-w-7xl px-6 md:mt-6 md:px-5" :aria-label="t('quickAccess.title')">
     <header class="mb-4 flex flex-col gap-3 md:mb-3 md:flex-row md:items-center md:justify-between">
-      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">{{ $t('quickAccess.title') }}</h2>
+      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">{{ t('quickAccess.title') }}</h2>
       <div class="flex flex-wrap items-center gap-2">
         <div class="relative">
           <button
@@ -12,7 +12,7 @@
             :aria-expanded="isPresetMenuOpen"
             @click.stop="togglePresetMenu"
           >
-            <span>{{ $t('quickAccess.addPreset') }}</span>
+            <span>{{ t('quickAccess.addPreset') }}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-4 w-4"
@@ -36,7 +36,7 @@
           :aria-expanded="isFormVisible"
           @click="handleToggleForm"
         >
-          <span>{{ isFormVisible ? $t('quickAccess.collapseForm') : $t('quickAccess.addCustom') }}</span>
+          <span>{{ isFormVisible ? t('quickAccess.collapseForm') : t('quickAccess.addCustom') }}</span>
         </button>
       </div>
     </header>
@@ -107,7 +107,7 @@
       v-else
       class="border-app bg-app-overlay text-app-tertiary flex flex-col items-center justify-center rounded-2xl border py-8 text-sm"
     >
-      {{ $t('quickAccess.emptyMessage') }}
+      {{ t('quickAccess.emptyMessage') }}
     </p>
   </section>
 </template>
@@ -116,6 +116,7 @@
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 
 import { getLocale } from '@/i18n'
+import { useI18n } from '@/i18n/composable'
 import { type FaviconItem, getFavicon, getSiteFavicon, getUnavatarFavicon, handleFaviconError } from '@/utils/favicon'
 import { getLocalizedSiteTitle, PRESET_QUICK_LINKS } from '@/utils/presets'
 import { performSearch } from '@/utils/search'
@@ -127,6 +128,8 @@ import { extractDomainFromUrl } from '@/utils/url'
 import LinkCard from './LinkCard.vue'
 import PresetMenu, { type PresetOption } from './PresetMenu.vue'
 import QuickLinkForm from './QuickLinkForm.vue'
+
+const { t } = useI18n()
 
 const quickLinks = ref<QuickLink[]>([])
 const settings = ref<Settings | null>(null)

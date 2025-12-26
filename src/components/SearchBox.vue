@@ -3,7 +3,7 @@
     ref="searchBoxRef"
     class="relative z-10 mx-auto w-full max-w-[640px]"
     role="search"
-    :aria-label="$t('search.siteSearch')"
+    :aria-label="t('search.siteSearch')"
   >
     <form
       class="border-app bg-app-overlay relative flex items-center rounded-3xl border px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl transition-all duration-300 focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] dark:focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.4)]"
@@ -42,7 +42,7 @@
           data-engine-menu
           class="border-app menu-app absolute top-8 left-0 z-500 min-w-[180px] rounded-lg border shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
           role="listbox"
-          :aria-label="$t('search.selectEngine')"
+          :aria-label="t('search.selectEngine')"
         >
           <button
             v-for="(engine, key) in SEARCH_ENGINES"
@@ -63,9 +63,9 @@
           v-model="query"
           type="text"
           class="text-app placeholder:text-app-tertiary w-full border-none bg-transparent text-base font-normal outline-none md:text-lg"
-          :placeholder="$t('search.placeholder')"
+          :placeholder="t('search.placeholder')"
           autocomplete="off"
-          :aria-label="$t('search.searchBox')"
+          :aria-label="t('search.searchBox')"
           :aria-expanded="isSuggestionListVisible"
           aria-controls="search-suggestions"
           @keydown="handleKeydown"
@@ -110,7 +110,7 @@
         v-if="query"
         class="text-app-tertiary hover:text-app bg-app-overlay-hover ml-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 transition-all duration-200 hover:scale-110"
         type="button"
-        :aria-label="$t('search.clearSearch')"
+        :aria-label="t('search.clearSearch')"
         @click="query = ''"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-5 w-5">
@@ -123,8 +123,11 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
+import { useI18n } from '@/i18n/composable'
 import { getSearchSuggestions, performSearch, SEARCH_ENGINES, type SearchEngine } from '@/utils/search'
 import { getSettings, saveSettings, type Settings } from '@/utils/storage'
+
+const { t } = useI18n()
 
 const query = ref('')
 const settings = ref<Settings | null>(null)
