@@ -10,8 +10,7 @@
   font-weight: 400;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  background-attachment: fixed;
+  /* 背景色由 HTML 内联脚本控制，避免闪烁 */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -27,6 +26,7 @@ body {
   width: 100%;
   overflow: hidden;
   /* 彻底禁用系统滚动条，由 App.vue 容器处理 */
+  /* 背景色由 HTML 内联脚本和内联样式控制，避免闪烁 */
 }
 
 #app {
@@ -37,8 +37,7 @@ body {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%);
-    background-attachment: fixed;
+    /* 背景色由 HTML 内联脚本控制，避免闪烁 */
   }
 }
 
