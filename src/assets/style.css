@@ -54,6 +54,14 @@ body {
   --app-bg-overlay-hover: #374151;
   --app-border-color: rgba(255, 255, 255, 0.15);
   --app-border-color-hover: rgba(255, 255, 255, 0.3);
+
+  /* 视觉 token（阴影/焦点） */
+  --app-shadow-xs: 0 1px 6px rgba(0, 0, 0, 0.16);
+  --app-shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.22);
+  --app-shadow-md: 0 10px 28px rgba(0, 0, 0, 0.28);
+  --app-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.38);
+  --app-focus-ring: rgba(102, 126, 234, 0.35);
+  --app-focus-ring: color-mix(in srgb, var(--primary-color, #667eea) 45%, transparent);
 }
 
 /* Light 模式变量 */
@@ -67,6 +75,11 @@ body {
   --app-bg-overlay-hover: rgba(255, 255, 255, 0.95);
   --app-border-color: rgba(33, 53, 71, 0.25);
   --app-border-color-hover: rgba(33, 53, 71, 0.35);
+
+  --app-shadow-xs: 0 1px 6px rgba(0, 0, 0, 0.06);
+  --app-shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.08);
+  --app-shadow-md: 0 10px 28px rgba(0, 0, 0, 0.10);
+  --app-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.14);
 }
 
 /* Dark 模式变量 */
@@ -80,6 +93,11 @@ body {
   --app-bg-overlay-hover: #374151;
   --app-border-color: rgba(255, 255, 255, 0.15);
   --app-border-color-hover: rgba(255, 255, 255, 0.3);
+
+  --app-shadow-xs: 0 1px 6px rgba(0, 0, 0, 0.16);
+  --app-shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.22);
+  --app-shadow-md: 0 10px 28px rgba(0, 0, 0, 0.28);
+  --app-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.38);
 }
 
 /* 主题只影响 App.vue 中的字体颜色，不影响背景色 */

@@ -1,29 +1,46 @@
 <template>
   <div class="pt-2 text-center">
-    <h1 class="mb-2 text-5xl">
-      {{ time }}
+    <h1 class="text-app mb-2 flex items-end justify-center gap-1 text-5xl font-semibold tracking-tight md:text-4xl">
+      <span class="tabular-nums">{{ timeMain }}</span>
+      <span class="text-app-tertiary pb-1 text-2xl font-medium tabular-nums md:text-xl">:{{ timeSeconds }}</span>
+      <span v-if="timeSuffix" class="text-app-tertiary pb-1 text-lg font-medium md:text-base">{{ timeSuffix }}</span>
     </h1>
-    <p class="text-2xl font-light tracking-wide md:text-[1.2rem]" style="color: var(--app-text-color-secondary)">
+    <p class="text-app-tertiary text-lg font-normal tracking-wide md:text-[1.05rem]">
       {{ date }}
     </p>
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 import { getLocale } from '@/i18n'
 
-const time = ref('')
+const timeMain = ref('')
+const timeSeconds = ref('')
+const timeSuffix = ref('')
 const date = ref('')
+let timer: ReturnType<typeof setInterval> | null = null
 
 const updateTime = () => {
   const now = new Date()
   const currentLocale = getLocale() === 'zh' ? 'zh-CN' : 'en-US'
-  time.value = now.toLocaleTimeString(currentLocale, {
+
+  const parts = new Intl.DateTimeFormat(currentLocale, {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-  })
+  }).formatToParts(now)
+
+  const getPart = (type: Intl.DateTimeFormatPartTypes) => parts.find(p => p.type === type)?.value || ''
+  const hour = getPart('hour')
+  const minute = getPart('minute')
+  const second = getPart('second')
+  const dayPeriod = getPart('dayPeriod')
+
+  timeMain.value = `${hour}:${minute}`
+  timeSeconds.value = second
+  timeSuffix.value = dayPeriod ? ` ${dayPeriod}` : ''
+
   date.value = now.toLocaleDateString(currentLocale, {
     year: 'numeric',
     month: 'long',
@@ -34,6 +51,10 @@ const updateTime = () => {
 
 onMounted(async () => {
   updateTime()
-  setInterval(updateTime, 1000)
+  timer = setInterval(updateTime, 1000)
+})
+
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
 })
 </script>

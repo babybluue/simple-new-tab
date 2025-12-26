@@ -3,7 +3,7 @@
     <div
       v-if="open"
       data-quick-access-preset
-      class="border-app menu-app fixed z-50 w-72 overflow-hidden rounded-lg border shadow-xl backdrop-blur-sm"
+      class="border-app menu-app fixed z-50 w-72 overflow-hidden rounded-lg border shadow-(--app-shadow-md) backdrop-blur-sm"
       :style="{
         top: `${position.top}px`,
         left: `${position.left}px`,
@@ -19,7 +19,7 @@
           v-model="searchQuery"
           type="search"
           autocomplete="off"
-          class="border-app bg-app-overlay text-app placeholder:text-app-tertiary h-8 w-full rounded-md border px-2 text-xs outline-none focus:border-indigo-300 focus:ring-0"
+          class="border-app bg-app-overlay text-app placeholder:text-app-tertiary h-8 w-full rounded-md border px-2 text-xs ring-2 ring-transparent outline-none focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring)"
           :placeholder="t('presetMenu.searchOrFilter')"
         />
       </div>
@@ -45,7 +45,7 @@
             </div>
             <p class="text-app-tertiary truncate text-[11px]">{{ preset.domain }}</p>
           </div>
-          <span v-if="!preset.added" class="text-[11px] text-indigo-500">{{ t('presetMenu.add') }}</span>
+          <span v-if="!preset.added" class="text-[11px] text-[var(--primary-color)]">{{ t('presetMenu.add') }}</span>
         </button>
         <div v-if="!filteredPresets.length" class="text-app-tertiary px-3 py-6 text-center text-[12px]">
           {{ t('presetMenu.noMatches') }}

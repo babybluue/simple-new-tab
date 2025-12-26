@@ -1,11 +1,11 @@
 <template>
   <article
-    class="group relative flex cursor-pointer items-center gap-4 rounded-2xl border p-4 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl md:gap-3 md:p-3.5"
+    class="group relative flex cursor-pointer items-center gap-4 rounded-2xl border p-4 shadow-(--app-shadow-xs) backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-(--app-shadow-md) md:gap-3 md:p-3.5"
     :style="resolvedStyle"
     @click="$emit('select')"
   >
     <figure
-      class="bg-app-overlay border-app flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border shadow-md ring-2 md:h-11 md:w-11"
+      class="bg-app-overlay border-app flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border shadow-(--app-shadow-xs) ring-2 md:h-11 md:w-11"
       style="--tw-ring-color: var(--app-border-color)"
       :aria-label="`${title} ${t('common.icon')}`"
     >

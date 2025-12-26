@@ -65,7 +65,7 @@
         >
           <template #actions>
             <button
-              class="text-app-secondary hover:text-app bg-app-overlay bg-app-overlay-hover flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none hover:scale-110 md:h-6 md:w-6"
+              class="text-app-secondary hover:text-app bg-app-overlay bg-app-overlay-hover flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none hover:scale-[1.06] md:h-6 md:w-6"
               type="button"
               @click.stop="startEdit(link)"
             >
@@ -85,7 +85,7 @@
               </svg>
             </button>
             <button
-              class="text-app-secondary hover:text-app bg-app-overlay bg-app-overlay-hover flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none hover:scale-110 hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20"
+              class="text-app-secondary hover:text-app bg-app-overlay bg-app-overlay-hover flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none hover:scale-[1.06] hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20"
               type="button"
               @click.stop="handleRemove(link)"
             >

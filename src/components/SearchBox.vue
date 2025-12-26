@@ -6,7 +6,7 @@
     :aria-label="t('search.siteSearch')"
   >
     <form
-      class="border-app bg-app-overlay relative flex items-center rounded-3xl border px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl transition-all duration-300 focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] dark:focus-within:shadow-[0_12px_48px_rgba(0,0,0,0.4)]"
+      class="border-app bg-app-overlay relative flex items-center rounded-3xl border px-5 py-4 shadow-(--app-shadow-md) ring-2 ring-transparent backdrop-blur-xl transition-all duration-300 focus-within:border-(--app-border-color-hover) focus-within:shadow-(--app-shadow-lg) focus-within:ring-(--app-focus-ring)"
       role="search"
       @submit.prevent="handleSubmit"
     >
@@ -40,7 +40,7 @@
         <div
           v-if="isEngineMenuOpen"
           data-engine-menu
-          class="border-app menu-app absolute top-8 left-0 z-500 min-w-[180px] rounded-lg border shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
+          class="border-app menu-app absolute top-8 left-0 z-500 min-w-[180px] rounded-lg border shadow-(--app-shadow-md) backdrop-blur-xl"
           role="listbox"
           :aria-label="t('search.selectEngine')"
         >
@@ -77,7 +77,7 @@
           v-if="isSuggestionListVisible && suggestions.length > 0"
           id="search-suggestions"
           data-suggestions-menu
-          class="border-app menu-app absolute top-full left-0 z-500 mt-2 w-full rounded-lg border shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
+          class="border-app menu-app absolute top-full left-0 z-500 mt-2 w-full rounded-lg border shadow-(--app-shadow-md) backdrop-blur-xl"
           role="listbox"
         >
           <ul>
@@ -108,7 +108,7 @@
       </div>
       <button
         v-if="query"
-        class="text-app-tertiary hover:text-app bg-app-overlay-hover ml-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 transition-all duration-200 hover:scale-110"
+        class="text-app-tertiary hover:text-app bg-app-overlay-hover ml-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 transition-all duration-200 hover:scale-[1.06]"
         type="button"
         :aria-label="t('search.clearSearch')"
         @click="query = ''"
