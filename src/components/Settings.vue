@@ -28,6 +28,33 @@
         :aria-label="tFn('settings.title')"
       >
         <div>
+          <div class="mb-4 text-base font-semibold">{{ tFn('settings.language') }}</div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              v-for="langOption in LANGUAGE_OPTIONS"
+              :key="langOption.value"
+              class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-2 text-sm transition focus:outline-none disabled:opacity-60"
+              :class="{
+                'ring-2 ring-offset-2': currentLanguage === langOption.value,
+              }"
+              :style="
+                currentLanguage === langOption.value
+                  ? {
+                      '--tw-ring-color': 'var(--app-border-color-hover)',
+                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                    }
+                  : {}
+              "
+              type="button"
+              :disabled="applying"
+              @click="useLanguage(langOption.value)"
+            >
+              <span>{{ langOption.label }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4">
           <div class="mb-4 text-base font-semibold">{{ tFn('settings.theme') }}</div>
           <div class="flex flex-wrap items-center gap-2">
             <button
@@ -312,33 +339,6 @@
             </label>
           </div>
         </div>
-
-        <div class="mt-4">
-          <div class="mb-4 text-base font-semibold">{{ tFn('settings.language') }}</div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button
-              v-for="langOption in LANGUAGE_OPTIONS"
-              :key="langOption.value"
-              class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-2 text-sm transition focus:outline-none disabled:opacity-60"
-              :class="{
-                'ring-2 ring-offset-2': currentLanguage === langOption.value,
-              }"
-              :style="
-                currentLanguage === langOption.value
-                  ? {
-                      '--tw-ring-color': 'var(--app-border-color-hover)',
-                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
-                    }
-                  : {}
-              "
-              type="button"
-              :disabled="applying"
-              @click="useLanguage(langOption.value)"
-            >
-              <span>{{ langOption.label }}</span>
-            </button>
-          </div>
-        </div>
       </section>
     </Transition>
   </aside>
@@ -577,7 +577,7 @@ const currentLanguage = computed<SupportedLocale>(() => {
 
 const useLanguage = async (lang: SupportedLocale) => {
   await setLocale(lang)
-  // persistAndApply会保存设置，包括language字段
+  // persistAndApply 会保存设置，包括 language 字段
   await persistAndApply({ language: lang })
 }
 </script>
