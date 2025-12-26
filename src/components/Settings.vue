@@ -216,7 +216,7 @@
               class="border-app h-10 w-10 cursor-pointer rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
               :class="{ 'ring-2': isPrimaryActive(color) }"
               :style="{
-                background: color,
+                ...getPrimaryPresetStyle(color),
                 ...(isPrimaryActive(color)
                   ? {
                       '--tw-ring-color': 'var(--app-border-color-hover)',
@@ -436,6 +436,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const PRIMARY_PRESETS = [
   THEME_LIGHT_BG,
   THEME_DARK_BG,
+  'transparent',
   '#6200ea', // Deep Purple 500
   '#2962ff', // Blue A700
   '#00c853', // Green A700
@@ -445,6 +446,23 @@ const PRIMARY_PRESETS = [
   '#8bc34a', // Light Green 500
   '#ffc107', // Amber 500
 ]
+
+const getPrimaryPresetStyle = (color: string) => {
+  // 透明色需要可视化：用棋盘格提示“透明”
+  if (color === 'transparent') {
+    return {
+      backgroundColor: 'transparent',
+      backgroundImage:
+        'linear-gradient(45deg, rgba(255,255,255,0.16) 25%, transparent 25%),' +
+        'linear-gradient(-45deg, rgba(255,255,255,0.16) 25%, transparent 25%),' +
+        'linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.16) 75%),' +
+        'linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.16) 75%)',
+      backgroundSize: '12px 12px',
+      backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0px',
+    } as const
+  }
+  return { background: color } as const
+}
 
 const THEME_OPTIONS = computed(() => [
   { value: 'light' as const, label: t('settings.themeLight') },

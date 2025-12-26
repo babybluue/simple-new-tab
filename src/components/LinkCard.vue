@@ -1,9 +1,10 @@
 <template>
-  <!-- icon-only: 纯图标（无卡片背景/边框、无白底容器） -->
+  <!-- icon-only: 纯图标（卡片背景跟随主色；保留轻量 hover overlay 和边框层） -->
   <div v-if="iconOnly" class="group inline-flex w-[96px] flex-col items-center md:w-[88px]">
     <button
       type="button"
-      class="relative inline-flex h-[96px] w-[96px] cursor-pointer items-center justify-center rounded-[28px] border-0 bg-transparent p-0 transition-transform duration-200 outline-none hover:scale-[1.04] focus-visible:ring-(--app-focus-ring) md:h-[88px] md:w-[88px]"
+      class="relative inline-flex h-[96px] w-[96px] cursor-pointer items-center justify-center rounded-[28px] border-0 p-0 transition-transform duration-200 outline-none hover:scale-[1.04] focus-visible:ring-(--app-focus-ring) md:h-[88px] md:w-[88px]"
+      :style="iconOnlyButtonStyle"
       :aria-label="title"
       @click="$emit('select')"
     >
@@ -63,7 +64,8 @@
     @click="$emit('select')"
   >
     <figure
-      class="bg-app-overlay flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-(--app-shadow-xs) md:h-11 md:w-11"
+      class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-(--app-shadow-xs) md:h-11 md:w-11"
+      :style="figureStyle"
       :aria-label="`${title} ${t('common.icon')}`"
     >
       <img
@@ -123,6 +125,18 @@ defineEmits<{
 }>()
 
 const resolvedStyle = computed(() => (props.iconOnly ? {} : props.cardStyle || {}))
+
+const figureStyle = computed<Record<string, string>>(() => {
+  // 默认卡片的图标容器底色：跟随主色（避免受 bg-app-overlay 影响）
+  const background = props.cardStyle?.background || 'var(--primary-color, #667eea)'
+  return { background }
+})
+
+const iconOnlyButtonStyle = computed<Record<string, string>>(() => {
+  // icon-only 模式：背景跟随用户主色（来自 buildPrimarySurfaceStyle / primaryColor）
+  const background = props.cardStyle?.background || 'var(--primary-surface, var(--primary-color, #667eea))'
+  return { background }
+})
 
 const iconOnlyBorderStyle = computed<Record<string, string>>(() => {
   const borderColor = props.cardStyle?.borderColor || 'var(--app-border-color)'

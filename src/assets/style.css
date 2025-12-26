@@ -50,8 +50,9 @@ body {
   --app-text-muted: rgba(255, 255, 255, 0.6);
 
   /* 背景和边框颜色变量 */
-  --app-bg-overlay: #1f2937;
-  --app-bg-overlay-hover: #374151;
+  /* 让 overlay 表面轻微跟随主色（不直接变成纯主色，避免可读性问题） */
+  --app-bg-overlay: color-mix(in srgb, var(--primary-color, #667eea) 16%, #1f2937);
+  --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color, #667eea) 22%, #374151);
   --app-border-color: rgba(255, 255, 255, 0.15);
   --app-border-color-hover: rgba(255, 255, 255, 0.3);
 
@@ -71,8 +72,8 @@ body {
   --app-text-color-tertiary: rgba(33, 53, 71, 0.65);
   --app-text-muted: rgba(33, 53, 71, 0.6);
 
-  --app-bg-overlay: rgba(255, 255, 255, 0.85);
-  --app-bg-overlay-hover: rgba(255, 255, 255, 0.95);
+  --app-bg-overlay: color-mix(in srgb, var(--primary-color, #667eea) 10%, rgba(255, 255, 255, 0.85));
+  --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color, #667eea) 14%, rgba(255, 255, 255, 0.95));
   --app-border-color: rgba(33, 53, 71, 0.25);
   --app-border-color-hover: rgba(33, 53, 71, 0.35);
 
@@ -89,8 +90,8 @@ body {
   --app-text-color-tertiary: rgba(255, 255, 255, 0.65);
   --app-text-muted: rgba(255, 255, 255, 0.6);
 
-  --app-bg-overlay: #1f2937;
-  --app-bg-overlay-hover: #374151;
+  --app-bg-overlay: color-mix(in srgb, var(--primary-color, #667eea) 16%, #1f2937);
+  --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color, #667eea) 22%, #374151);
   --app-border-color: rgba(255, 255, 255, 0.15);
   --app-border-color-hover: rgba(255, 255, 255, 0.3);
 
