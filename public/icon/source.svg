@@ -1,0 +1,25 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Store icon guidelines:
+    - Flat, no gradients
+    - High contrast, readable at 16–48px
+    - Simple + elegant
+  -->
+
+  <!-- Background (solid color) -->
+  <rect x="96" y="96" width="832" height="832" rx="196" fill="#FFFFFF" />
+
+  <!-- Foreground: Tab/Window + plus (new tab) -->
+  <rect x="232" y="276" width="560" height="520" rx="120" stroke="#111111" stroke-width="56" />
+  <path d="M304 404H720" stroke="#111111" stroke-width="56" stroke-linecap="round" />
+
+  <!-- top-left dots -->
+  <circle cx="328" cy="340" r="18" fill="#111111" />
+  <circle cx="382" cy="340" r="18" fill="#111111" opacity="0.85" />
+  <circle cx="436" cy="340" r="18" fill="#111111" opacity="0.7" />
+
+  <!-- plus -->
+  <path d="M512 520V700" stroke="#111111" stroke-width="72" stroke-linecap="round" />
+  <path d="M422 610H602" stroke="#111111" stroke-width="72" stroke-linecap="round" />
+</svg>
+
