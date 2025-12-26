@@ -23,7 +23,7 @@
       <section
         v-if="open"
         id="settings-panel"
-        class="border-app bg-app-overlay text-app-secondary ring-app-border max-h-[calc(100vh-8rem)] w-[320px] overflow-y-auto rounded-2xl border p-4 shadow-(--app-shadow-lg) ring-1 backdrop-blur-2xl"
+        class="border-app bg-app-overlay text-app-secondary ring-app-border max-h-[calc(100vh-8rem)] w-[330px] overflow-y-auto rounded-2xl border p-4 shadow-(--app-shadow-lg) ring-1 backdrop-blur-2xl"
         style="--tw-ring-color: var(--app-border-color)"
         :aria-label="tFn('settings.title')"
       >
@@ -138,51 +138,10 @@
                 </svg>
               </div>
             </button>
-
-            <button
-              class="border-app bg-app-overlay relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
-              :class="{ 'ring-2': settings.backgroundType === 'upload' }"
-              :style="
-                settings.backgroundType === 'upload'
-                  ? {
-                      '--tw-ring-color': 'var(--app-border-color-hover)',
-                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
-                    }
-                  : {}
-              "
-              type="button"
-            >
-              <input
-                ref="fileInput"
-                type="file"
-                accept="image/*"
-                class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                :title="tFn('settings.uploadImage')"
-                @click.stop
-                @change="handleUpload"
-              />
-              <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <svg
-                  class="text-app-secondary h-5 w-5 drop-shadow"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M12 16v-6" />
-                  <path d="M9 13l3-3 3 3" />
-                  <path d="M4 17v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" />
-                  <path d="M16 7h2a2 2 0 0 1 2 2v3" />
-                  <path d="M4 12V9a2 2 0 0 1 2-2h2" />
-                </svg>
-              </div>
-            </button>
           </div>
 
           <div
-            class="bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl p-3 text-xs backdrop-blur-sm"
+            class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
           >
             <span>{{ tFn('settings.refreshBingWallpaper') }}</span>
             <button
@@ -206,6 +165,44 @@
                 />
               </svg>
               {{ tFn('common.refresh') }}
+            </button>
+          </div>
+
+          <div
+            class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+          >
+            <span>{{ tFn('settings.uploadImage') }}</span>
+            <button
+              class="border-app text-app bg-app-overlay bg-app-overlay-hover relative flex cursor-pointer items-center gap-1 overflow-hidden rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+              type="button"
+              :disabled="applying"
+              :title="tFn('settings.uploadImage')"
+            >
+              <input
+                ref="fileInput"
+                type="file"
+                accept="image/*"
+                class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                @click.stop
+                @change="handleUpload"
+              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-6" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13l3-3 3 3" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 17v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"
+                />
+              </svg>
+              {{ tFn('common.upload') }}
             </button>
           </div>
         </div>
@@ -233,9 +230,9 @@
             />
             <button
               class="border-app bg-app-overlay relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
-              :class="{ 'ring-2': isPrimaryActive(primaryCustomColor) }"
+              :class="{ 'ring-2': isPrimaryCustomActive() }"
               :style="
-                isPrimaryActive(primaryCustomColor)
+                isPrimaryCustomActive()
                   ? {
                       '--tw-ring-color': 'var(--app-border-color-hover)',
                       '--tw-ring-offset-color': 'var(--app-bg-overlay)',
@@ -275,18 +272,15 @@
           <div class="mb-4 text-base font-semibold">{{ tFn('settings.controls') }}</div>
           <div class="space-y-3">
             <label
-              class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
+              class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
             >
               <span>{{ tFn('settings.dateTime') }}</span>
               <button
                 type="button"
-                class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
-                :class="settings.showDateTime ? 'bg-app-overlay-hover' : 'bg-app-overlay'"
-                :style="
-                  settings.showDateTime
-                    ? { backgroundColor: 'var(--app-bg-overlay-hover)' }
-                    : { backgroundColor: 'var(--app-bg-overlay)' }
-                "
+                role="switch"
+                :aria-checked="settings.showDateTime"
+                class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                :style="getSwitchTrackStyle(settings.showDateTime)"
                 :disabled="applying"
                 @click="toggleVisibility('showDateTime')"
               >
@@ -298,15 +292,15 @@
               </button>
             </label>
             <label
-              class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
+              class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
             >
               <span>{{ tFn('settings.quickAccess') }}</span>
               <button
                 type="button"
-                class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
-                :style="{
-                  backgroundColor: settings.showQuickAccess ? 'var(--app-bg-overlay-hover)' : 'var(--app-bg-overlay)',
-                }"
+                role="switch"
+                :aria-checked="settings.showQuickAccess"
+                class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                :style="getSwitchTrackStyle(settings.showQuickAccess)"
                 :disabled="applying"
                 @click="toggleVisibility('showQuickAccess')"
               >
@@ -318,15 +312,15 @@
               </button>
             </label>
             <label
-              class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
+              class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
             >
               <span>{{ tFn('settings.recentVisits') }}</span>
               <button
                 type="button"
-                class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
-                :style="{
-                  backgroundColor: settings.showHistory ? 'var(--app-bg-overlay-hover)' : 'var(--app-bg-overlay)',
-                }"
+                role="switch"
+                :aria-checked="settings.showHistory"
+                class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                :style="getSwitchTrackStyle(settings.showHistory)"
                 :disabled="applying"
                 @click="toggleVisibility('showHistory')"
               >
@@ -381,7 +375,6 @@ const PRESET_BACKGROUNDS = [
   'linear-gradient(135deg, #0ea5e9 0%, #2563eb 45%, #0f172a 100%)',
   'linear-gradient(135deg, #34d399 0%, #10b981 45%, #047857 100%)',
   'linear-gradient(135deg, #fbbf24 0%, #f97316 45%, #ef4444 100%)',
-  '#0b1224',
   'linear-gradient(135deg, #06b6d4 0%, #22d3ee 45%, #0ea5e9 100%)',
   'linear-gradient(135deg, #ef4444 0%, #dc2626 45%, #991b1b 100%)',
   'linear-gradient(135deg, #f472b6 0%, #ec4899 45%, #be185d 100%)',
@@ -526,6 +519,8 @@ const isCustomActive = () =>
 const isPrimaryActive = (value: string) =>
   settings.value.primaryColorType === 'preset' && settings.value.primaryColor === value
 
+const isPrimaryCustomActive = () => settings.value.primaryColorType === 'custom'
+
 const handleUpload = (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
@@ -545,6 +540,18 @@ const handleUpload = (event: Event) => {
 
 const toggleVisibility = async (key: 'showDateTime' | 'showQuickAccess' | 'showHistory') => {
   await persistAndApply({ [key]: !settings.value[key] })
+}
+
+const getSwitchTrackStyle = (on: boolean) => {
+  // ON：明显的主色系高亮；OFF：保持中性
+  // 这里用 color-mix 让主色跟 overlay 融合，避免纯色过刺眼
+  const primary = 'var(--primary-color, #667eea)'
+  const base = 'var(--app-bg-overlay)'
+  const baseHover = 'var(--app-bg-overlay-hover)'
+  return {
+    backgroundColor: on ? `color-mix(in srgb, ${primary} 58%, ${baseHover})` : base,
+    borderColor: on ? `color-mix(in srgb, ${primary} 42%, var(--app-border-color-hover))` : 'var(--app-border-color)',
+  } as const
 }
 
 const useTheme = async (theme: Settings['theme']) => {

@@ -31,10 +31,10 @@
     >
       <li v-for="item in history" :key="item.domain || item.url">
         <LinkCard
-          :title="item.title"
+          :title="(item.title || item.domain || item.url).trim()"
           :subtitle="item.domain || item.url"
           :favicon="getFavicon(item as FaviconItem)"
-          :fallback-char="item.title.charAt(0).toUpperCase()"
+          :fallback-char="((item.title || item.domain || item.url || '?').trim().charAt(0) || '?').toUpperCase()"
           :card-style="cardStyle"
           @select="handleSelect(item)"
           @icon-error="handleFaviconErrorWrapper(item, $event)"
@@ -148,8 +148,16 @@ const loadHistory = async () => {
   const allHistory = await getHistory()
   const frequentSites = allHistory.filter(item => (item.visitCount ?? 1) >= MIN_VISIT_THRESHOLD)
   const filtered = frequentSites.length > 0 ? frequentSites : allHistory
+  const safe = filtered
+    .filter(item => typeof item?.url === 'string' && item.url.trim())
+    .map(item => {
+      const url = item.url.trim()
+      const domain = item.domain || extractDomainFromUrl(url)
+      const title = (item.title || '').trim() || domain || url
+      return { ...item, url, domain, title }
+    })
   // 对相同域名的记录进行去重
-  history.value = deduplicateByDomain(filtered)
+  history.value = deduplicateByDomain(safe)
 }
 
 const handleSelect = async (item: HistoryItem) => {
