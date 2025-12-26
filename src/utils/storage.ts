@@ -101,7 +101,15 @@ export async function getSettings(): Promise<Settings> {
   const stored = result.settings as Partial<Settings> | undefined
 
   // 获取当前系统主题偏好
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  // 注意：MV3 background/service worker 环境没有 `window`，因此这里必须兼容非 DOM 环境。
+  const prefersDark = (() => {
+    try {
+      const mm = (globalThis as unknown as { matchMedia?: (query: string) => MediaQueryList })?.matchMedia
+      return typeof mm === 'function' ? mm('(prefers-color-scheme: dark)').matches : false
+    } catch {
+      return false
+    }
+  })()
   const systemThemeBg = prefersDark ? THEME_DARK_BG : THEME_LIGHT_BG
 
   // 如果是首次加载（没有存储的设置），根据系统偏好设置默认背景和主色

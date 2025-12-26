@@ -29,7 +29,7 @@
       class="grid"
       :class="
         settings?.iconOnlyLinkCards
-          ? 'grid-cols-[repeat(auto-fit,minmax(96px,1fr))] justify-items-center gap-5 md:grid-cols-[repeat(auto-fit,minmax(88px,1fr))] md:gap-4'
+          ? 'grid-cols-[repeat(auto-fill,minmax(96px,1fr))] justify-items-center gap-x-4 gap-y-0 md:grid-cols-[repeat(auto-fill,minmax(88px,1fr))] md:gap-x-3 md:gap-y-0'
           : 'grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-4 md:grid-cols-[repeat(auto-fit,minmax(min(280px,100%),1fr))] md:gap-3'
       "
       role="list"

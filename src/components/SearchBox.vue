@@ -1,12 +1,12 @@
 <template>
   <section
     ref="searchBoxRef"
-    class="relative z-10 mx-auto w-full max-w-[640px]"
+    class="relative z-10 mx-auto w-full max-w-[clamp(320px,72vw,900px)]"
     role="search"
     :aria-label="t('search.siteSearch')"
   >
     <form
-      class="border-app bg-app-overlay relative flex items-center rounded-3xl border px-5 py-4 shadow-(--app-shadow-md) ring-2 ring-transparent backdrop-blur-xl transition-all duration-300 focus-within:border-(--app-border-color-hover) focus-within:shadow-(--app-shadow-lg) focus-within:ring-(--app-focus-ring)"
+      class="border-app bg-app-overlay relative flex items-center rounded-3xl border px-4 py-3 shadow-(--app-shadow-md) ring-2 ring-transparent backdrop-blur-xl transition-all duration-300 focus-within:border-(--app-border-color-hover) focus-within:shadow-(--app-shadow-lg) focus-within:ring-(--app-focus-ring) sm:px-5 sm:py-4"
       role="search"
       @submit.prevent="handleSubmit"
     >

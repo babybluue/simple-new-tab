@@ -1,7 +1,9 @@
 import { addHistory, type HistoryItem } from '@/utils/storage'
 
 export default defineBackground(() => {
-  console.log('Background script loaded', { id: browser.runtime.id })
+  // 兼容 Chromium：某些环境下没有 `browser`（webextension-polyfill）
+  const runtimeId = chrome?.runtime?.id
+  console.log('Background script loaded', { id: runtimeId })
 
   // 监听标签页更新，记录访问历史
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
