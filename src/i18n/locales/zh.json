@@ -30,7 +30,8 @@
     "dateTime": "时间",
     "quickAccess": "快速访问",
     "recentVisits": "最近访问",
-    "iconOnlyLinkCards": "站点卡片仅显示图标",
+    "openLinksInNewTab": "在新标签页打开",
+    "iconOnlyLinkCards": "显示图标",
     "language": "语言",
     "languageZh": "中文",
     "languageEn": "English"
@@ -45,7 +46,7 @@
   "quickAccess": {
     "title": "快速访问",
     "addPreset": "添加预设",
-    "addCustom": "添加自定义",
+    "addCustom": "添加表单",
     "collapseForm": "收起表单",
     "emptyMessage": "暂无快速访问站点，点击上方按钮添加一个吧～",
     "websiteName": "网站名称（可选）",
@@ -69,8 +70,7 @@
   "dateTime": {
     "format": {
       "time": "HH:mm:ss",
-      "date": "yyyy年M月d日 EEEE"
+      "date": "yyyy 年 M 月 d 日 EEEE"
     }
   }
 }
-

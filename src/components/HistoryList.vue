@@ -70,7 +70,7 @@
               class="text-app-secondary hover:text-app flex cursor-pointer items-center justify-center border-none transition"
               :class="
                 settings?.iconOnlyLinkCards
-                  ? 'bg-transparent h-6 w-6 rounded-md opacity-70 hover:bg-red-500/15 hover:opacity-100 dark:hover:bg-red-500/12'
+                  ? 'bg-transparent h-6 w-6 rounded-md opacity-70 hover:bg-app-overlay hover:text-red-500 hover:opacity-100'
                   : 'bg-app-overlay bg-app-overlay-hover h-7 w-7 rounded-lg hover:scale-[1.06] hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20'
               "
               type="button"
@@ -178,7 +178,7 @@ const loadHistory = async () => {
 
 const handleSelect = async (item: HistoryItem) => {
   if (!settings.value) return
-  performSearch(item.url, settings.value.searchEngine)
+  performSearch(item.url, settings.value.searchEngine, settings.value.openLinksInNewTab)
 
   const { addHistory } = await import('@/utils/storage')
   await addHistory({ ...item, timestamp: Date.now() })

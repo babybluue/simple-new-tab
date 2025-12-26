@@ -30,7 +30,8 @@
     "dateTime": "Date & Time",
     "quickAccess": "Quick Access",
     "recentVisits": "Recent Visits",
-    "iconOnlyLinkCards": "Site cards: icons only",
+    "openLinksInNewTab": "Open links in new tab",
+    "iconOnlyLinkCards": "Icons Only",
     "language": "Language",
     "languageZh": "中文",
     "languageEn": "English"
@@ -73,4 +74,3 @@
     }
   }
 }
-

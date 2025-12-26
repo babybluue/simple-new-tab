@@ -53,8 +53,8 @@
       class="grid"
       :class="
         settings?.iconOnlyLinkCards
-          ? 'justify-start gap-4 grid-cols-[repeat(auto-fill,96px)] md:gap-3 md:grid-cols-[repeat(auto-fill,88px)]'
-          : 'gap-3 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(220px,1fr))]'
+          ? 'grid-cols-[repeat(auto-fill,96px)] justify-start gap-4 md:grid-cols-[repeat(auto-fill,88px)] md:gap-3'
+          : 'grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(220px,1fr))]'
       "
       role="list"
     >
@@ -74,7 +74,7 @@
               class="text-app-secondary hover:text-app flex cursor-pointer items-center justify-center border-none transition"
               :class="
                 settings?.iconOnlyLinkCards
-                  ? 'bg-transparent h-6 w-6 rounded-md opacity-70 hover:bg-app-overlay hover:opacity-100'
+                  ? 'hover:bg-app-overlay h-6 w-6 rounded-md bg-transparent opacity-70 hover:opacity-100'
                   : 'bg-app-overlay bg-app-overlay-hover h-7 w-7 rounded-lg hover:scale-[1.06] md:h-6 md:w-6'
               "
               type="button"
@@ -99,7 +99,7 @@
               class="text-app-secondary hover:text-app flex cursor-pointer items-center justify-center border-none transition"
               :class="
                 settings?.iconOnlyLinkCards
-                  ? 'bg-transparent h-6 w-6 rounded-md opacity-70 hover:bg-red-500/15 hover:opacity-100 dark:hover:bg-red-500/12'
+                  ? 'hover:bg-app-overlay h-6 w-6 rounded-md bg-transparent opacity-70 hover:text-red-500 hover:opacity-100'
                   : 'bg-app-overlay bg-app-overlay-hover h-7 w-7 rounded-lg hover:scale-[1.06] hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20'
               "
               type="button"
@@ -232,7 +232,7 @@ const loadQuickLinks = async () => {
 
 const handleQuickLinkSelect = async (link: QuickLink) => {
   const engine = settings.value?.searchEngine ?? 'google'
-  performSearch(link.url, engine)
+  performSearch(link.url, engine, settings.value?.openLinksInNewTab ?? false)
   await addQuickLink(link) // 让最近使用的站点排前
   await loadQuickLinks()
 }

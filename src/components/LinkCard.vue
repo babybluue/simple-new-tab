@@ -1,37 +1,42 @@
 <template>
   <!-- icon-only: 纯图标（无卡片背景/边框、无白底容器） -->
-  <button
-    v-if="iconOnly"
-    type="button"
-    class="group relative inline-flex h-[96px] w-[96px] cursor-pointer items-center justify-center rounded-[28px] border-0 bg-transparent p-0 transition-transform duration-200 outline-none hover:scale-[1.04] focus-visible:ring-(--app-focus-ring) md:h-[88px] md:w-[88px]"
-    :aria-label="title"
-    @click="$emit('select')"
-  >
-    <!-- subtle hover surface (not a white block) -->
-    <span
-      aria-hidden="true"
-      class="bg-app-overlay border-app absolute inset-0 rounded-[28px] border opacity-[0.12] backdrop-blur-sm transition-all duration-200 group-hover:opacity-[0.26] group-hover:shadow-(--app-shadow-xs)"
-    />
-    <img
-      v-if="favicon"
-      :src="favicon"
-      :alt="`${title} ${t('common.icon')}`"
-      class="border-app relative h-[64px] w-[64px] rounded-2xl border object-contain shadow-(--app-shadow-xs) transition-transform duration-200 group-hover:scale-[1.02] md:h-[56px] md:w-[56px]"
-      @error="$emit('icon-error', $event)"
-    />
-    <div
-      v-else
-      class="border-app text-app-secondary relative flex h-[64px] w-[64px] items-center justify-center rounded-2xl border text-2xl font-bold shadow-(--app-shadow-xs) md:h-[56px] md:w-[56px]"
+  <div v-if="iconOnly" class="group inline-flex w-[96px] flex-col items-center md:w-[88px]">
+    <button
+      type="button"
+      class="relative inline-flex h-[96px] w-[96px] cursor-pointer items-center justify-center rounded-[28px] border-0 bg-transparent p-0 transition-transform duration-200 outline-none hover:scale-[1.04] focus-visible:ring-(--app-focus-ring) md:h-[88px] md:w-[88px]"
+      :aria-label="title"
+      @click="$emit('select')"
     >
-      {{ fallbackChar }}
+      <!-- subtle hover surface (not a white block) -->
+      <span
+        aria-hidden="true"
+        class="bg-app-overlay border-app absolute inset-0 rounded-[28px] border opacity-[0.12] backdrop-blur-sm transition-all duration-200 group-hover:opacity-[0.26] group-hover:shadow-(--app-shadow-xs)"
+      />
+      <img
+        v-if="favicon"
+        :src="favicon"
+        :alt="`${title} ${t('common.icon')}`"
+        class="border-app relative h-[64px] w-[64px] rounded-2xl border object-contain shadow-(--app-shadow-xs) transition-transform duration-200 group-hover:scale-[1.02] md:h-[56px] md:w-[56px]"
+        @error="$emit('icon-error', $event)"
+      />
+      <div
+        v-else
+        class="border-app text-app-secondary relative flex h-[64px] w-[64px] items-center justify-center rounded-2xl border text-2xl font-bold shadow-(--app-shadow-xs) md:h-[56px] md:w-[56px]"
+      >
+        {{ fallbackChar }}
+      </div>
+    </button>
+
+    <!-- reserve space to avoid covering icon / overlapping neighbors -->
+    <div class="mt-2 flex h-6 items-center justify-center">
+      <div
+        v-if="$slots.actions"
+        class="pointer-events-none flex gap-1 opacity-0 transition-opacity duration-150 group-hover:pointer-events-auto group-hover:opacity-100"
+      >
+        <slot name="actions" />
+      </div>
     </div>
-    <div
-      v-if="$slots.actions"
-      class="absolute top-1.5 right-1.5 flex gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
-    >
-      <slot name="actions" />
-    </div>
-  </button>
+  </div>
 
   <!-- default card -->
   <article

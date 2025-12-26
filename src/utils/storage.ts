@@ -28,6 +28,8 @@ export interface Settings {
   showDateTime: boolean
   showQuickAccess: boolean
   showHistory: boolean
+  /** 点击 LinkCard 时在新标签页打开链接 */
+  openLinksInNewTab: boolean
   /** LinkCard 仅显示图标（隐藏标题/副标题） */
   iconOnlyLinkCards: boolean
   language?: 'zh' | 'en'
@@ -45,6 +47,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showDateTime: true,
   showQuickAccess: true,
   showHistory: true,
+  openLinksInNewTab: false,
   iconOnlyLinkCards: false,
   language: undefined, // 默认根据浏览器语言自动选择
 }

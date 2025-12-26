@@ -48,22 +48,30 @@ export function normalizeURL(str: string): string {
 }
 
 // 执行搜索或导航
-export function performSearch(query: string, searchEngine: string = 'google'): void {
+export function performSearch(query: string, searchEngine: string = 'google', openInNewTab: boolean = false): void {
   if (!query.trim()) return
 
   const trimmedQuery = query.trim()
 
+  const open = (url: string) => {
+    if (openInNewTab) {
+      chrome.tabs.create({ url })
+    } else {
+      chrome.tabs.update({ url })
+    }
+  }
+
   // 如果是 URL，直接导航
   if (isURL(trimmedQuery)) {
     const url = normalizeURL(trimmedQuery)
-    chrome.tabs.update({ url })
+    open(url)
     return
   }
 
   // 否则使用搜索引擎搜索
   const engine = SEARCH_ENGINES[searchEngine] || SEARCH_ENGINES.google
   const searchUrl = `${engine.url}${encodeURIComponent(trimmedQuery)}`
-  chrome.tabs.update({ url: searchUrl })
+  open(searchUrl)
 }
 
 // 获取搜索建议

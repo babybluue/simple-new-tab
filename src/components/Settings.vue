@@ -334,6 +334,26 @@
             <label
               class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
             >
+              <span>{{ tFn('settings.openLinksInNewTab') }}</span>
+              <button
+                type="button"
+                role="switch"
+                :aria-checked="settings.openLinksInNewTab"
+                class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                :style="getSwitchTrackStyle(settings.openLinksInNewTab)"
+                :disabled="applying"
+                @click="toggleVisibility('openLinksInNewTab')"
+              >
+                <span
+                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                  style="background-color: var(--app-text-color)"
+                  :class="settings.openLinksInNewTab ? 'translate-x-5' : 'translate-x-0'"
+                />
+              </button>
+            </label>
+            <label
+              class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
+            >
               <span>{{ tFn('settings.iconOnlyLinkCards') }}</span>
               <button
                 type="button"
@@ -558,7 +578,9 @@ const handleUpload = (event: Event) => {
   target.value = ''
 }
 
-const toggleVisibility = async (key: 'showDateTime' | 'showQuickAccess' | 'showHistory' | 'iconOnlyLinkCards') => {
+const toggleVisibility = async (
+  key: 'showDateTime' | 'showQuickAccess' | 'showHistory' | 'openLinksInNewTab' | 'iconOnlyLinkCards'
+) => {
   await persistAndApply({ [key]: !settings.value[key] })
 }
 
