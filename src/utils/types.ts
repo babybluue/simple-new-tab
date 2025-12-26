@@ -5,4 +5,3 @@ export interface QuickLink {
   domain?: string
   category?: string
 }
-

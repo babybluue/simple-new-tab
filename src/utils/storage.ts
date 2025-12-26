@@ -28,6 +28,7 @@ export interface Settings {
   showDateTime: boolean
   showQuickAccess: boolean
   showHistory: boolean
+  language?: 'zh' | 'en'
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -42,8 +43,8 @@ export const DEFAULT_SETTINGS: Settings = {
   showDateTime: true,
   showQuickAccess: true,
   showHistory: true,
+  language: undefined, // 默认根据浏览器语言自动选择
 }
-
 
 export const DEFAULT_QUICK_LINKS: QuickLink[] = [
   { title: 'Google', url: 'https://www.google.com' },

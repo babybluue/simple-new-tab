@@ -1,8 +1,8 @@
 <template>
-  <aside class="fixed top-6 right-6 z-50 flex flex-col items-end gap-3 md:right-5" aria-label="外观设置">
+  <aside class="fixed top-6 right-6 z-50 flex flex-col items-end gap-3 md:right-5" :aria-label="$t('settings.title')">
     <button
       class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl border shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:rotate-90 hover:shadow-xl"
-      title="设置"
+      :title="$t('common.settings')"
       type="button"
       :aria-expanded="open"
       aria-controls="settings-panel"
@@ -25,10 +25,10 @@
         id="settings-panel"
         class="border-app bg-app-overlay text-app-secondary ring-app-border max-h-[calc(100vh-8rem)] w-[320px] overflow-y-auto rounded-2xl border p-4 shadow-2xl ring-1 backdrop-blur-2xl"
         style="--tw-ring-color: var(--app-border-color)"
-        aria-label="背景与配色设置"
+        :aria-label="$t('settings.title')"
       >
         <div>
-          <div class="mb-4 text-base font-semibold">主题</div>
+          <div class="mb-4 text-base font-semibold">{{ $t('settings.theme') }}</div>
           <div class="flex flex-wrap items-center gap-2">
             <button
               v-for="themeOption in THEME_OPTIONS"
@@ -54,7 +54,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <div class="text-base font-semibold">背景</div>
+          <div class="text-base font-semibold">{{ $t('settings.background') }}</div>
 
           <div class="mt-4 flex flex-wrap items-center gap-2">
             <button
@@ -92,7 +92,7 @@
                 v-model="customColor"
                 type="color"
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                title="自定义色"
+                :title="$t('settings.customColor')"
                 @input="handleCustomColorInput"
               />
               <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -130,7 +130,7 @@
                 type="file"
                 accept="image/*"
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                title="上传图片"
+                :title="$t('settings.uploadImage')"
                 @click.stop
                 @change="handleUpload"
               />
@@ -157,7 +157,7 @@
           <div
             class="bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl p-3 text-xs backdrop-blur-sm"
           >
-            <span>刷新 Bing 壁纸</span>
+            <span>{{ $t('settings.refreshBingWallpaper') }}</span>
             <button
               class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
               type="button"
@@ -178,13 +178,13 @@
                   d="M4 4v6h6M20 20v-6h-6M5 19A9 9 0 0118 6l1-1M19 5l-1 1"
                 />
               </svg>
-              刷新
+              {{ $t('common.refresh') }}
             </button>
           </div>
         </div>
 
         <div class="mt-4">
-          <div class="mb-4 text-base font-semibold">主色</div>
+          <div class="mb-4 text-base font-semibold">{{ $t('settings.primaryColor') }}</div>
           <div class="flex flex-wrap items-center gap-2">
             <button
               v-for="color in PRIMARY_PRESETS"
@@ -222,7 +222,7 @@
                 v-model="primaryCustomColor"
                 type="color"
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                title="主色自定义"
+                :title="$t('settings.primaryColorCustom')"
                 @input="usePrimaryCustom"
               />
               <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -245,12 +245,12 @@
         </div>
 
         <div class="mt-4">
-          <div class="mb-4 text-base font-semibold">控制</div>
+          <div class="mb-4 text-base font-semibold">{{ $t('settings.controls') }}</div>
           <div class="space-y-3">
             <label
               class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
             >
-              <span>时间</span>
+              <span>{{ $t('settings.dateTime') }}</span>
               <button
                 type="button"
                 class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
@@ -273,7 +273,7 @@
             <label
               class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
             >
-              <span>快速访问</span>
+              <span>{{ $t('settings.quickAccess') }}</span>
               <button
                 type="button"
                 class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
@@ -293,7 +293,7 @@
             <label
               class="bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl p-3 text-sm backdrop-blur-sm transition"
             >
-              <span>最近访问</span>
+              <span>{{ $t('settings.recentVisits') }}</span>
               <button
                 type="button"
                 class="relative h-6 w-11 cursor-pointer rounded-full transition-colors focus:outline-none disabled:opacity-60"
@@ -312,14 +312,42 @@
             </label>
           </div>
         </div>
+
+        <div class="mt-4">
+          <div class="mb-4 text-base font-semibold">{{ $t('settings.language') }}</div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              v-for="langOption in LANGUAGE_OPTIONS"
+              :key="langOption.value"
+              class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-2 text-sm transition focus:outline-none disabled:opacity-60"
+              :class="{
+                'ring-2 ring-offset-2': currentLanguage === langOption.value,
+              }"
+              :style="
+                currentLanguage === langOption.value
+                  ? {
+                      '--tw-ring-color': 'var(--app-border-color-hover)',
+                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                    }
+                  : {}
+              "
+              type="button"
+              :disabled="applying"
+              @click="useLanguage(langOption.value)"
+            >
+              <span>{{ langOption.label }}</span>
+            </button>
+          </div>
+        </div>
       </section>
     </Transition>
   </aside>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { computed, getCurrentInstance, onMounted, ref } from 'vue'
 
+import { getLocale, setLocale, t, type SupportedLocale } from '@/i18n'
 import type { Settings } from '@/utils/storage'
 import { DEFAULT_SETTINGS, getSettings, saveSettings } from '@/utils/storage'
 import {
@@ -381,19 +409,32 @@ const PRIMARY_PRESETS = [
   '#ffc107', // Amber 500
 ]
 
-const THEME_OPTIONS = [
-  { value: 'light', label: '浅色' },
-  { value: 'dark', label: '深色' },
-  { value: 'auto', label: '自动' },
-] as const
+const THEME_OPTIONS = computed(() => [
+  { value: 'light' as const, label: t('settings.themeLight') },
+  { value: 'dark' as const, label: t('settings.themeDark') },
+  { value: 'auto' as const, label: t('settings.themeAuto') },
+])
+
+const LANGUAGE_OPTIONS = computed(() => [
+  { value: 'zh' as const, label: t('settings.languageZh') },
+  { value: 'en' as const, label: t('settings.languageEn') },
+])
 
 const ensureSettings = async () => {
   if (props.initialSettings) {
+    // 如果初始设置中有语言，应用它
+    if (props.initialSettings.language) {
+      await setLocale(props.initialSettings.language)
+    }
     emit('settings-updated', settings.value)
     return
   }
   const stored = await getSettings()
   settings.value = stored
+  // 如果存储的设置中有语言，应用它
+  if (stored.language) {
+    await setLocale(stored.language)
+  }
   // 如果是自定义颜色，直接使用存储的值；否则使用 normalizeColorInput 转换
   customColor.value =
     stored.backgroundType === 'custom' ? stored.backgroundColor : normalizeColorInput(stored.backgroundColor)
@@ -524,6 +565,16 @@ const useTheme = async (theme: Settings['theme']) => {
     primaryColorType: 'preset',
     primaryColor: newPrimary,
   })
+}
+
+const currentLanguage = computed<SupportedLocale>(() => {
+  return getLocale()
+})
+
+const useLanguage = async (lang: SupportedLocale) => {
+  await setLocale(lang)
+  // persistAndApply会保存设置，包括language字段
+  await persistAndApply({ language: lang })
 }
 </script>
 

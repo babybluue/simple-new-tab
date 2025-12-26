@@ -9,7 +9,7 @@
         <DateTime />
       </header>
 
-      <section class="mt-6 mb-8 w-full md:mb-6" aria-label="搜索">
+      <section class="mt-6 mb-8 w-full md:mb-6" :aria-label="$t('search.siteSearch')">
         <SearchBox />
       </section>
       <QuickAccessList v-if="displaySettings.showQuickAccess" />

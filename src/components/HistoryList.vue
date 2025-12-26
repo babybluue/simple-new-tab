@@ -1,15 +1,16 @@
 <template>
-  <section v-if="history.length > 0" class="mx-auto mt-12 w-full max-w-7xl px-6 md:px-5" aria-label="最近访问">
+  <section class="mx-auto mt-12 w-full max-w-7xl px-6 md:px-5" :aria-label="$t('history.title')">
     <header class="mb-6 flex items-center justify-between md:mb-5">
-      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">最近访问</h2>
+      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">{{ $t('history.title') }}</h2>
       <button
+        v-if="history.length > 0"
         class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
         type="button"
         :aria-expanded="!isCollapsed"
         :aria-controls="'history-list'"
         @click="toggleCollapse"
       >
-        <span>{{ isCollapsed ? '展开' : '收起' }}</span>
+        <span>{{ isCollapsed ? $t('common.expand') : $t('common.collapse') }}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -23,7 +24,7 @@
       </button>
     </header>
     <ul
-      v-if="!isCollapsed"
+      v-if="!isCollapsed && history.length > 0"
       id="history-list"
       class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] md:gap-3"
       role="list"

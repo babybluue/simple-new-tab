@@ -7,6 +7,15 @@ export default defineConfig({
   modules: ['@wxt-dev/module-vue'],
   vite: () => ({
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        vue: 'vue/dist/vue.runtime.esm-bundler.js',
+      },
+    },
+    define: {
+      __VUE_OPTIONS_API__: false,
+      __VUE_PROD_DEVTOOLS__: false,
+    },
   }),
   manifest: {
     chrome_url_overrides: {

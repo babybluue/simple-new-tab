@@ -2,15 +2,22 @@ import '@/assets/style.css'
 
 import { createApp } from 'vue'
 
-import App from './App.vue'
-import { applyBackground, applyPrimaryColor, applyTheme } from '@/utils/theme'
+import { initLocale } from '@/i18n'
+import i18nPlugin from '@/i18n/plugin'
 import { getSettings } from '@/utils/storage'
+import { applyBackground, applyPrimaryColor, applyTheme } from '@/utils/theme'
 
+import App from './App.vue'
 ;(async () => {
+  // 初始化i18n
+  await initLocale()
+
   const settings = await getSettings()
   applyTheme(settings.theme)
   await applyBackground(settings)
   applyPrimaryColor(settings.primaryColor)
 
-  createApp(App, { initialSettings: settings }).mount('#app')
+  const app = createApp(App, { initialSettings: settings })
+  app.use(i18nPlugin)
+  app.mount('#app')
 })()

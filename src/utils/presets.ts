@@ -1,4 +1,5 @@
 import type { QuickLink } from './types'
+import { extractDomainFromUrl } from './url'
 
 export const PRESET_QUICK_LINKS: QuickLink[] = [
   // 论坛 / 社交网络
@@ -170,3 +171,92 @@ export const PRESET_QUICK_LINKS: QuickLink[] = [
   { title: 'Meta AI', url: 'https://www.meta.ai', category: 'AI' },
 ]
 
+// 网站标题的 i18n 映射（基于 URL）
+// 如果网站标题在两种语言下相同，则不需要添加
+export const PRESET_SITE_TITLES: Record<string, { zh: string; en: string }> = {
+  'wx.qq.com': { zh: '微信网页版', en: 'WeChat Web' },
+  'weibo.com': { zh: '微博', en: 'Weibo' },
+  'www.zhihu.com': { zh: '知乎', en: 'Zhihu' },
+  'www.xiaohongshu.com': { zh: '小红书', en: 'Xiaohongshu' },
+  'www.douban.com': { zh: '豆瓣', en: 'Douban' },
+  'tieba.baidu.com': { zh: '百度贴吧', en: 'Baidu Tieba' },
+  'qzone.qq.com': { zh: 'QQ 空间', en: 'QQ Zone' },
+  'www.bilibili.com': { zh: '哔哩哔哩', en: 'Bilibili' },
+  'v.qq.com': { zh: '腾讯视频', en: 'Tencent Video' },
+  'www.iqiyi.com': { zh: '爱奇艺', en: 'iQiyi' },
+  'www.youku.com': { zh: '优酷', en: 'Youku' },
+  'www.douyin.com': { zh: '抖音', en: 'Douyin' },
+  'www.kuaishou.com': { zh: '快手', en: 'Kuaishou' },
+  'www.douyu.com': { zh: '斗鱼', en: 'Douyu' },
+  'y.qq.com': { zh: 'QQ 音乐', en: 'QQ Music' },
+  'music.163.com': { zh: '网易云音乐', en: 'NetEase Cloud Music' },
+  'aws.amazon.com': { zh: 'AWS 控制台', en: 'AWS Console' },
+  'juejin.cn': { zh: '掘金', en: 'Juejin' },
+  'www.csdn.net': { zh: 'CSDN', en: 'CSDN' },
+  'segmentfault.com': { zh: 'SegmentFault', en: 'SegmentFault' },
+  'www.v2ex.com': { zh: 'V2EX', en: 'V2EX' },
+  'www.oschina.net': { zh: '开源中国', en: 'OSChina' },
+  'bbs.nga.cn': { zh: 'NGA 玩家社区', en: 'NGA Gaming Community' },
+  'www.nytimes.com': { zh: '纽约时报', en: 'The New York Times' },
+  'www.wsj.com': { zh: '华尔街日报', en: 'The Wall Street Journal' },
+  'www.reuters.com': { zh: '路透社', en: 'Reuters' },
+  'www.theguardian.com': { zh: '卫报', en: 'The Guardian' },
+  'www.people.com.cn': { zh: '人民网', en: 'People.cn' },
+  'www.xinhuanet.com': { zh: '新华网', en: 'Xinhua News' },
+  'www.cctv.com': { zh: '央视网', en: 'CCTV' },
+  'www.thepaper.cn': { zh: '澎湃新闻', en: 'The Paper' },
+  'news.sohu.com': { zh: '搜狐新闻', en: 'Sohu News' },
+  'www.taobao.com': { zh: '淘宝', en: 'Taobao' },
+  'www.tmall.com': { zh: '天猫', en: 'Tmall' },
+  'www.jd.com': { zh: '京东', en: 'JD.com' },
+  'www.pinduoduo.com': { zh: '拼多多', en: 'Pinduoduo' },
+  'www.suning.com': { zh: '苏宁易购', en: 'Suning' },
+}
+
+// 分类的 i18n 映射
+export const PRESET_CATEGORIES: Record<string, { zh: string; en: string }> = {
+  社交: { zh: '社交', en: 'Social' },
+  论坛: { zh: '论坛', en: 'Forum' },
+  社区: { zh: '社区', en: 'Community' },
+  问答: { zh: '问答', en: 'Q&A' },
+  设计: { zh: '设计', en: 'Design' },
+  博客: { zh: '博客', en: 'Blog' },
+  视频: { zh: '视频', en: 'Video' },
+  直播: { zh: '直播', en: 'Live' },
+  短视频: { zh: '短视频', en: 'Short Video' },
+  音乐: { zh: '音乐', en: 'Music' },
+  办公: { zh: '办公', en: 'Office' },
+  开发: { zh: '开发', en: 'Development' },
+  云: { zh: '云', en: 'Cloud' },
+  刷题: { zh: '刷题', en: 'Coding Practice' },
+  数据: { zh: '数据', en: 'Data' },
+  资讯: { zh: '资讯', en: 'News' },
+  游戏: { zh: '游戏', en: 'Gaming' },
+  新闻: { zh: '新闻', en: 'News' },
+  购物: { zh: '购物', en: 'Shopping' },
+  AI: { zh: 'AI', en: 'AI' },
+}
+
+/**
+ * 根据 URL 和当前语言获取本地化的网站标题
+ */
+export function getLocalizedSiteTitle(url: string, locale: 'zh' | 'en', fallbackTitle: string): string {
+  const domain = extractDomainFromUrl(url) || url
+  const mapping = PRESET_SITE_TITLES[domain]
+  if (mapping) {
+    return mapping[locale]
+  }
+  return fallbackTitle
+}
+
+/**
+ * 根据分类和当前语言获取本地化的分类名称
+ */
+export function getLocalizedCategory(category: string | undefined, locale: 'zh' | 'en'): string | undefined {
+  if (!category) return undefined
+  const mapping = PRESET_CATEGORIES[category]
+  if (mapping) {
+    return mapping[locale]
+  }
+  return category
+}

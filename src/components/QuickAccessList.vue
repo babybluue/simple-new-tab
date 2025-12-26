@@ -1,7 +1,7 @@
 <template>
-  <section class="mx-auto mt-8 w-full max-w-7xl px-6 md:mt-6 md:px-5" aria-label="快速访问">
+  <section class="mx-auto mt-8 w-full max-w-7xl px-6 md:mt-6 md:px-5" :aria-label="$t('quickAccess.title')">
     <header class="mb-4 flex flex-col gap-3 md:mb-3 md:flex-row md:items-center md:justify-between">
-      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">快速访问</h2>
+      <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">{{ $t('quickAccess.title') }}</h2>
       <div class="flex flex-wrap items-center gap-2">
         <div class="relative">
           <button
@@ -12,7 +12,7 @@
             :aria-expanded="isPresetMenuOpen"
             @click.stop="togglePresetMenu"
           >
-            <span>添加预设</span>
+            <span>{{ $t('quickAccess.addPreset') }}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-4 w-4"
@@ -36,7 +36,7 @@
           :aria-expanded="isFormVisible"
           @click="handleToggleForm"
         >
-          <span>{{ isFormVisible ? '收起表单' : '添加自定义' }}</span>
+          <span>{{ isFormVisible ? $t('quickAccess.collapseForm') : $t('quickAccess.addCustom') }}</span>
         </button>
       </div>
     </header>
@@ -55,7 +55,7 @@
     >
       <li v-for="link in quickLinks" :key="link.domain || link.url">
         <LinkCard
-          :title="link.title"
+          :title="getLocalizedSiteTitle(link.url, getLocale(), link.title)"
           :subtitle="link.domain || link.url"
           :favicon="getFavicon(link as FaviconItem)"
           :fallback-char="link.title.charAt(0).toUpperCase()"
@@ -107,7 +107,7 @@
       v-else
       class="border-app bg-app-overlay text-app-tertiary flex flex-col items-center justify-center rounded-2xl border py-8 text-sm"
     >
-      暂无快速访问站点，点击上方按钮添加一个吧～
+      {{ $t('quickAccess.emptyMessage') }}
     </p>
   </section>
 </template>
@@ -115,8 +115,9 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 
+import { getLocale } from '@/i18n'
 import { type FaviconItem, getFavicon, getSiteFavicon, getUnavatarFavicon, handleFaviconError } from '@/utils/favicon'
-import { PRESET_QUICK_LINKS } from '@/utils/presets'
+import { getLocalizedSiteTitle, PRESET_QUICK_LINKS } from '@/utils/presets'
 import { performSearch } from '@/utils/search'
 import { addQuickLink, getQuickLinks, getSettings, removeQuickLink, type Settings } from '@/utils/storage'
 import { buildPrimarySurfaceStyle } from '@/utils/theme'
@@ -145,10 +146,12 @@ const buildPresetWithMeta = (preset: QuickLink): QuickLink => {
 
 const presetOptions = computed<PresetOption[]>(() => {
   const domains = quickLinks.value.map(link => link.domain || extractDomainFromUrl(link.url))
+  const currentLocale = getLocale()
   return PRESET_QUICK_LINKS.map(buildPresetWithMeta).map(preset => {
     const domain = preset.domain || extractDomainFromUrl(preset.url)
     const added = domains.includes(domain) || quickLinks.value.some(link => link.url === preset.url)
-    return { ...preset, added }
+    const localizedTitle = getLocalizedSiteTitle(preset.url, currentLocale, preset.title)
+    return { ...preset, title: localizedTitle, added }
   })
 })
 

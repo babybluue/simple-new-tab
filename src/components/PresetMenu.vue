@@ -11,8 +11,8 @@
       }"
     >
       <div class="text-app-tertiary flex items-center justify-between px-3 py-2 text-[11px]">
-        <span>选择常用网站</span>
-        <span>{{ hasAvailablePresets ? '点击即可添加' : '已全部添加' }}</span>
+        <span>{{ $t('presetMenu.selectCommonSites') }}</span>
+        <span>{{ hasAvailablePresets ? $t('presetMenu.clickToAdd') : $t('presetMenu.allAdded') }}</span>
       </div>
       <div class="px-3 pb-2">
         <input
@@ -20,7 +20,7 @@
           type="search"
           autocomplete="off"
           class="border-app bg-app-overlay text-app placeholder:text-app-tertiary h-8 w-full rounded-md border px-2 text-xs outline-none focus:border-indigo-300 focus:ring-0"
-          placeholder="搜索或输入关键词筛选"
+          :placeholder="$t('presetMenu.searchOrFilter')"
         />
       </div>
       <div class="overflow-auto p-1" :style="{ maxHeight: `${Math.max(position.maxHeight - 92, 160)}px` }">
@@ -40,18 +40,20 @@
           />
           <div class="min-w-0 flex-1 text-left">
             <div class="flex items-center gap-2">
-              <span class="truncate">{{ preset.title }}</span>
-              <span v-if="preset.added" class="text-app-tertiary text-[11px]">已添加</span>
+              <span class="truncate">{{ getLocalizedSiteTitle(preset.url, getLocale(), preset.title) }}</span>
+              <span v-if="preset.added" class="text-app-tertiary text-[11px]">{{ $t('presetMenu.added') }}</span>
             </div>
             <p class="text-app-tertiary truncate text-[11px]">{{ preset.domain }}</p>
           </div>
-          <span v-if="!preset.added" class="text-[11px] text-indigo-500">添加</span>
+          <span v-if="!preset.added" class="text-[11px] text-indigo-500">{{ $t('presetMenu.add') }}</span>
         </button>
         <div v-if="!filteredPresets.length" class="text-app-tertiary px-3 py-6 text-center text-[12px]">
-          未找到匹配的站点
+          {{ $t('presetMenu.noMatches') }}
         </div>
       </div>
-      <div v-if="!hasAvailablePresets" class="text-app-tertiary px-3 pb-3 text-[11px]">常用网站已全部添加</div>
+      <div v-if="!hasAvailablePresets" class="text-app-tertiary px-3 pb-3 text-[11px]">
+        {{ $t('presetMenu.allSitesAdded') }}
+      </div>
     </div>
   </Teleport>
 </template>
@@ -59,6 +61,8 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
+import { getLocale } from '@/i18n'
+import { getLocalizedSiteTitle } from '@/utils/presets'
 import type { QuickLink } from '@/utils/types'
 
 export interface PresetOption extends QuickLink {
@@ -81,9 +85,11 @@ const hasAvailablePresets = computed(() => props.presets.some(preset => !preset.
 
 const filteredPresets = computed(() => {
   const keyword = searchQuery.value.trim().toLowerCase()
+  const currentLocale = getLocale()
   if (!keyword) return props.presets
   return props.presets.filter(preset => {
-    const title = preset.title.toLowerCase()
+    const localizedTitle = getLocalizedSiteTitle(preset.url, currentLocale, preset.title)
+    const title = localizedTitle.toLowerCase()
     const domain = (preset.domain || '').toLowerCase()
     return title.includes(keyword) || domain.includes(keyword)
   })

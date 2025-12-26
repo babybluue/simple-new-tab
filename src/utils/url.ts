@@ -22,4 +22,3 @@ export function getTitleFromUrl(url: string): string {
     return url
   }
 }
-

@@ -1,0 +1,75 @@
+{
+  "common": {
+    "settings": "Settings",
+    "search": "Search",
+    "add": "Add",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "refresh": "Refresh",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "upload": "Upload",
+    "custom": "Custom",
+    "icon": "Icon"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeAuto": "Auto",
+    "background": "Background",
+    "customColor": "Custom Color",
+    "uploadImage": "Upload Image",
+    "refreshBingWallpaper": "Refresh Bing Wallpaper",
+    "primaryColor": "Primary Color",
+    "primaryColorCustom": "Custom Primary Color",
+    "controls": "Controls",
+    "dateTime": "Date & Time",
+    "quickAccess": "Quick Access",
+    "recentVisits": "Recent Visits",
+    "language": "Language",
+    "languageZh": "中文",
+    "languageEn": "English"
+  },
+  "search": {
+    "placeholder": "Search or enter URL...",
+    "searchBox": "Search Box",
+    "selectEngine": "Select Search Engine",
+    "clearSearch": "Clear Search",
+    "siteSearch": "Site Search"
+  },
+  "quickAccess": {
+    "title": "Quick Access",
+    "addPreset": "Add Preset",
+    "addCustom": "Add Custom",
+    "collapseForm": "Collapse Form",
+    "emptyMessage": "No quick access sites yet. Click the button above to add one!",
+    "websiteName": "Website Name (Optional)",
+    "websiteUrl": "Website URL, e.g. https://example.com",
+    "customIconUrl": "Custom Icon URL (Optional)"
+  },
+  "presetMenu": {
+    "selectCommonSites": "Select Common Sites",
+    "clickToAdd": "Click to Add",
+    "allAdded": "All Added",
+    "searchOrFilter": "Search or filter by keyword",
+    "added": "Added",
+    "add": "Add",
+    "noMatches": "No matching sites found",
+    "allSitesAdded": "All common sites have been added"
+  },
+  "history": {
+    "title": "Recent Visits",
+    "emptyMessage": "No visit history yet. Visit some websites and frequently visited sites will appear here"
+  },
+  "dateTime": {
+    "format": {
+      "time": "HH:mm:ss",
+      "date": "EEEE, MMMM d, yyyy"
+    }
+  }
+}
+
