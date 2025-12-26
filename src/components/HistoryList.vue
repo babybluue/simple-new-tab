@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto mt-12 w-full max-w-7xl px-6 md:px-5" :aria-label="t('history.title')">
+  <section class="mx-auto mt-12 w-full max-w-7xl" :aria-label="t('history.title')">
     <header class="mb-6 flex items-center justify-between md:mb-5">
       <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">{{ t('history.title') }}</h2>
       <button
@@ -29,8 +29,8 @@
       class="grid"
       :class="
         settings?.iconOnlyLinkCards
-          ? 'justify-start gap-5 grid-cols-[repeat(auto-fill,96px)] md:gap-4 md:grid-cols-[repeat(auto-fill,88px)]'
-          : 'gap-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-3 md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]'
+          ? 'grid-cols-[repeat(auto-fit,minmax(96px,1fr))] justify-items-center gap-5 md:grid-cols-[repeat(auto-fit,minmax(88px,1fr))] md:gap-4'
+          : 'grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-4 md:grid-cols-[repeat(auto-fit,minmax(min(280px,100%),1fr))] md:gap-3'
       "
       role="list"
     >
@@ -50,7 +50,7 @@
               class="text-app-secondary hover:text-app flex cursor-pointer items-center justify-center border-none transition"
               :class="
                 settings?.iconOnlyLinkCards
-                  ? 'bg-transparent h-6 w-6 rounded-md opacity-70 hover:bg-app-overlay hover:opacity-100'
+                  ? 'hover:bg-app-overlay h-6 w-6 rounded-md bg-transparent opacity-70 hover:opacity-100'
                   : 'bg-app-overlay bg-app-overlay-hover h-7 w-7 rounded-lg hover:scale-[1.06] md:h-6 md:w-6'
               "
               type="button"
@@ -70,7 +70,7 @@
               class="text-app-secondary hover:text-app flex cursor-pointer items-center justify-center border-none transition"
               :class="
                 settings?.iconOnlyLinkCards
-                  ? 'bg-transparent h-6 w-6 rounded-md opacity-70 hover:bg-app-overlay hover:text-red-500 hover:opacity-100'
+                  ? 'hover:bg-app-overlay h-6 w-6 rounded-md bg-transparent opacity-70 hover:text-red-500 hover:opacity-100'
                   : 'bg-app-overlay bg-app-overlay-hover h-7 w-7 rounded-lg hover:scale-[1.06] hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20'
               "
               type="button"

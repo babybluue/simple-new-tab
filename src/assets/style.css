@@ -157,3 +157,10 @@ body {
 .menu-item-app-active {
   background-color: var(--app-bg-overlay-hover);
 }
+
+/* 主要操作 badge：保证在任意主色/主题下都具备可读性 */
+.badge-primary {
+  color: var(--app-text-color);
+  border: 1px solid color-mix(in srgb, var(--primary-color, #667eea) 55%, var(--app-border-color));
+  background-color: color-mix(in srgb, var(--primary-color, #667eea) 18%, transparent);
+}

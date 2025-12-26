@@ -45,7 +45,12 @@
             </div>
             <p class="text-app-tertiary truncate text-[11px]">{{ preset.domain }}</p>
           </div>
-          <span v-if="!preset.added" class="text-[11px] text-[var(--primary-color)]">{{ t('presetMenu.add') }}</span>
+          <span
+            v-if="!preset.added"
+            class="badge-primary cursor-pointer rounded-full px-2 py-0.5 text-[11px] font-medium"
+          >
+            {{ t('presetMenu.add') }}
+          </span>
         </button>
         <div v-if="!filteredPresets.length" class="text-app-tertiary px-3 py-6 text-center text-[12px]">
           {{ t('presetMenu.noMatches') }}

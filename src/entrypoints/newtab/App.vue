@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <main
-      class="app-main relative flex min-h-screen w-full flex-col items-center px-6 py-12 md:px-5 md:py-8"
+      class="app-main relative flex min-h-[100dvh] w-full flex-col items-center px-[clamp(16px,3vw,28px)] py-[clamp(24px,5vh,56px)]"
       role="main"
     >
       <Settings :initial-settings="initialSettings" @settings-updated="handleSettingsUpdate" />
@@ -62,6 +62,7 @@ onMounted(async () => {
 <style scoped>
 .app-container {
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
   overflow-y: auto;
   overflow-x: hidden;

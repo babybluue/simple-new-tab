@@ -1,5 +1,5 @@
 <template>
-  <aside class="fixed top-6 right-6 z-50 flex flex-col items-end gap-3 md:right-5" :aria-label="tFn('settings.title')">
+  <aside class="settings-anchor fixed z-50 flex flex-col items-end gap-3" :aria-label="tFn('settings.title')">
     <button
       class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl border shadow-(--app-shadow-sm) backdrop-blur-lg transition-all duration-300 hover:scale-[1.06] hover:rotate-45 hover:shadow-(--app-shadow-md)"
       :title="tFn('common.settings')"
@@ -23,7 +23,7 @@
       <section
         v-if="open"
         id="settings-panel"
-        class="border-app bg-app-overlay text-app-secondary ring-app-border max-h-[calc(100vh-8rem)] w-[330px] overflow-y-auto rounded-2xl border p-4 shadow-(--app-shadow-lg) ring-1 backdrop-blur-2xl"
+        class="border-app bg-app-overlay text-app-secondary ring-app-border max-h-[calc(100dvh-8rem)] w-[min(92vw,360px)] overflow-x-hidden overflow-y-auto rounded-2xl border p-4 shadow-(--app-shadow-lg) ring-1 backdrop-blur-2xl"
         style="--tw-ring-color: var(--app-border-color)"
         :aria-label="tFn('settings.title')"
       >
@@ -632,6 +632,11 @@ const useLanguage = async (lang: SupportedLocale) => {
 </script>
 
 <style scoped>
+.settings-anchor {
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition:

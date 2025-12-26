@@ -1,6 +1,6 @@
 <template>
-  <section class="mx-auto mt-8 w-full max-w-7xl px-6 md:mt-6 md:px-5" :aria-label="t('quickAccess.title')">
-    <header class="mb-4 flex flex-col gap-3 md:mb-3 md:flex-row md:items-center md:justify-between">
+  <section class="mx-auto mt-8 w-full max-w-7xl md:mt-6" :aria-label="t('quickAccess.title')">
+    <header class="mb-4 flex justify-between gap-3 md:mb-3 md:flex-row md:items-center">
       <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">{{ t('quickAccess.title') }}</h2>
       <div class="flex flex-wrap items-center gap-2">
         <div class="relative">
@@ -53,8 +53,8 @@
       class="grid"
       :class="
         settings?.iconOnlyLinkCards
-          ? 'grid-cols-[repeat(auto-fill,96px)] justify-start gap-x-4 gap-y-0 md:grid-cols-[repeat(auto-fill,88px)] md:gap-x-3 md:gap-y-0'
-          : 'grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(220px,1fr))]'
+          ? 'grid-cols-[repeat(auto-fit,minmax(96px,1fr))] justify-items-center gap-x-4 gap-y-0 md:grid-cols-[repeat(auto-fit,minmax(88px,1fr))] md:gap-x-3 md:gap-y-0'
+          : 'grid-cols-[repeat(auto-fit,minmax(min(240px,100%),1fr))] gap-3 md:grid-cols-[repeat(auto-fit,minmax(min(220px,100%),1fr))]'
       "
       role="list"
     >
