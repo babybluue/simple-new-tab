@@ -51,7 +51,8 @@
     "emptyMessage": "暂无快速访问站点，点击上方按钮添加一个吧～",
     "websiteName": "网站名称（可选）",
     "websiteUrl": "网站链接，例如 https://example.com",
-    "customIconUrl": "自定义图标 URL（可选）"
+    "customIconUrl": "自定义图标 URL（可选）",
+    "dragToReorder": "拖动排序"
   },
   "presetMenu": {
     "selectCommonSites": "选择常用网站",

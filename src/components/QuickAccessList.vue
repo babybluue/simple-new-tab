@@ -53,12 +53,24 @@
       class="grid"
       :class="
         settings?.iconOnlyLinkCards
-          ? 'grid-cols-[repeat(auto-fill,96px)] justify-start gap-4 md:grid-cols-[repeat(auto-fill,88px)] md:gap-3'
+          ? 'grid-cols-[repeat(auto-fill,96px)] justify-start gap-x-4 gap-y-0 md:grid-cols-[repeat(auto-fill,88px)] md:gap-x-3 md:gap-y-0'
           : 'grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(220px,1fr))]'
       "
       role="list"
     >
-      <li v-for="link in quickLinks" :key="link.domain || link.url">
+      <li
+        v-for="link in quickLinks"
+        :key="link.domain || link.url"
+        :data-quick-link-key="link.domain || link.url"
+        class="relative"
+        :class="{
+          'opacity-60': draggingKey === (link.domain || link.url),
+          'ring-app/30 ring-2': dragOverKey === (link.domain || link.url) && draggingKey !== (link.domain || link.url),
+        }"
+        @dragenter.prevent="handleDragEnter(link)"
+        @dragover.prevent="handleDragOver"
+        @drop.prevent="handleDrop"
+      >
         <LinkCard
           :title="getLocalizedSiteTitle(link.url, getLocale(), link.title)"
           :subtitle="link.domain || link.url"
@@ -70,6 +82,36 @@
           @icon-error="handleFaviconErrorWrapper(link, $event)"
         >
           <template #actions>
+            <button
+              class="text-app-secondary hover:text-app flex cursor-grab items-center justify-center border-none transition active:cursor-grabbing"
+              :class="
+                settings?.iconOnlyLinkCards
+                  ? 'hover:bg-app-overlay h-6 w-6 rounded-md bg-transparent opacity-70 hover:opacity-100'
+                  : 'bg-app-overlay bg-app-overlay-hover h-7 w-7 rounded-lg hover:scale-[1.06] md:h-6 md:w-6'
+              "
+              type="button"
+              draggable="true"
+              :aria-label="t('quickAccess.dragToReorder')"
+              :title="t('quickAccess.dragToReorder')"
+              @click.stop
+              @dragstart.stop="handleDragStart(link, $event)"
+              @dragend.stop="handleDragEnd"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                class="h-4 w-4"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 6h.01M9 12h.01M9 18h.01M15 6h.01M15 12h.01M15 18h.01"
+                />
+              </svg>
+            </button>
             <button
               class="text-app-secondary hover:text-app flex cursor-pointer items-center justify-center border-none transition"
               :class="
@@ -136,7 +178,14 @@ import { useI18n } from '@/i18n/composable'
 import { type FaviconItem, getFavicon, getSiteFavicon, getUnavatarFavicon, handleFaviconError } from '@/utils/favicon'
 import { getLocalizedSiteTitle, PRESET_QUICK_LINKS } from '@/utils/presets'
 import { performSearch } from '@/utils/search'
-import { addQuickLink, getQuickLinks, getSettings, removeQuickLink, type Settings } from '@/utils/storage'
+import {
+  addQuickLink,
+  getQuickLinks,
+  getSettings,
+  removeQuickLink,
+  saveQuickLinks,
+  type Settings,
+} from '@/utils/storage'
 import { buildPrimarySurfaceStyle } from '@/utils/theme'
 import type { QuickLink } from '@/utils/types'
 import { extractDomainFromUrl } from '@/utils/url'
@@ -155,6 +204,11 @@ const editingLink = ref<QuickLink | null>(null)
 const faviconFallbackTried = ref<Record<string, boolean>>({})
 const presetToggleRef = ref<HTMLElement | null>(null)
 const menuPosition = ref<{ top: number; left: number; maxHeight: number }>({ top: 0, left: 0, maxHeight: 420 })
+
+const draggingKey = ref<string | null>(null)
+const dragOverKey = ref<string | null>(null)
+const hasDraggedOrderChange = ref(false)
+const isPersistingOrder = ref(false)
 
 const buildPresetWithMeta = (preset: QuickLink): QuickLink => {
   const domain = preset.domain || extractDomainFromUrl(preset.url)
@@ -210,6 +264,8 @@ onUnmounted(() => {
 
 const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
   if (changes.quickLinks) {
+    // 拖拽排序落盘时会触发 onChanged，这里避免“自己写 -> 自己读”导致 UI 闪烁
+    if (isPersistingOrder.value) return
     loadQuickLinks()
   }
   if (changes.settings) {
@@ -231,6 +287,7 @@ const loadQuickLinks = async () => {
 }
 
 const handleQuickLinkSelect = async (link: QuickLink) => {
+  if (draggingKey.value) return
   const engine = settings.value?.searchEngine ?? 'google'
   performSearch(link.url, engine, settings.value?.openLinksInNewTab ?? false)
   await addQuickLink(link) // 让最近使用的站点排前
@@ -290,5 +347,71 @@ const resetForm = () => {
 
 const handleFaviconErrorWrapper = (link: QuickLink, e: Event) => {
   handleFaviconError(link as FaviconItem, e, faviconFallbackTried.value)
+}
+
+const getQuickLinkKey = (link: QuickLink): string => {
+  return link.domain || link.url
+}
+
+const moveQuickLink = (fromIndex: number, toIndex: number) => {
+  const list = [...quickLinks.value]
+  if (fromIndex < 0 || toIndex < 0 || fromIndex >= list.length || toIndex >= list.length) return
+  if (fromIndex === toIndex) return
+  const [moved] = list.splice(fromIndex, 1)
+  list.splice(toIndex, 0, moved)
+  quickLinks.value = list
+  hasDraggedOrderChange.value = true
+}
+
+const handleDragStart = (link: QuickLink, e: DragEvent) => {
+  const key = getQuickLinkKey(link)
+  draggingKey.value = key
+  dragOverKey.value = null
+  hasDraggedOrderChange.value = false
+
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', key)
+  }
+}
+
+const handleDragEnter = (target: QuickLink) => {
+  if (!draggingKey.value) return
+  const targetKey = getQuickLinkKey(target)
+  dragOverKey.value = targetKey
+
+  const fromIndex = quickLinks.value.findIndex(l => getQuickLinkKey(l) === draggingKey.value)
+  const toIndex = quickLinks.value.findIndex(l => getQuickLinkKey(l) === targetKey)
+  moveQuickLink(fromIndex, toIndex)
+}
+
+const handleDragOver = (e: DragEvent) => {
+  if (!draggingKey.value) return
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
+}
+
+const persistQuickLinksOrderIfNeeded = async () => {
+  if (!hasDraggedOrderChange.value) return
+  isPersistingOrder.value = true
+  try {
+    await saveQuickLinks(quickLinks.value)
+  } finally {
+    // 等 storage.onChanged 回调走完，避免刚 set 就被 load 覆盖
+    setTimeout(() => {
+      isPersistingOrder.value = false
+    }, 50)
+  }
+}
+
+const handleDrop = async () => {
+  await persistQuickLinksOrderIfNeeded()
+  draggingKey.value = null
+  dragOverKey.value = null
+}
+
+const handleDragEnd = async () => {
+  await persistQuickLinksOrderIfNeeded()
+  draggingKey.value = null
+  dragOverKey.value = null
 }
 </script>

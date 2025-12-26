@@ -99,9 +99,9 @@ export const PRESET_QUICK_LINKS: QuickLink[] = [
   { title: '苏宁易购', url: 'https://www.suning.com', category: '购物' },
 
   // AI
-  { title: 'ChatGPT', url: 'https://chat.openai.com', category: 'AI' },
+  { title: 'ChatGPT', url: 'https://chat.openai.com', category: 'AI', default: true },
   { title: 'Claude', url: 'https://claude.ai', category: 'AI' },
-  { title: 'Gemini', url: 'https://gemini.google.com', category: 'AI' },
+  { title: 'Gemini', url: 'https://gemini.google.com', category: 'AI', default: true },
   { title: 'Perplexity', url: 'https://www.perplexity.ai', category: 'AI' },
   { title: 'Midjourney', url: 'https://www.midjourney.com', category: 'AI' },
   { title: 'DeepSeek', url: 'https://chat.deepseek.com', category: 'AI' },

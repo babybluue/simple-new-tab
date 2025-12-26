@@ -51,7 +51,8 @@
     "emptyMessage": "No quick access sites yet. Click the button above to add one!",
     "websiteName": "Website Name (Optional)",
     "websiteUrl": "Website URL, e.g. https://example.com",
-    "customIconUrl": "Custom Icon URL (Optional)"
+    "customIconUrl": "Custom Icon URL (Optional)",
+    "dragToReorder": "Drag to reorder"
   },
   "presetMenu": {
     "selectCommonSites": "Select Common Sites",
