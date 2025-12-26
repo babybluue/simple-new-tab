@@ -1,24 +1,26 @@
-import type { InjectionKey } from 'vue'
-import { computed, inject, provide } from 'vue'
+import type { InjectionKey, Ref } from 'vue'
+import { inject, provide } from 'vue'
 
 import type { SupportedLocale } from './index'
-import { getLocale, setLocale, t } from './index'
+import { getLocaleRef, setLocale, t } from './index'
 
-const I18nKey: InjectionKey<{
-  locale: SupportedLocale
+export type I18nContext = {
+  locale: Ref<SupportedLocale>
   t: (key: string) => string
   setLocale: (locale: SupportedLocale) => Promise<void>
-}> = Symbol('i18n')
+}
+
+export const I18nKey: InjectionKey<I18nContext> = Symbol('i18n')
 
 export function provideI18n() {
-  const locale = computed(() => getLocale())
+  const locale = getLocaleRef()
   const translate = (key: string) => t(key)
   const changeLocale = async (newLocale: SupportedLocale) => {
     await setLocale(newLocale)
   }
 
   provide(I18nKey, {
-    locale: locale.value,
+    locale,
     t: translate,
     setLocale: changeLocale,
   })
@@ -31,11 +33,12 @@ export function provideI18n() {
 }
 
 export function useI18n() {
-  const i18n = inject(I18nKey)
+  // 提供默认值以避免 Vue 在未找到注入时输出警告
+  const i18n = inject(I18nKey, null)
   if (!i18n) {
-    // 如果没有提供，返回默认实现
+    // 如果没有提供（例如未安装插件），返回默认实现
     return {
-      locale: computed(() => getLocale()),
+      locale: getLocaleRef(),
       t: (key: string) => t(key),
       setLocale: async (locale: SupportedLocale) => {
         await setLocale(locale)
@@ -43,7 +46,7 @@ export function useI18n() {
     }
   }
   return {
-    locale: computed(() => i18n.locale),
+    locale: i18n.locale,
     t: i18n.t,
     setLocale: i18n.setLocale,
   }

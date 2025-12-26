@@ -10,18 +10,24 @@
       <!-- subtle hover surface (not a white block) -->
       <span
         aria-hidden="true"
-        class="bg-app-overlay border-app absolute inset-0 rounded-[28px] border opacity-[0.12] backdrop-blur-sm transition-all duration-200 group-hover:opacity-[0.26] group-hover:shadow-(--app-shadow-xs)"
+        class="bg-app-overlay absolute inset-0 rounded-[28px] opacity-[0.12] backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-[0.22]"
+      />
+      <!-- border layer: keep border fully visible (don't apply opacity) -->
+      <span
+        aria-hidden="true"
+        class="absolute inset-0 rounded-[28px] border transition-all duration-200 group-hover:shadow-(--app-shadow-xs) group-hover:ring-2"
+        :style="iconOnlyBorderStyle"
       />
       <img
         v-if="favicon"
         :src="favicon"
         :alt="`${title} ${t('common.icon')}`"
-        class="border-app relative h-[64px] w-[64px] rounded-2xl border object-contain shadow-(--app-shadow-xs) transition-transform duration-200 group-hover:scale-[1.02] md:h-[56px] md:w-[56px]"
+        class="relative h-[64px] w-[64px] rounded-2xl object-contain shadow-(--app-shadow-xs) transition-transform duration-200 group-hover:scale-[1.02] md:h-[56px] md:w-[56px]"
         @error="$emit('icon-error', $event)"
       />
       <div
         v-else
-        class="border-app text-app-secondary relative flex h-[64px] w-[64px] items-center justify-center rounded-2xl border text-2xl font-bold shadow-(--app-shadow-xs) md:h-[56px] md:w-[56px]"
+        class="bg-app-overlay text-app-secondary relative flex h-[64px] w-[64px] items-center justify-center rounded-2xl text-2xl font-bold shadow-(--app-shadow-xs) md:h-[56px] md:w-[56px]"
       >
         {{ fallbackChar }}
       </div>
@@ -46,8 +52,7 @@
     @click="$emit('select')"
   >
     <figure
-      class="bg-app-overlay border-app flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border shadow-(--app-shadow-xs) ring-2 md:h-11 md:w-11"
-      style="--tw-ring-color: var(--app-border-color)"
+      class="bg-app-overlay flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-(--app-shadow-xs) md:h-11 md:w-11"
       :aria-label="`${title} ${t('common.icon')}`"
     >
       <img
@@ -107,4 +112,12 @@ defineEmits<{
 }>()
 
 const resolvedStyle = computed(() => (props.iconOnly ? {} : props.cardStyle || {}))
+
+const iconOnlyBorderStyle = computed<Record<string, string>>(() => {
+  const borderColor = props.cardStyle?.borderColor || 'var(--app-border-color)'
+  return {
+    borderColor,
+    '--tw-ring-color': borderColor,
+  }
+})
 </script>
