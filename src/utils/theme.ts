@@ -7,6 +7,56 @@ const buildDirectBingImage = (idx: number, mkt = 'zh-CN') =>
 
 const shuffleIndices = (max = 8) => Array.from({ length: max }, (_, i) => i).sort(() => Math.random() - 0.5)
 
+// Bing 图片缓存相关
+const CACHE_NAME = 'bing-background-cache'
+const CACHE_KEY = 'bingBackgroundUrl'
+
+/**
+ * 获取缓存的 Bing 图片 URL
+ */
+async function getCachedBingImageUrl(): Promise<string | null> {
+  try {
+    const result = await chrome.storage.local.get(CACHE_KEY)
+    const cachedUrl = result[CACHE_KEY] as string | undefined
+    return cachedUrl || null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * 缓存 Bing 图片
+ */
+async function cacheBingImage(imageUrl: string): Promise<void> {
+  try {
+    // 使用 Cache API 缓存图片
+    const cache = await caches.open(CACHE_NAME)
+    await cache.add(imageUrl)
+
+    // 同时将 URL 存储在 chrome.storage 中，方便快速访问
+    await chrome.storage.local.set({ [CACHE_KEY]: imageUrl })
+  } catch {
+    // 静默失败
+  }
+}
+
+/**
+ * 清除 Bing 图片缓存
+ */
+export async function clearBingImageCache(): Promise<void> {
+  try {
+    // 清除 Cache API 缓存
+    const cache = await caches.open(CACHE_NAME)
+    const keys = await cache.keys()
+    await Promise.all(keys.map(key => cache.delete(key)))
+
+    // 清除 chrome.storage 中的缓存
+    await chrome.storage.local.remove(CACHE_KEY)
+  } catch {
+    // 静默失败
+  }
+}
+
 // Light 和 Dark 主题背景色常量
 // 使用稍微偏灰的浅色，避免纯白色显得过于空泛
 export const THEME_LIGHT_BG = '#f1f3f5'
@@ -53,14 +103,60 @@ export const applyTheme = (theme: Settings['theme']) => {
   }
 }
 
-export const fetchBingImageUrl = async (excludeUrl?: string): Promise<string | null> => {
+export const fetchBingImageUrl = async (excludeUrl?: string, useCache = true): Promise<string | null> => {
+  // 如果需要使用缓存且没有排除 URL，先尝试从缓存获取
+  if (useCache && !excludeUrl) {
+    const cachedUrl = await getCachedBingImageUrl()
+    if (cachedUrl) {
+      // 验证缓存是否有效
+      try {
+        const cache = await caches.open(CACHE_NAME)
+        const cached = await cache.match(cachedUrl)
+        if (cached) {
+          // 异步获取新图片并更新缓存（不阻塞）
+          fetchBingImageUrl(excludeUrl, false)
+            .then(newUrl => {
+              if (newUrl) cacheBingImage(newUrl)
+            })
+            .catch(() => {
+              // 静默失败
+            })
+          return cachedUrl
+        }
+      } catch {
+        // 缓存无效，继续获取新图片
+      }
+    }
+  }
+
+  // 获取新的图片 URL
   const indices = shuffleIndices(8)
+  let newUrl: string | null = null
+
   for (const idx of indices) {
     const candidate = buildDirectBingImage(idx)
-    if (candidate !== excludeUrl) return candidate
+    if (candidate !== excludeUrl) {
+      newUrl = candidate
+      break
+    }
   }
-  return buildDirectBingImage(Math.floor(Math.random() * 8))
+
+  if (!newUrl) {
+    newUrl = buildDirectBingImage(Math.floor(Math.random() * 8))
+  }
+
+  // 缓存新图片（异步，不阻塞返回）
+  if (useCache && newUrl) {
+    cacheBingImage(newUrl).catch(() => {
+      // 静默失败
+    })
+  }
+
+  return newUrl
 }
+
+// 存储当前的 blob URL，用于后续释放
+let currentBlobUrl: string | null = null
 
 export const applyBackground = async (
   settings: Pick<Settings, 'backgroundType' | 'backgroundColor' | 'backgroundImageUrl'>
@@ -68,21 +164,53 @@ export const applyBackground = async (
   const root = document.documentElement
   if (!root) return
 
+  // 释放之前的 blob URL
+  if (currentBlobUrl) {
+    URL.revokeObjectURL(currentBlobUrl)
+    currentBlobUrl = null
+  }
+
   root.style.backgroundAttachment = 'fixed'
   root.style.backgroundSize = 'cover'
   root.style.backgroundRepeat = 'no-repeat'
   root.style.backgroundPosition = 'center'
 
+  // 根据主题确定蒙层颜色和透明度
+  const isLight = root.classList.contains('light')
+  const overlayColor = isLight ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'
+
   if (settings.backgroundType === 'bing' || settings.backgroundType === 'upload') {
-    const imageUrl =
-      settings.backgroundType === 'bing'
-        ? settings.backgroundImageUrl || (await fetchBingImageUrl(settings.backgroundImageUrl))
-        : settings.backgroundImageUrl
+    let imageUrl: string | null = null
+    let originalUrl: string | undefined = undefined
+
+    if (settings.backgroundType === 'bing') {
+      // 优先使用已有的 URL，否则获取新图片（使用缓存）
+      originalUrl = settings.backgroundImageUrl
+      imageUrl = originalUrl || (await fetchBingImageUrl(originalUrl, true))
+      originalUrl = imageUrl || originalUrl
+    } else {
+      imageUrl = settings.backgroundImageUrl || null
+      originalUrl = imageUrl || undefined
+    }
 
     if (imageUrl) {
+      // 尝试从缓存中获取 blob URL 以提升加载速度
+      try {
+        const cache = await caches.open(CACHE_NAME)
+        const cached = await cache.match(imageUrl)
+        if (cached) {
+          const blob = await cached.blob()
+          currentBlobUrl = URL.createObjectURL(blob)
+          imageUrl = currentBlobUrl
+        }
+      } catch {
+        // 如果缓存获取失败，使用原始 URL
+      }
+
+      // 添加蒙层：使用 linear-gradient 叠加半透明蒙层（透明度 30%）
       root.style.backgroundImage = ''
-      root.style.background = `center center / cover no-repeat fixed url(${imageUrl})`
-      return imageUrl
+      root.style.background = `linear-gradient(${overlayColor}, ${overlayColor}), center center / cover no-repeat fixed url(${imageUrl})`
+      return originalUrl
     }
 
     root.style.backgroundImage = ''

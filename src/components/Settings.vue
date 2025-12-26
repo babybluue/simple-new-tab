@@ -326,6 +326,7 @@ import {
   applyBackground,
   applyPrimaryColor,
   applyTheme,
+  clearBingImageCache,
   fetchBingImageUrl,
   THEME_DARK_BG,
   THEME_LIGHT_BG,
@@ -418,12 +419,16 @@ const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false
 
     if (merged.backgroundType === 'bing') {
       if (forceRefreshBing || !merged.backgroundImageUrl) {
-        const url = await fetchBingImageUrl(merged.backgroundImageUrl)
+        const url = await fetchBingImageUrl(merged.backgroundImageUrl, !forceRefreshBing)
         if (url) {
           merged.backgroundImageUrl = url
         }
       }
     } else if (merged.backgroundType !== 'upload') {
+      // 切换到非 Bing 背景时，清除缓存
+      if (settings.value.backgroundType === 'bing') {
+        await clearBingImageCache()
+      }
       merged.backgroundImageUrl = ''
     }
 
