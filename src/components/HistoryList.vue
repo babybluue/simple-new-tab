@@ -26,7 +26,12 @@
     <ul
       v-if="!isCollapsed && history.length > 0"
       id="history-list"
-      class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] md:gap-3"
+      class="grid"
+      :class="
+        settings?.iconOnlyLinkCards
+          ? 'justify-start gap-5 grid-cols-[repeat(auto-fill,96px)] md:gap-4 md:grid-cols-[repeat(auto-fill,88px)]'
+          : 'gap-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))] md:gap-3 md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]'
+      "
       role="list"
     >
       <li v-for="item in history" :key="item.domain || item.url">
@@ -36,12 +41,18 @@
           :favicon="getFavicon(item as FaviconItem)"
           :fallback-char="((item.title || item.domain || item.url || '?').trim().charAt(0) || '?').toUpperCase()"
           :card-style="cardStyle"
+          :icon-only="settings?.iconOnlyLinkCards"
           @select="handleSelect(item)"
           @icon-error="handleFaviconErrorWrapper(item, $event)"
         >
           <template #actions>
             <button
-              class="text-app-secondary hover:text-app bg-app-overlay bg-app-overlay-hover flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none hover:scale-[1.06] md:h-6 md:w-6"
+              class="text-app-secondary hover:text-app flex cursor-pointer items-center justify-center border-none transition"
+              :class="
+                settings?.iconOnlyLinkCards
+                  ? 'bg-transparent h-6 w-6 rounded-md opacity-70 hover:bg-app-overlay hover:opacity-100'
+                  : 'bg-app-overlay bg-app-overlay-hover h-7 w-7 rounded-lg hover:scale-[1.06] md:h-6 md:w-6'
+              "
               type="button"
               @click.stop="handlePin(item)"
             >
@@ -56,7 +67,12 @@
               </svg>
             </button>
             <button
-              class="text-app-secondary hover:text-app bg-app-overlay bg-app-overlay-hover flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border-none hover:scale-[1.06] hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20"
+              class="text-app-secondary hover:text-app flex cursor-pointer items-center justify-center border-none transition"
+              :class="
+                settings?.iconOnlyLinkCards
+                  ? 'bg-transparent h-6 w-6 rounded-md opacity-70 hover:bg-red-500/15 hover:opacity-100 dark:hover:bg-red-500/12'
+                  : 'bg-app-overlay bg-app-overlay-hover h-7 w-7 rounded-lg hover:scale-[1.06] hover:bg-red-500/30 md:h-6 md:w-6 dark:hover:bg-red-500/20'
+              "
               type="button"
               @click.stop="handleRemove(item)"
             >
