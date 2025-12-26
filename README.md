@@ -48,7 +48,7 @@ git push origin main --tags
 4. GitHub Actions 会自动：
    - 执行 `pnpm zip` / `pnpm zip:firefox`
    - 创建 `vX.Y.Z` 的 GitHub Release（若已存在则跳过）
-   - 把 `.output/*.zip` 作为附件上传到 Release
+    - 把插件包作为附件上传到 Release（仅上传 `*-chrome.zip` / `*-firefox.zip`，不包含 `sources.zip`）
 
 > 说明：浏览器扩展的 `manifest.version` 必须是纯数字点分段（不允许 `-beta`）。  
 > 本项目会把 `1.2.3-beta.1` 自动转换为 `1.2.3` 写入 `version`，同时把完整 semver 写入 `version_name`。
