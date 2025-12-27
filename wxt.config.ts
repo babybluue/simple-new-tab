@@ -38,6 +38,9 @@ export default defineConfig({
     },
   }),
   manifest: {
+    default_locale: 'en',
+    name: '__MSG_extName__',
+    description: '__MSG_extDescription__',
     version: extensionVersion,
     version_name: pkg.version,
     chrome_url_overrides: {

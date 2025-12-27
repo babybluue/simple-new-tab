@@ -1,0 +1,12 @@
+{
+  "extName": {
+    "message": "Tablite",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "A clean, customizable new tab page with search, quick links, frequent sites, and beautiful themes.",
+    "description": "Extension description"
+  }
+}
+
+

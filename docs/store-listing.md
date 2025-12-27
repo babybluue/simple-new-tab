@@ -1,61 +1,71 @@
-# Simple New Tab / 简洁新标签页 — Store Listing Copy
+STORE LISTING COPY (PLAIN TEXT)
+You can copy and paste the following text into Chrome Web Store / Microsoft Edge Add-ons / Firefox AMO.
 
-> 你可以直接把下面的内容复制到 Chrome Web Store / Microsoft Edge Add-ons / Firefox AMO 的上架页面。
+============================================================
+Chrome Web Store: Listing languages (IMPORTANT)
+============================================================
 
----
+To show both English and Chinese on the store page, you need to add languages in the Chrome Web Store Developer Dashboard:
 
-## 中文（简体）
+1. Open your item → Store listing → Listing languages.
+2. Keep English as the default (Recommended: English (United States)).
+3. Add Chinese (Simplified).
+4. Fill in the localized fields (name, short description, detailed description, etc.) for each language and save.
 
-### 一句话简介（短描述）
+Tip: The extension itself can also localize its name/description via manifest locales. This repo includes `_locales` for EN and zh_CN.
 
+============================================================
+中文（简体）
+============================================================
+
+短描述：
 一个简洁美观、可自定义的新标签页：搜索、快捷访问、常用站点与壁纸/主题一页搞定。
 
-### 详细介绍（长描述）
+长描述：
+简洁新标签页用更清爽的布局替换浏览器的新标签页，让你把注意力放在真正重要的事情上：
+快速搜索、常用网站一键直达、自动生成常访问站点列表，并支持主题与背景自定义（Bing 壁纸/上传图片）。
 
-`简洁新标签页` 用更清爽的布局替换浏览器的新标签页，让你把注意力放在真正重要的事情上：快速搜索、常用网站一键直达、自动记录常访问站点，并支持主题与背景自定义（含 Bing 壁纸/上传图片）。
+特性
 
-#### 功能亮点
+🌗 自动适配浅色/深色（可跟随系统）
+🔍 一键搜索 + 搜索建议，支持多种搜索引擎
+🧩 快捷入口：把常用网站固定到新标签页
+📌 常用站点：自动整理你最常访问的网站（本地保存）
+🖼️ 背景随心：Bing 每日壁纸 / 预设背景 / 上传图片
+🎛️ 自定义布局：模块自由开关与排序，支持图标模式与紧凑/舒适显示
 
-- **多搜索引擎**：Google / Bing / 百度 / DuckDuckGo，支持搜索建议。
-- **快捷访问**：自由新增、编辑、删除站点；可选“仅图标”模式更极简。
-- **常用站点**：自动根据你打开过的网页生成常用列表（仅保存在本地）。
-- **外观自定义**：浅色/深色/跟随系统；预设背景、自定义颜色、Bing 壁纸、上传图片；主色调可选。
-- **细节体验**：流畅动画、良好对齐与间距、适合日常高频使用。
+权限与隐私说明：
 
-### 权限与隐私说明
+🔒 本地存储（storage）：保存你的设置、快捷访问与常用站点（仅本地）。
+🧾 标签页信息（tabs）：读取当前打开网页的 URL/标题，用于生成“常用站点”（不读取历史数据库，不上传）。
+🌐 联网请求（host permissions）：仅用于搜索建议与可选的 Bing 壁纸/站点图标获取。
+✅ 我们不会出售或上传你的个人数据。
 
-- **`storage`（存储）**：用于保存你的设置、快捷访问和常用站点列表。
-- **`tabs`（标签页）**：用于在后台监听已打开网页的 URL/标题，从而在本地生成“常用站点”列表（不读取你的浏览器历史记录数据库，也不上传）。
-- **联网请求（host permissions）**：仅用于获取搜索建议与（可选）Bing 壁纸、站点图标（favicon）。  
-  我们不会出售或上传你的个人数据；所有设置与常用站点数据默认仅保存在本地浏览器中。
-
-### 关键词（可选）
-
+关键词（可选）：
 新标签页 / New Tab / 快捷访问 / 搜索 / 壁纸 / 主题 / 书签
 
----
+============================================================
+English
+============================================================
 
-## English
-
-### Short description
-
+Short description:
 A clean, customizable new tab page with search, quick links, frequent sites, and beautiful themes.
 
-### Long description
-
+Long description:
 Tablite replaces your new tab with a calm, practical dashboard—built for fast searching, quick access to what you use most, and a look that fits your style.
 
-#### Highlights
+Features
 
-- **Fast search**: Choose your preferred search engine, with suggestions.
-- **Quick Links**: Pin your favorite sites for one‑click access (supports an icon‑only layout).
-- **Frequent Sites**: Automatically surfaces the sites you visit most, stored locally.
-- **Themes & backgrounds**: Light/Dark/Auto, accent colors, preset backgrounds, Bing wallpaper, or your own image.
-- **Clean design**: Minimal layout, smooth motion, and a distraction‑free experience.
+🌗 Auto light/dark (with system sync)
+🔍 Quick search with suggestions, multiple engines supported
+🧩 Quick Links: pin your favorite sites for one-click access
+📌 Frequent Sites: smart list of sites you visit most (stored locally)
+🖼️ Backgrounds: Bing daily wallpaper, presets, or your own image
+🎛️ Custom layout: show/hide and reorder sections, with compact/comfortable density
 
-### Permissions & privacy
+Permissions & privacy:
 
-- **`storage`**: Stores your settings, quick links, and frequent sites locally.
-- **`tabs`**: Listens to tab updates (URL/title) to build the local “Frequent Sites” list.  
-  It does **not** read your browser’s history database and does **not** upload your data.
-- **Host permissions**: Only used for search suggestions and (optional) Bing wallpaper / site favicons.
+🔒 Storage: Saves your settings, quick links, and frequent sites locally on your device.
+🧾 Tabs: Uses the URL/title of opened pages to build the local Frequent Sites list (no history database access, no uploads).
+🌐 Host permissions: Only for search suggestions and optional Bing wallpaper / site favicons.
+✅ We do not sell or upload your personal data.
