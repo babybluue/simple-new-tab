@@ -5,7 +5,14 @@
       role="main"
     >
       <Settings :initial-settings="initialSettings" @settings-updated="handleSettingsUpdate" />
-      <header v-if="displaySettings.showDateTime" class="mb-2">
+      <header
+        class="mb-2"
+        :class="{
+          invisible: !displaySettings.showDateTime,
+          'pointer-events-none': !displaySettings.showDateTime,
+        }"
+        :aria-hidden="!displaySettings.showDateTime"
+      >
         <DateTime />
       </header>
 
