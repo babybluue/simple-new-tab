@@ -7,7 +7,7 @@ export const PRESET_QUICK_LINKS: QuickLink[] = [
   { title: 'Instagram', url: 'https://www.instagram.com', category: '社交' },
   { title: 'LinkedIn', url: 'https://www.linkedin.com', category: '社交' },
   { title: 'X', url: 'https://x.com', category: '社交', default: true },
-  { title: 'Reddit', url: 'https://www.reddit.com', category: '论坛' },
+  { title: 'Reddit', url: 'https://www.reddit.com', category: '论坛', default: true },
   { title: 'Pinterest', url: 'https://www.pinterest.com', category: '社交' },
   { title: 'Tumblr', url: 'https://www.tumblr.com', category: '社交' },
   { title: 'Discord', url: 'https://discord.com', category: '社交' },
@@ -18,14 +18,15 @@ export const PRESET_QUICK_LINKS: QuickLink[] = [
   { title: 'Threads', url: 'https://www.threads.net', category: '社交' },
   { title: '微博', url: 'https://weibo.com', category: '社交', default: true },
   { title: '知乎', url: 'https://www.zhihu.com', category: '社区', default: true },
-  { title: '小红书', url: 'https://www.xiaohongshu.com', category: '社区', default: true },
-  { title: '豆瓣', url: 'https://www.douban.com', category: '社区', default: true },
+  { title: '小红书', url: 'https://www.xiaohongshu.com', category: '社区' },
+  { title: '豆瓣', url: 'https://www.douban.com', category: '社区' },
   { title: '百度贴吧', url: 'https://tieba.baidu.com', category: '论坛' },
   { title: 'Medium', url: 'https://medium.com', category: '博客' },
+  { title: '抖音', url: 'https://www.douyin.com', category: '短视频' },
 
   // 视频 / 娱乐
   { title: 'YouTube', url: 'https://www.youtube.com', category: '视频', default: true },
-  { title: 'Netflix', url: 'https://www.netflix.com', category: '视频' },
+  { title: 'Netflix', url: 'https://www.netflix.com', category: '视频', default: true },
   { title: 'Disney+', url: 'https://www.disneyplus.com', category: '视频' },
   { title: 'Prime Video', url: 'https://www.primevideo.com', category: '视频' },
   { title: 'Hulu', url: 'https://www.hulu.com', category: '视频' },
@@ -81,22 +82,21 @@ export const PRESET_QUICK_LINKS: QuickLink[] = [
   { title: '开源中国', url: 'https://www.oschina.net', category: '社区' },
 
   // 游戏
-  { title: 'Steam', url: 'https://store.steampowered.com', category: '游戏', default: true },
-  { title: 'Epic Games', url: 'https://store.epicgames.com', category: '游戏', default: true },
+  { title: 'Steam', url: 'https://store.steampowered.com', category: '游戏' },
+  { title: 'Epic Games', url: 'https://store.epicgames.com', category: '游戏' },
   { title: 'PlayStation', url: 'https://www.playstation.com', category: '游戏' },
   { title: 'Xbox', url: 'https://www.xbox.com', category: '游戏' },
   { title: 'Nintendo', url: 'https://www.nintendo.com', category: '游戏' },
 
   // 购物
-  { title: 'Amazon', url: 'https://www.amazon.com', category: '购物' },
+  { title: 'Amazon', url: 'https://www.amazon.com', category: '购物', default: true },
   { title: 'eBay', url: 'https://www.ebay.com', category: '购物' },
   { title: 'Walmart', url: 'https://www.walmart.com', category: '购物' },
   { title: 'Alibaba', url: 'https://www.alibaba.com', category: '购物' },
-  { title: '淘宝', url: 'https://www.taobao.com', category: '购物' },
+  { title: '淘宝', url: 'https://www.taobao.com', category: '购物', default: true },
   { title: '天猫', url: 'https://www.tmall.com', category: '购物' },
   { title: '京东', url: 'https://www.jd.com', category: '购物' },
   { title: '拼多多', url: 'https://www.pinduoduo.com', category: '购物' },
-  { title: '苏宁易购', url: 'https://www.suning.com', category: '购物' },
 
   // AI
   { title: 'ChatGPT', url: 'https://chat.openai.com', category: 'AI', default: true },
@@ -134,7 +134,6 @@ export const PRESET_SITE_TITLES: Record<string, { zh: string; en: string }> = {
   'www.tmall.com': { zh: '天猫', en: 'Tmall' },
   'www.jd.com': { zh: '京东', en: 'JD.com' },
   'www.pinduoduo.com': { zh: '拼多多', en: 'Pinduoduo' },
-  'www.suning.com': { zh: '苏宁易购', en: 'Suning' },
 }
 
 // 分类的 i18n 映射
