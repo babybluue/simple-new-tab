@@ -154,37 +154,6 @@
             </button>
           </div>
 
-          <div class="border-app bg-app-overlay mt-3 rounded-xl border p-3 shadow-(--app-shadow-xs) backdrop-blur-sm">
-            <div class="text-app-secondary mb-2 text-xs">
-              {{ tFn('settings.onlineImage') }}
-            </div>
-            <div class="flex items-center gap-2">
-              <input
-                v-model="onlineImageUrlDraft"
-                class="border-app bg-app-overlay text-app placeholder:text-app-secondary min-w-0 flex-1 rounded-lg border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-(--app-focus-ring)"
-                type="url"
-                inputmode="url"
-                autocomplete="off"
-                autocapitalize="off"
-                spellcheck="false"
-                :placeholder="tFn('settings.onlineImagePlaceholder')"
-                :disabled="applying"
-                @keydown.enter.prevent="useOnlineImageUrl"
-              />
-              <button
-                class="border-app text-app bg-app-overlay bg-app-overlay-hover flex min-w-18 cursor-pointer items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
-                type="button"
-                :disabled="applying"
-                @click="useOnlineImageUrl"
-              >
-                {{ tFn('common.save') }}
-              </button>
-            </div>
-            <div v-if="onlineUrlInvalid" class="mt-2 text-[11px] leading-relaxed text-red-400">
-              {{ tFn('settings.onlineImageInvalid') }}
-            </div>
-          </div>
-
           <div
             class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
           >
@@ -205,6 +174,37 @@
               />
               {{ tFn('common.upload') }}
             </button>
+          </div>
+        </div>
+
+        <div class="border-app bg-app-overlay mt-3 rounded-xl border p-3 shadow-(--app-shadow-xs) backdrop-blur-sm">
+          <div class="text-app-secondary mb-2 text-xs">
+            {{ tFn('settings.onlineImage') }}
+          </div>
+          <div class="flex items-center gap-2">
+            <input
+              v-model="onlineImageUrlDraft"
+              class="border-app bg-app-overlay text-app placeholder:text-app-secondary min-w-0 flex-1 rounded-lg border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-(--app-focus-ring)"
+              type="url"
+              inputmode="url"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              :placeholder="tFn('settings.onlineImagePlaceholder')"
+              :disabled="applying"
+              @keydown.enter.prevent="useOnlineImageUrl"
+            />
+            <button
+              class="border-app text-app bg-app-overlay bg-app-overlay-hover flex min-w-18 cursor-pointer items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+              type="button"
+              :disabled="applying"
+              @click="useOnlineImageUrl"
+            >
+              {{ tFn('common.save') }}
+            </button>
+          </div>
+          <div v-if="onlineUrlInvalid" class="mt-2 text-[11px] leading-relaxed text-red-400">
+            {{ tFn('settings.onlineImageInvalid') }}
           </div>
         </div>
 
@@ -774,7 +774,9 @@ const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false
 
     if (merged.backgroundType === 'bing') {
       if (forceRefreshBing || !merged.backgroundImageUrl) {
-        const url = await fetchBingImageUrl(merged.backgroundImageUrl, !forceRefreshBing)
+        // force refresh 时需要排除“当前正在用的那张”，而不是 next 里被清空的 URL
+        const exclude = forceRefreshBing ? settings.value.backgroundImageUrl : merged.backgroundImageUrl
+        const url = await fetchBingImageUrl(exclude, !forceRefreshBing)
         if (url) {
           merged.backgroundImageUrl = url
         }

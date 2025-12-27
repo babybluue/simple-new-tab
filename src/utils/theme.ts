@@ -2,10 +2,54 @@ import type { Settings } from './storage'
 
 // 直接使用支持跨域的 Bing 壁纸直链服务，避免 JSON 请求被 CORS 拦截
 // 服务说明：https://bing.biturl.top/ （常见镜像，若不可用可再替换）
-const buildDirectBingImage = (idx: number, mkt = 'zh-CN') =>
-  `https://bing.biturl.top/?resolution=1920&format=image&index=${idx}&mkt=${mkt}&rand=${Date.now()}`
+const BING_POOL_SIZE = 8
+const RECENT_INDICES_KEY = 'bingRecentIndices'
 
-const shuffleIndices = (max = 8) => Array.from({ length: max }, (_, i) => i).sort(() => Math.random() - 0.5)
+const buildDirectBingImage = (idx: number, mkt = 'zh-CN') =>
+  `https://bing.biturl.top/?resolution=1920&format=image&index=${idx}&mkt=${mkt}`
+
+const shuffleIndices = (max = BING_POOL_SIZE) =>
+  Array.from({ length: max }, (_, i) => i).sort(() => Math.random() - 0.5)
+
+const parseBingIndexFromUrl = (url?: string): number | null => {
+  if (!url) return null
+  try {
+    const u = new URL(url)
+    const raw = u.searchParams.get('index')
+    if (!raw) return null
+    const n = Number.parseInt(raw, 10)
+    return Number.isFinite(n) ? n : null
+  } catch {
+    return null
+  }
+}
+
+async function getRecentBingIndices(): Promise<number[]> {
+  try {
+    const result = await chrome.storage.local.get(RECENT_INDICES_KEY)
+    const raw = result[RECENT_INDICES_KEY] as unknown
+    if (!Array.isArray(raw)) return []
+    return raw.filter(v => typeof v === 'number' && Number.isFinite(v))
+  } catch {
+    return []
+  }
+}
+
+async function setRecentBingIndices(indices: number[]): Promise<void> {
+  try {
+    // 仅保留最近 BING_POOL_SIZE 个，避免无限增长
+    const next = indices.slice(0, BING_POOL_SIZE)
+    await chrome.storage.local.set({ [RECENT_INDICES_KEY]: next })
+  } catch {
+    // 静默失败
+  }
+}
+
+async function rememberBingIndex(idx: number): Promise<void> {
+  const recent = await getRecentBingIndices()
+  const next = [idx, ...recent.filter(v => v !== idx)].slice(0, BING_POOL_SIZE)
+  await setRecentBingIndices(next)
+}
 
 // Bing 图片缓存相关
 const CACHE_NAME = 'bing-background-cache'
@@ -51,7 +95,7 @@ export async function clearBingImageCache(): Promise<void> {
     await Promise.all(keys.map(key => cache.delete(key)))
 
     // 清除 chrome.storage 中的缓存
-    await chrome.storage.local.remove(CACHE_KEY)
+    await chrome.storage.local.remove([CACHE_KEY, RECENT_INDICES_KEY])
   } catch {
     // 静默失败
   }
@@ -113,6 +157,12 @@ export const fetchBingImageUrl = async (excludeUrl?: string, useCache = true): P
         const cache = await caches.open(CACHE_NAME)
         const cached = await cache.match(cachedUrl)
         if (cached) {
+          // 记住本次返回的 index，用于下次“刷新不重复”
+          const cachedIndex = parseBingIndexFromUrl(cachedUrl)
+          if (cachedIndex !== null) {
+            rememberBingIndex(cachedIndex).catch(() => {})
+          }
+
           // 异步获取新图片并更新缓存（不阻塞）
           fetchBingImageUrl(excludeUrl, false)
             .then(newUrl => {
@@ -130,20 +180,40 @@ export const fetchBingImageUrl = async (excludeUrl?: string, useCache = true): P
   }
 
   // 获取新的图片 URL
-  const indices = shuffleIndices(8)
+  const indices = shuffleIndices(BING_POOL_SIZE)
   let newUrl: string | null = null
+  const excludeIndex = parseBingIndexFromUrl(excludeUrl)
+  const recent = await getRecentBingIndices()
 
-  for (const idx of indices) {
-    const candidate = buildDirectBingImage(idx)
-    if (candidate !== excludeUrl) {
-      newUrl = candidate
-      break
+  const pickIndex = (blocked: Set<number>): number | null => {
+    for (const idx of indices) {
+      if (!blocked.has(idx)) return idx
     }
+    return null
   }
 
-  if (!newUrl) {
-    newUrl = buildDirectBingImage(Math.floor(Math.random() * 8))
+  // 先尽量做到：不等于上一张 + 不在最近出现过
+  const blocked1 = new Set<number>(recent)
+  if (excludeIndex !== null) blocked1.add(excludeIndex)
+  let picked = pickIndex(blocked1)
+
+  // 如果 8 张都“最近用过”了，就重置最近记录（保留上一张），再选一个不同的
+  if (picked === null) {
+    const keep = excludeIndex !== null ? [excludeIndex] : []
+    await setRecentBingIndices(keep)
+    const blocked2 = new Set<number>(keep)
+    picked = pickIndex(blocked2)
   }
+
+  if (picked === null) {
+    // 兜底：至少保证和上一张不同（如果能解析到 index）
+    const fallbackPool = shuffleIndices(BING_POOL_SIZE)
+    const fallback = fallbackPool.find(i => (excludeIndex === null ? true : i !== excludeIndex)) ?? 0
+    picked = fallback
+  }
+
+  newUrl = buildDirectBingImage(picked)
+  rememberBingIndex(picked).catch(() => {})
 
   // 缓存新图片（异步，不阻塞返回）
   if (useCache && newUrl) {
