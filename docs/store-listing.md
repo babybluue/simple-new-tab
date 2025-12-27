@@ -19,11 +19,11 @@ Tip: The extension itself can also localize its name/description via manifest lo
 ============================================================
 
 短描述：
-一个简洁美观、可自定义的新标签页：搜索、快捷访问、常用站点与壁纸/主题一页搞定。
+一个简洁美观、可自定义的新标签页：搜索、快捷访问、常用站点与壁纸/主题一页搞定（支持自定义 CSS）。
 
 长描述：
 简洁新标签页用更清爽的布局替换浏览器的新标签页，让你把注意力放在真正重要的事情上：
-快速搜索、常用网站一键直达、自动生成常访问站点列表，并支持主题与背景自定义（Bing 壁纸/上传图片）。
+快速搜索、常用网站一键直达、自动整理常访问站点，并支持主题/背景与样式深度自定义（Bing 壁纸/上传图片/自定义 CSS）。
 
 特性
 
@@ -32,7 +32,7 @@ Tip: The extension itself can also localize its name/description via manifest lo
 🧩 快捷入口：把常用网站固定到新标签页
 📌 常用站点：自动整理你最常访问的网站（本地保存）
 🖼️ 背景随心：Bing 每日壁纸 / 预设背景 / 上传图片
-🎛️ 自定义布局：模块自由开关与排序，支持图标模式与紧凑/舒适显示
+🎨 自定义显示：模块自由开关，支持自定义 CSS
 
 权限与隐私说明：
 
@@ -49,10 +49,10 @@ English
 ============================================================
 
 Short description:
-A clean, customizable new tab page with search, quick links, frequent sites, and beautiful themes.
+A clean, customizable new tab page with search, quick links, frequent sites, and beautiful themes (plus custom CSS).
 
 Long description:
-Tablite replaces your new tab with a calm, practical dashboard—built for fast searching, quick access to what you use most, and a look that fits your style.
+Tablite replaces your new tab with a calm, practical dashboard—built for fast searching, quick access to what you use most, and a look you can truly customize (themes, backgrounds, and custom CSS).
 
 Features
 
@@ -61,7 +61,7 @@ Features
 🧩 Quick Links: pin your favorite sites for one-click access
 📌 Frequent Sites: smart list of sites you visit most (stored locally)
 🖼️ Backgrounds: Bing daily wallpaper, presets, or your own image
-🎛️ Custom layout: show/hide and reorder sections, with compact/comfortable density
+🎨 Custom display: show/hide sections, Custom CSS
 
 Permissions & privacy:
 
