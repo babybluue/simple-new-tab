@@ -95,7 +95,8 @@ export function parseAndSanitizeSettingsBackup(jsonText: string): ParseBackupRes
   next.theme = oneOf(s.theme, ['light', 'dark', 'auto'] as const) ?? next.theme
   next.maxHistoryItems = asInt(s.maxHistoryItems, 0, 50) ?? next.maxHistoryItems
 
-  next.backgroundType = oneOf(s.backgroundType, ['preset', 'custom', 'bing', 'upload'] as const) ?? next.backgroundType
+  next.backgroundType =
+    oneOf(s.backgroundType, ['preset', 'custom', 'bing', 'upload', 'url'] as const) ?? next.backgroundType
   next.backgroundColor = asString(s.backgroundColor, 2000) ?? next.backgroundColor
 
   const rawBgUrl = asString(s.backgroundImageUrl, 5_000_000)
@@ -126,6 +127,13 @@ export function parseAndSanitizeSettingsBackup(jsonText: string): ParseBackupRes
     // Bing 背景 URL 只允许 http(s)，否则让后续逻辑重新拉取
     if (next.backgroundImageUrl && !isHttpUrl(next.backgroundImageUrl)) {
       warnings.push('Bing background URL is invalid; it will be refreshed.')
+      next.backgroundImageUrl = ''
+    }
+  } else if (next.backgroundType === 'url') {
+    // 在线背景 URL：只允许 http(s)，否则回退到 preset
+    if (!next.backgroundImageUrl || !isHttpUrl(next.backgroundImageUrl)) {
+      warnings.push('Online background URL is missing/invalid; fallback to preset background.')
+      next.backgroundType = 'preset'
       next.backgroundImageUrl = ''
     }
   } else {

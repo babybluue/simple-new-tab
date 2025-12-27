@@ -83,7 +83,7 @@
         <div class="mt-4">
           <div class="text-base font-semibold">{{ tFn('settings.background') }}</div>
 
-          <div class="mt-4 flex flex-wrap items-center gap-2">
+          <div class="mt-4 grid w-full grid-cols-[repeat(auto-fit,2.5rem)] justify-between gap-2">
             <button
               v-for="bg in PRESET_BACKGROUNDS"
               :key="bg"
@@ -145,27 +145,44 @@
           >
             <span>{{ tFn('settings.refreshBingWallpaper') }}</span>
             <button
-              class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+              class="border-app text-app bg-app-overlay bg-app-overlay-hover flex min-w-18 cursor-pointer items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
               type="button"
               :disabled="bingLoading || applying"
               @click="refreshBing"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 4v6h6M20 20v-6h-6M5 19A9 9 0 0118 6l1-1M19 5l-1 1"
-                />
-              </svg>
               {{ tFn('common.refresh') }}
             </button>
+          </div>
+
+          <div class="border-app bg-app-overlay mt-3 rounded-xl border p-3 shadow-(--app-shadow-xs) backdrop-blur-sm">
+            <div class="text-app-secondary mb-2 text-xs">
+              {{ tFn('settings.onlineImage') }}
+            </div>
+            <div class="flex items-center gap-2">
+              <input
+                v-model="onlineImageUrlDraft"
+                class="border-app bg-app-overlay text-app placeholder:text-app-secondary min-w-0 flex-1 rounded-lg border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-(--app-focus-ring)"
+                type="url"
+                inputmode="url"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                :placeholder="tFn('settings.onlineImagePlaceholder')"
+                :disabled="applying"
+                @keydown.enter.prevent="useOnlineImageUrl"
+              />
+              <button
+                class="border-app text-app bg-app-overlay bg-app-overlay-hover flex min-w-18 cursor-pointer items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+                type="button"
+                :disabled="applying"
+                @click="useOnlineImageUrl"
+              >
+                {{ tFn('common.save') }}
+              </button>
+            </div>
+            <div v-if="onlineUrlInvalid" class="mt-2 text-[11px] leading-relaxed text-red-400">
+              {{ tFn('settings.onlineImageInvalid') }}
+            </div>
           </div>
 
           <div
@@ -173,7 +190,7 @@
           >
             <span>{{ tFn('settings.uploadImage') }}</span>
             <button
-              class="border-app text-app bg-app-overlay bg-app-overlay-hover relative flex cursor-pointer items-center gap-1 overflow-hidden rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+              class="border-app text-app bg-app-overlay bg-app-overlay-hover relative flex min-w-18 cursor-pointer items-center justify-center gap-1 overflow-hidden rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
               type="button"
               :disabled="applying"
               :title="tFn('settings.uploadImage')"
@@ -186,22 +203,6 @@
                 @click.stop
                 @change="handleUpload"
               />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-6" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13l3-3 3 3" />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 17v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"
-                />
-              </svg>
               {{ tFn('common.upload') }}
             </button>
           </div>
@@ -209,7 +210,7 @@
 
         <div class="mt-4">
           <div class="mb-4 text-base font-semibold">{{ tFn('settings.primaryColor') }}</div>
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="grid w-full grid-cols-[repeat(auto-fit,2.5rem)] justify-between gap-2">
             <button
               v-for="color in PRIMARY_PRESETS"
               :key="color"
@@ -539,10 +540,20 @@ const PRESET_BACKGROUNDS = [
 const normalizeColorInput = (value: string) =>
   value.startsWith('linear') || value.startsWith('radial') ? '#667eea' : value
 
+const isHttpUrl = (url: string): boolean => {
+  try {
+    const u = new URL(url)
+    return u.protocol === 'http:' || u.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 const settings = ref<Settings>({ ...(props.initialSettings || DEFAULT_SETTINGS) })
 const customColor = ref(normalizeColorInput(settings.value.backgroundColor))
 const primaryCustomColor = ref(settings.value.primaryColor || '#667eea')
 const customCssDraft = ref(settings.value.customCss || '')
+const onlineImageUrlDraft = ref(settings.value.backgroundType === 'url' ? settings.value.backgroundImageUrl || '' : '')
 const applying = ref(false)
 const bingLoading = ref(false)
 const open = ref(false)
@@ -607,6 +618,7 @@ const syncUiFromSettings = async (next: Settings) => {
     next.backgroundType === 'custom' ? next.backgroundColor : normalizeColorInput(next.backgroundColor)
   primaryCustomColor.value = next.primaryColor || '#667eea'
   customCssDraft.value = next.customCss || ''
+  onlineImageUrlDraft.value = next.backgroundType === 'url' ? next.backgroundImageUrl || '' : onlineImageUrlDraft.value
 }
 
 const ensureSettings = async () => {
@@ -637,6 +649,7 @@ const ensureSettings = async () => {
     stored.backgroundType === 'custom' ? stored.backgroundColor : normalizeColorInput(stored.backgroundColor)
   primaryCustomColor.value = stored.primaryColor || '#667eea'
   customCssDraft.value = stored.customCss || ''
+  onlineImageUrlDraft.value = stored.backgroundType === 'url' ? stored.backgroundImageUrl || '' : ''
   await applyBackground(stored)
   applyPrimaryColor(stored.primaryColor || '#667eea')
   applyTheme(stored.theme)
@@ -766,12 +779,16 @@ const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false
           merged.backgroundImageUrl = url
         }
       }
-    } else if (merged.backgroundType !== 'upload') {
-      // 切换到非 Bing 背景时，清除缓存
+    } else {
+      // 离开 Bing 背景时，清除缓存（不影响 upload/url）
       if (settings.value.backgroundType === 'bing') {
         await clearBingImageCache()
       }
-      merged.backgroundImageUrl = ''
+
+      // 仅在非图片背景类型时清空 backgroundImageUrl
+      if (merged.backgroundType !== 'upload' && merged.backgroundType !== 'url') {
+        merged.backgroundImageUrl = ''
+      }
     }
 
     // 先更新 settings.value，确保响应式更新
@@ -841,6 +858,18 @@ const handleUpload = (event: Event) => {
   reader.readAsDataURL(file)
   // 允许选择同一文件时也能再次触发 change
   target.value = ''
+}
+
+const onlineUrlInvalid = computed(() => {
+  const v = (onlineImageUrlDraft.value || '').trim()
+  if (!v) return false
+  return !isHttpUrl(v)
+})
+
+const useOnlineImageUrl = async () => {
+  const v = (onlineImageUrlDraft.value || '').trim()
+  if (!v || !isHttpUrl(v)) return
+  await persistAndApply({ backgroundType: 'url', backgroundImageUrl: v })
 }
 
 const toggleVisibility = async (

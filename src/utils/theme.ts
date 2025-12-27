@@ -158,6 +158,13 @@ export const fetchBingImageUrl = async (excludeUrl?: string, useCache = true): P
 // 存储当前的 blob URL，用于后续释放
 let currentBlobUrl: string | null = null
 
+const toCssUrl = (rawUrl: string): string => {
+  // 统一把 URL 包在引号中，避免 &、空格等字符导致 CSS url() 解析异常
+  // encodeURI 不会破坏已有的 query 参数（会处理空格等不安全字符）
+  const encoded = encodeURI(rawUrl).replace(/"/g, '\\"')
+  return `url("${encoded}")`
+}
+
 export const applyBackground = async (
   settings: Pick<Settings, 'backgroundType' | 'backgroundColor' | 'backgroundImageUrl'>
 ): Promise<string | undefined> => {
@@ -179,7 +186,7 @@ export const applyBackground = async (
   const isLight = root.classList.contains('light')
   const overlayColor = isLight ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'
 
-  if (settings.backgroundType === 'bing' || settings.backgroundType === 'upload') {
+  if (settings.backgroundType === 'bing' || settings.backgroundType === 'upload' || settings.backgroundType === 'url') {
     let imageUrl: string | null = null
     let originalUrl: string | undefined = undefined
 
@@ -196,12 +203,15 @@ export const applyBackground = async (
     if (imageUrl) {
       // 尝试从缓存中获取 blob URL 以提升加载速度
       try {
-        const cache = await caches.open(CACHE_NAME)
-        const cached = await cache.match(imageUrl)
-        if (cached) {
-          const blob = await cached.blob()
-          currentBlobUrl = URL.createObjectURL(blob)
-          imageUrl = currentBlobUrl
+        // 仅对 bing 背景做 Cache API 缓存命中（其他在线 URL 可能是一次性的签名链接，不强制依赖缓存）
+        if (settings.backgroundType === 'bing') {
+          const cache = await caches.open(CACHE_NAME)
+          const cached = await cache.match(imageUrl)
+          if (cached) {
+            const blob = await cached.blob()
+            currentBlobUrl = URL.createObjectURL(blob)
+            imageUrl = currentBlobUrl
+          }
         }
       } catch {
         // 如果缓存获取失败，使用原始 URL
@@ -209,7 +219,7 @@ export const applyBackground = async (
 
       // 添加蒙层：使用 linear-gradient 叠加半透明蒙层（透明度 30%）
       root.style.backgroundImage = ''
-      root.style.background = `linear-gradient(${overlayColor}, ${overlayColor}), center center / cover no-repeat fixed url(${imageUrl})`
+      root.style.background = `linear-gradient(${overlayColor}, ${overlayColor}), center center / cover no-repeat fixed ${toCssUrl(imageUrl)}`
       return originalUrl
     }
 

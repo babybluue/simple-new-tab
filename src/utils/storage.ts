@@ -14,7 +14,7 @@ export interface HistoryItem {
   visitCount?: number
 }
 
-export type BackgroundType = 'preset' | 'custom' | 'bing' | 'upload'
+export type BackgroundType = 'preset' | 'custom' | 'bing' | 'upload' | 'url'
 export type PrimaryColorType = 'preset' | 'custom'
 
 export interface Settings {
