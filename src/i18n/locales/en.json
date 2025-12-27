@@ -39,7 +39,17 @@
     "customCssHint": "Tip: This CSS is injected on every new tab load. Broken CSS can make the UI look wrong—keep a backup.",
     "language": "Language",
     "languageZh": "中文",
-    "languageEn": "English"
+    "languageEn": "English",
+    "backup": "Import / Export",
+    "exportBackup": "Export JSON",
+    "importBackup": "Import JSON",
+    "backupHint": "Save your current settings and quick access to a JSON file, then import it on another device to restore.",
+    "exportSuccess": "Backup exported.",
+    "exportFailed": "Export failed. Please try again.",
+    "importInvalid": "Import failed: invalid file or unsupported version.",
+    "importTooLarge": "Import failed: file is too large.",
+    "importSuccess": "Imported successfully. Settings applied.",
+    "importWithWarnings": "some items were skipped"
   },
   "search": {
     "placeholder": "Search or enter URL...",

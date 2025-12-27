@@ -39,7 +39,17 @@
     "customCssHint": "提示：这段 CSS 会在每次新标签页加载时注入。写错样式可能导致页面显示异常，建议先保存一份备份。",
     "language": "语言",
     "languageZh": "中文",
-    "languageEn": "English"
+    "languageEn": "English",
+    "backup": "导入 / 导出",
+    "exportBackup": "导出 JSON",
+    "importBackup": "导入 JSON",
+    "backupHint": "可将当前设置与快速访问保存为 JSON 文件，并在其他设备导入恢复。",
+    "exportSuccess": "已导出备份文件。",
+    "exportFailed": "导出失败，请稍后重试。",
+    "importInvalid": "导入失败：文件格式不正确或版本不支持。",
+    "importTooLarge": "导入失败：文件过大。",
+    "importSuccess": "导入成功，设置已应用。",
+    "importWithWarnings": "部分内容被忽略"
   },
   "search": {
     "placeholder": "搜索或输入网址...",

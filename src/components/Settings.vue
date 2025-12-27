@@ -434,6 +434,52 @@
             </div>
           </div>
         </div>
+
+        <div class="mt-4">
+          <div class="mb-4 text-base font-semibold">{{ tFn('settings.backup') }}</div>
+          <div
+            class="border-app bg-app-overlay text-app-secondary flex flex-col gap-2 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <button
+                class="border-app text-app bg-app-overlay bg-app-overlay-hover inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
+                type="button"
+                :disabled="applying || backupBusy"
+                @click="exportBackup"
+              >
+                {{ tFn('settings.exportBackup') }}
+              </button>
+
+              <button
+                class="border-app text-app bg-app-overlay bg-app-overlay-hover relative inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
+                type="button"
+                :disabled="applying || backupBusy"
+                @click="triggerImport"
+              >
+                <input
+                  ref="backupFileInput"
+                  type="file"
+                  accept="application/json,.json"
+                  class="hidden"
+                  @change="handleImport"
+                />
+                {{ tFn('settings.importBackup') }}
+              </button>
+            </div>
+
+            <div class="text-app-secondary text-[11px] leading-relaxed">
+              {{ tFn('settings.backupHint') }}
+            </div>
+
+            <div
+              v-if="backupMessage"
+              class="text-[11px] leading-relaxed"
+              :class="backupError ? 'text-red-400' : 'text-app-secondary'"
+            >
+              {{ backupMessage }}
+            </div>
+          </div>
+        </div>
       </section>
     </Transition>
   </aside>
@@ -446,8 +492,9 @@ import type { SupportedLocale } from '@/i18n'
 import { getLocale, setLocale, t } from '@/i18n'
 import { useI18n } from '@/i18n/composable'
 import { applyCustomCss } from '@/utils/customCss'
+import { buildSettingsBackup, parseAndSanitizeSettingsBackup } from '@/utils/settingsTransfer'
 import type { Settings } from '@/utils/storage'
-import { DEFAULT_SETTINGS, getSettings, saveSettings } from '@/utils/storage'
+import { DEFAULT_SETTINGS, getQuickLinks, getSettings, saveQuickLinks, saveSettings } from '@/utils/storage'
 import {
   applyBackground,
   applyPrimaryColor,
@@ -495,6 +542,10 @@ const applying = ref(false)
 const bingLoading = ref(false)
 const open = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
+const backupFileInput = ref<HTMLInputElement | null>(null)
+const backupBusy = ref(false)
+const backupMessage = ref('')
+const backupError = ref(false)
 
 const PRIMARY_PRESETS = [
   THEME_LIGHT_BG,
@@ -573,6 +624,99 @@ onMounted(async () => {
 
 const toggle = () => {
   open.value = !open.value
+}
+
+const formatDateForFileName = (d: Date) => {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
+}
+
+const exportBackup = async () => {
+  backupBusy.value = true
+  backupError.value = false
+  backupMessage.value = ''
+  try {
+    const s = await getSettings()
+    const links = await getQuickLinks()
+    const backup = buildSettingsBackup({ settings: s, quickLinks: links })
+    const text = JSON.stringify(backup, null, 2)
+    const blob = new Blob([text], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `tablite-backup-${formatDateForFileName(new Date())}.json`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+    backupMessage.value = t('settings.exportSuccess')
+  } catch {
+    backupError.value = true
+    backupMessage.value = t('settings.exportFailed')
+  } finally {
+    backupBusy.value = false
+  }
+}
+
+const triggerImport = () => {
+  backupMessage.value = ''
+  backupError.value = false
+  backupFileInput.value?.click()
+}
+
+const handleImport = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  // 允许再次选择同一文件
+  target.value = ''
+  if (!file) return
+
+  const MAX_BYTES = 8 * 1024 * 1024
+  if (file.size > MAX_BYTES) {
+    backupError.value = true
+    backupMessage.value = t('settings.importTooLarge')
+    return
+  }
+
+  backupBusy.value = true
+  backupError.value = false
+  backupMessage.value = ''
+
+  try {
+    const text = await file.text()
+    const parsed = parseAndSanitizeSettingsBackup(text)
+    if (!parsed.ok) {
+      backupError.value = true
+      backupMessage.value = t('settings.importInvalid')
+      return
+    }
+
+    // 先切换语言（让 UI 立即刷新），再保存设置
+    if (parsed.settings.language) {
+      await setLocale(parsed.settings.language)
+    }
+
+    await saveQuickLinks(parsed.quickLinks)
+    await persistAndApply(parsed.settings)
+
+    // 同步本地 UI 草稿状态，避免导入后显示不一致
+    customCssDraft.value = settings.value.customCss || ''
+    customColor.value =
+      settings.value.backgroundType === 'custom'
+        ? settings.value.backgroundColor
+        : normalizeColorInput(settings.value.backgroundColor)
+    primaryCustomColor.value = settings.value.primaryColor || '#667eea'
+
+    backupMessage.value =
+      parsed.warnings.length > 0
+        ? `${t('settings.importSuccess')} (${t('settings.importWithWarnings')})`
+        : t('settings.importSuccess')
+  } catch {
+    backupError.value = true
+    backupMessage.value = t('settings.importFailed')
+  } finally {
+    backupBusy.value = false
+  }
 }
 
 const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false) => {
