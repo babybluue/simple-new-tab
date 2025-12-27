@@ -33,6 +33,10 @@ export interface Settings {
   openLinksInNewTab: boolean
   /** LinkCard 仅显示图标（隐藏标题/副标题） */
   iconOnlyLinkCards: boolean
+  /** 是否启用用户自定义 CSS */
+  customCssEnabled: boolean
+  /** 用户自定义 CSS 文本 */
+  customCss: string
   language?: 'zh' | 'en'
 }
 
@@ -51,6 +55,8 @@ export const DEFAULT_SETTINGS: Settings = {
   showHistory: true,
   openLinksInNewTab: false,
   iconOnlyLinkCards: false,
+  customCssEnabled: false,
+  customCss: '',
   language: undefined, // 默认根据浏览器语言自动选择
 }
 

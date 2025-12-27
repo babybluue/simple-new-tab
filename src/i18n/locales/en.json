@@ -7,6 +7,7 @@
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
+    "clear": "Clear",
     "refresh": "Refresh",
     "expand": "Expand",
     "collapse": "Collapse",
@@ -32,6 +33,10 @@
     "recentVisits": "Recent Visits",
     "openLinksInNewTab": "Open links in new tab",
     "iconOnlyLinkCards": "Icons Only",
+    "customCss": "Custom CSS",
+    "customCssEnable": "Enable custom CSS",
+    "customCssPlaceholder": "/* Paste your CSS here */",
+    "customCssHint": "Tip: This CSS is injected on every new tab load. Broken CSS can make the UI look wrong—keep a backup.",
     "language": "Language",
     "languageZh": "中文",
     "languageEn": "English"

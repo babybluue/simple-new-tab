@@ -7,6 +7,7 @@
     "cancel": "取消",
     "edit": "编辑",
     "delete": "删除",
+    "clear": "清空",
     "refresh": "刷新",
     "expand": "展开",
     "collapse": "收起",
@@ -32,6 +33,10 @@
     "recentVisits": "最近访问",
     "openLinksInNewTab": "在新标签页打开",
     "iconOnlyLinkCards": "仅显示图标",
+    "customCss": "自定义 CSS",
+    "customCssEnable": "启用自定义 CSS",
+    "customCssPlaceholder": "/* 在这里粘贴你的 CSS */",
+    "customCssHint": "提示：这段 CSS 会在每次新标签页加载时注入。写错样式可能导致页面显示异常，建议先保存一份备份。",
     "language": "语言",
     "languageZh": "中文",
     "languageEn": "English"

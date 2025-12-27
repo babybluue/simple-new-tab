@@ -33,6 +33,7 @@ import QuickAccessList from '@/components/QuickAccessList.vue'
 import SearchBox from '@/components/SearchBox.vue'
 import Settings from '@/components/Settings.vue'
 import { useI18n } from '@/i18n/composable'
+import { applyCustomCss } from '@/utils/customCss'
 import { getSettings, type Settings as SettingsModel } from '@/utils/storage'
 import { applyBackground, applyPrimaryColor, applyTheme } from '@/utils/theme'
 
@@ -54,6 +55,7 @@ const handleSettingsUpdate = async (updatedSettings: SettingsModel) => {
   applyTheme(updatedSettings.theme)
   await applyBackground(updatedSettings)
   applyPrimaryColor(updatedSettings.primaryColor || '#667eea')
+  applyCustomCss(updatedSettings)
 }
 
 onMounted(async () => {
@@ -63,6 +65,7 @@ onMounted(async () => {
     applyTheme(loadedSettings.theme)
     await applyBackground(loadedSettings)
     applyPrimaryColor(loadedSettings.primaryColor)
+    applyCustomCss(loadedSettings)
   }
 })
 </script>

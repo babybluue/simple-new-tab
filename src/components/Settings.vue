@@ -373,6 +373,67 @@
             </label>
           </div>
         </div>
+
+        <div class="mt-4">
+          <div class="mb-4 text-base font-semibold">{{ tFn('settings.customCss') }}</div>
+
+          <label
+            class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
+          >
+            <span>{{ tFn('settings.customCssEnable') }}</span>
+            <button
+              type="button"
+              role="switch"
+              :aria-checked="settings.customCssEnabled"
+              class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+              :style="getSwitchTrackStyle(settings.customCssEnabled)"
+              :disabled="applying"
+              @click="toggleCustomCssEnabled"
+            >
+              <span
+                class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                style="background-color: var(--app-text-color)"
+                :class="settings.customCssEnabled ? 'translate-x-5' : 'translate-x-0'"
+              />
+            </button>
+          </label>
+
+          <div class="border-app bg-app-overlay mt-3 rounded-xl border p-3 shadow-(--app-shadow-xs) backdrop-blur-sm">
+            <textarea
+              v-model="customCssDraft"
+              class="border-app bg-app-overlay text-app placeholder:text-app-secondary w-full resize-y rounded-lg border p-3 text-xs leading-relaxed outline-none focus:ring-2 focus:ring-(--app-focus-ring)"
+              :placeholder="tFn('settings.customCssPlaceholder')"
+              rows="7"
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="off"
+              :disabled="applying"
+            />
+
+            <div class="text-app-secondary mt-2 text-[11px] leading-relaxed">
+              {{ tFn('settings.customCssHint') }}
+            </div>
+
+            <div class="mt-3 flex items-center justify-end gap-2">
+              <button
+                class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
+                type="button"
+                :disabled="applying || (!customCssDraft && !settings.customCss)"
+                @click="clearCustomCss"
+              >
+                {{ tFn('common.clear') }}
+              </button>
+              <button
+                class="border-app text-app bg-app-overlay bg-app-overlay-hover inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
+                type="button"
+                :disabled="applying || !customCssChanged"
+                @click="saveCustomCss"
+              >
+                {{ tFn('common.save') }}
+              </button>
+            </div>
+          </div>
+        </div>
       </section>
     </Transition>
   </aside>
@@ -384,6 +445,7 @@ import { computed, onMounted, ref } from 'vue'
 import type { SupportedLocale } from '@/i18n'
 import { getLocale, setLocale, t } from '@/i18n'
 import { useI18n } from '@/i18n/composable'
+import { applyCustomCss } from '@/utils/customCss'
 import type { Settings } from '@/utils/storage'
 import { DEFAULT_SETTINGS, getSettings, saveSettings } from '@/utils/storage'
 import {
@@ -428,6 +490,7 @@ const normalizeColorInput = (value: string) =>
 const settings = ref<Settings>({ ...(props.initialSettings || DEFAULT_SETTINGS) })
 const customColor = ref(normalizeColorInput(settings.value.backgroundColor))
 const primaryCustomColor = ref(settings.value.primaryColor || '#667eea')
+const customCssDraft = ref(settings.value.customCss || '')
 const applying = ref(false)
 const bingLoading = ref(false)
 const open = ref(false)
@@ -481,6 +544,8 @@ const ensureSettings = async () => {
     if (props.initialSettings.language) {
       await setLocale(props.initialSettings.language)
     }
+    customCssDraft.value = props.initialSettings.customCss || ''
+    applyCustomCss(props.initialSettings)
     emit('settings-updated', settings.value)
     return
   }
@@ -494,9 +559,11 @@ const ensureSettings = async () => {
   customColor.value =
     stored.backgroundType === 'custom' ? stored.backgroundColor : normalizeColorInput(stored.backgroundColor)
   primaryCustomColor.value = stored.primaryColor || '#667eea'
+  customCssDraft.value = stored.customCss || ''
   await applyBackground(stored)
   applyPrimaryColor(stored.primaryColor || '#667eea')
   applyTheme(stored.theme)
+  applyCustomCss(stored)
   emit('settings-updated', stored)
 }
 
@@ -536,6 +603,7 @@ const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false
       settings.value.backgroundImageUrl = fetched
     }
     applyPrimaryColor(settings.value.primaryColor || '#667eea')
+    applyCustomCss(settings.value)
     await saveSettings(settings.value)
     emit('settings-updated', settings.value)
   } finally {
@@ -600,6 +668,23 @@ const toggleVisibility = async (
   key: 'showDateTime' | 'showQuickAccess' | 'showHistory' | 'openLinksInNewTab' | 'iconOnlyLinkCards'
 ) => {
   await persistAndApply({ [key]: !settings.value[key] })
+}
+
+const customCssChanged = computed(() => (customCssDraft.value || '') !== (settings.value.customCss || ''))
+
+const saveCustomCss = async () => {
+  await persistAndApply({ customCss: customCssDraft.value })
+}
+
+const clearCustomCss = async () => {
+  customCssDraft.value = ''
+  await persistAndApply({ customCss: '', customCssEnabled: false })
+}
+
+const toggleCustomCssEnabled = async () => {
+  const nextEnabled = !settings.value.customCssEnabled
+  // 启用/禁用时也把当前草稿写入，避免“开关开了但还是旧 CSS”
+  await persistAndApply({ customCssEnabled: nextEnabled, customCss: customCssDraft.value })
 }
 
 const getSwitchTrackStyle = (on: boolean) => {
