@@ -4,7 +4,11 @@
       class="app-main relative flex min-h-dvh w-full flex-col items-center px-[clamp(20px,5vw,60px)] py-[clamp(24px,5vh,56px)]"
       role="main"
     >
-      <Settings :initial-settings="initialSettings" @settings-updated="handleSettingsUpdate" />
+      <Settings
+        :initial-settings="initialSettings"
+        :synced-settings="settings"
+        @settings-updated="handleSettingsUpdate"
+      />
       <header
         class="mb-2"
         :class="{
@@ -25,7 +29,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 import DateTime from '@/components/DateTime.vue'
 import HistoryList from '@/components/HistoryList.vue'
@@ -50,6 +54,28 @@ const displaySettings = computed(() => ({
   showHistory: settings.value?.showHistory ?? true,
 }))
 
+const isSameSettings = (a: SettingsModel | null, b: SettingsModel | null) => {
+  if (!a || !b) return false
+  return (
+    a.searchEngine === b.searchEngine &&
+    a.theme === b.theme &&
+    a.maxHistoryItems === b.maxHistoryItems &&
+    a.backgroundType === b.backgroundType &&
+    a.backgroundColor === b.backgroundColor &&
+    (a.backgroundImageUrl || '') === (b.backgroundImageUrl || '') &&
+    a.primaryColorType === b.primaryColorType &&
+    a.primaryColor === b.primaryColor &&
+    a.showDateTime === b.showDateTime &&
+    a.showQuickAccess === b.showQuickAccess &&
+    a.showHistory === b.showHistory &&
+    a.openLinksInNewTab === b.openLinksInNewTab &&
+    a.iconOnlyLinkCards === b.iconOnlyLinkCards &&
+    a.customCssEnabled === b.customCssEnabled &&
+    a.customCss === b.customCss &&
+    (a.language || '') === (b.language || '')
+  )
+}
+
 const handleSettingsUpdate = async (updatedSettings: SettingsModel) => {
   settings.value = updatedSettings
   applyTheme(updatedSettings.theme)
@@ -67,6 +93,23 @@ onMounted(async () => {
     applyPrimaryColor(loadedSettings.primaryColor)
     applyCustomCss(loadedSettings)
   }
+})
+
+const onStorageChanged = (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => {
+  if (areaName !== 'local') return
+  const change = changes.settings
+  if (!change?.newValue) return
+  const next = change.newValue as SettingsModel
+  if (isSameSettings(settings.value, next)) return
+  void handleSettingsUpdate(next)
+}
+
+onMounted(() => {
+  chrome.storage.onChanged.addListener(onStorageChanged)
+})
+
+onUnmounted(() => {
+  chrome.storage.onChanged.removeListener(onStorageChanged)
 })
 </script>
 <style scoped>

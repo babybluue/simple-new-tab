@@ -486,7 +486,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 import type { SupportedLocale } from '@/i18n'
 import { getLocale, setLocale, t } from '@/i18n'
@@ -509,6 +509,11 @@ const { t: tFn } = useI18n()
 
 const props = defineProps<{
   initialSettings?: Settings
+  /**
+   * 外部同步的 settings（例如来自 App.vue 的 storage.onChanged 监听）。
+   * 用于在多个打开的新标签页之间实时刷新设置面板 UI。
+   */
+  syncedSettings?: Settings | null
 }>()
 
 const emit = defineEmits<{
@@ -589,7 +594,28 @@ const LANGUAGE_OPTIONS = computed(() => [
   { value: 'en' as const, label: t('settings.languageEn') },
 ])
 
+const syncUiFromSettings = async (next: Settings) => {
+  settings.value = { ...DEFAULT_SETTINGS, ...next }
+
+  // 同步语言（让 UI 立即切换）
+  if (next.language) {
+    await setLocale(next.language)
+  }
+
+  // 同步颜色输入/草稿状态，避免面板显示滞后
+  customColor.value =
+    next.backgroundType === 'custom' ? next.backgroundColor : normalizeColorInput(next.backgroundColor)
+  primaryCustomColor.value = next.primaryColor || '#667eea'
+  customCssDraft.value = next.customCss || ''
+}
+
 const ensureSettings = async () => {
+  // 如果外部已经提供了最新的 settings，就以它为准（避免重复 getSettings + 避免与跨标签页同步冲突）
+  if (props.syncedSettings) {
+    await syncUiFromSettings(props.syncedSettings)
+    emit('settings-updated', settings.value)
+    return
+  }
   if (props.initialSettings) {
     // 如果初始设置中有语言，应用它
     if (props.initialSettings.language) {
@@ -621,6 +647,15 @@ const ensureSettings = async () => {
 onMounted(async () => {
   await ensureSettings()
 })
+
+watch(
+  () => props.syncedSettings,
+  async next => {
+    if (!next) return
+    await syncUiFromSettings(next)
+  },
+  { deep: true }
+)
 
 const toggle = () => {
   open.value = !open.value
