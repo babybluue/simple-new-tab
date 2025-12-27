@@ -186,7 +186,7 @@ import {
   saveQuickLinks,
   type Settings,
 } from '@/utils/storage'
-import { buildPrimarySurfaceStyle } from '@/utils/theme'
+// 使用 CSS 变量驱动卡片样式：Primary Color 预览时只需要更新 CSS 变量即可实时生效
 import type { QuickLink } from '@/utils/types'
 import { extractDomainFromUrl } from '@/utils/url'
 
@@ -229,7 +229,10 @@ const presetOptions = computed<PresetOption[]>(() => {
 })
 
 const cardStyle = computed(() => {
-  return buildPrimarySurfaceStyle(settings.value?.primaryColor)
+  return {
+    background: 'var(--primary-surface, var(--primary-color, #667eea))',
+    borderColor: 'var(--primary-border, var(--app-border-color))',
+  }
 })
 
 const updateMenuPosition = () => {

@@ -325,10 +325,23 @@ export const applyPrimaryColor = (color: string) => {
   if (!root) return
   const fallback = '#667eea'
   const base = color || fallback
+  const isLight = root.classList.contains('light')
   root.style.setProperty('--primary-color', base)
   root.style.setProperty('--primary-surface', base)
-  // 边框颜色会根据主题在 buildPrimarySurfaceStyle 中动态设置
-  root.style.setProperty('--primary-border', 'rgba(255,255,255,0.2)')
+  // 边框颜色：复用 buildPrimarySurfaceStyle 的判定逻辑（用 CSS 变量驱动 LinkCard）
+  let borderColor: string
+  if (base) {
+    if (isLight && (base === '#f1f3f5' || base === THEME_LIGHT_BG)) {
+      borderColor = 'rgba(33, 53, 71, 0.2)'
+    } else if (!isLight && (base === '#0f172a' || base === THEME_DARK_BG)) {
+      borderColor = 'rgba(255, 255, 255, 0.15)'
+    } else {
+      borderColor = isLight ? 'rgba(33, 53, 71, 0.2)' : 'rgba(255, 255, 255, 0.2)'
+    }
+  } else {
+    borderColor = isLight ? 'rgba(33, 53, 71, 0.18)' : 'rgba(255, 255, 255, 0.18)'
+  }
+  root.style.setProperty('--primary-border', borderColor)
 }
 
 export const buildPrimarySurfaceStyle = (primaryColor?: string) => {

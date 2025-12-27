@@ -241,14 +241,14 @@
                   : {}
               "
               type="button"
-              @click="usePrimaryCustom"
             >
               <input
                 v-model="primaryCustomColor"
                 type="color"
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 :title="tFn('settings.primaryColorCustom')"
-                @input="usePrimaryCustom"
+                @input="handlePrimaryColorInput"
+                @change="handlePrimaryColorChange"
               />
               <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <svg
@@ -537,8 +537,16 @@ const PRESET_BACKGROUNDS = [
   'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)',
 ]
 
+const isHexColor6 = (value: string) => /^#[0-9a-fA-F]{6}$/.test(value)
+
+// <input type="color"> 只接受 "#rrggbb"；gradient/transparent 之类会触发控制台警告
 const normalizeColorInput = (value: string) =>
-  value.startsWith('linear') || value.startsWith('radial') ? '#667eea' : value
+  value === 'transparent' || value.startsWith('linear') || value.startsWith('radial') ? '#667eea' : value
+
+const normalizeColorPickerValue = (value?: string, fallback = '#667eea') => {
+  if (!value) return fallback
+  return isHexColor6(value) ? value : fallback
+}
 
 const isHttpUrl = (url: string): boolean => {
   try {
@@ -551,7 +559,7 @@ const isHttpUrl = (url: string): boolean => {
 
 const settings = ref<Settings>({ ...(props.initialSettings || DEFAULT_SETTINGS) })
 const customColor = ref(normalizeColorInput(settings.value.backgroundColor))
-const primaryCustomColor = ref(settings.value.primaryColor || '#667eea')
+const primaryCustomColor = ref(normalizeColorPickerValue(settings.value.primaryColor, '#667eea'))
 const customCssDraft = ref(settings.value.customCss || '')
 const onlineImageUrlDraft = ref(settings.value.backgroundType === 'url' ? settings.value.backgroundImageUrl || '' : '')
 const applying = ref(false)
@@ -616,7 +624,7 @@ const syncUiFromSettings = async (next: Settings) => {
   // 同步颜色输入/草稿状态，避免面板显示滞后
   customColor.value =
     next.backgroundType === 'custom' ? next.backgroundColor : normalizeColorInput(next.backgroundColor)
-  primaryCustomColor.value = next.primaryColor || '#667eea'
+  primaryCustomColor.value = normalizeColorPickerValue(next.primaryColor, '#667eea')
   customCssDraft.value = next.customCss || ''
   onlineImageUrlDraft.value = next.backgroundType === 'url' ? next.backgroundImageUrl || '' : onlineImageUrlDraft.value
 }
@@ -647,7 +655,7 @@ const ensureSettings = async () => {
   // 如果是自定义颜色，直接使用存储的值；否则使用 normalizeColorInput 转换
   customColor.value =
     stored.backgroundType === 'custom' ? stored.backgroundColor : normalizeColorInput(stored.backgroundColor)
-  primaryCustomColor.value = stored.primaryColor || '#667eea'
+  primaryCustomColor.value = normalizeColorPickerValue(stored.primaryColor, '#667eea')
   customCssDraft.value = stored.customCss || ''
   onlineImageUrlDraft.value = stored.backgroundType === 'url' ? stored.backgroundImageUrl || '' : ''
   await applyBackground(stored)
@@ -825,8 +833,26 @@ const usePrimaryPreset = async (value: string) => {
   await persistAndApply({ primaryColorType: 'preset', primaryColor: value })
 }
 
-const usePrimaryCustom = async () => {
-  await persistAndApply({ primaryColorType: 'custom', primaryColor: primaryCustomColor.value })
+// Primary Color：
+// - input：只做预览（更新 CSS 变量）；不落盘，避免并发写入导致抖动
+// - change：用户确认后再一次性保存
+const handlePrimaryColorInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const next = target.value
+  primaryCustomColor.value = next
+  settings.value = {
+    ...settings.value,
+    primaryColorType: 'custom',
+    primaryColor: next,
+  }
+  applyPrimaryColor(next)
+}
+
+const handlePrimaryColorChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const next = target.value
+  primaryCustomColor.value = next
+  await persistAndApply({ primaryColorType: 'custom', primaryColor: next })
 }
 
 const refreshBing = async () => {

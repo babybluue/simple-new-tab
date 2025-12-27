@@ -106,7 +106,7 @@ import {
   removeHistoryItem,
   type Settings,
 } from '@/utils/storage'
-import { buildPrimarySurfaceStyle } from '@/utils/theme'
+// 使用 CSS 变量驱动卡片样式：Primary Color 预览时只需要更新 CSS 变量即可实时生效
 import { extractDomainFromUrl } from '@/utils/url'
 
 import LinkCard from './LinkCard.vue'
@@ -199,7 +199,10 @@ const handlePin = async (item: HistoryItem) => {
 }
 
 const cardStyle = computed(() => {
-  return buildPrimarySurfaceStyle(settings.value?.primaryColor)
+  return {
+    background: 'var(--primary-surface, var(--primary-color, #667eea))',
+    borderColor: 'var(--primary-border, var(--app-border-color))',
+  }
 })
 
 const handleFaviconErrorWrapper = (item: HistoryItem, e: Event) => {
