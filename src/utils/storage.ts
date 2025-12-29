@@ -1,5 +1,6 @@
 // 存储工具函数
-import { getUnavatarFavicon } from './favicon'
+import { getUnavatarFavicon, isAutoFavicon } from './favicon'
+import { tryGetLogoForUrl } from './logo'
 import { PRESET_QUICK_LINKS } from './presets'
 import { THEME_DARK_BG, THEME_LIGHT_BG } from './theme'
 import type { QuickLink } from './types'
@@ -88,9 +89,27 @@ const normalizeHistoryItem = (item: HistoryItem): HistoryItem => {
 
 const normalizeQuickLink = (link: QuickLink): QuickLink => {
   const domain = link.domain || extractDomainFromUrl(link.url)
-  const unavatarFavicon = getUnavatarFavicon({ domain, url: link.url })
-  const favicon = link.favicon || unavatarFavicon
-  return { ...link, domain, favicon }
+
+  // 给“用户自定义链接”补齐可用的内置 logo（仅在确实存在对应 svg 时才写入；不回退 generic）。
+  const logo = link.logo || tryGetLogoForUrl(link.url)
+
+  let favicon = link.favicon
+  if (logo) {
+    // 有本地 logo：不持久化“自动生成的在线 favicon”（避免编辑回显一堆链接）。
+    if (favicon && isAutoFavicon({ domain, url: link.url }, favicon)) {
+      favicon = undefined
+    }
+  } else {
+    // 没有本地 logo：保持“在线获取”的初衷 —— 默认补齐 unavatar，且允许它继续持久化，
+    // 这样编辑时也能看到/修改这个 URL。
+    favicon = favicon || getUnavatarFavicon({ domain, url: link.url })
+  }
+
+  const next: QuickLink = { ...link, domain }
+  if (logo) next.logo = logo
+  if (favicon) next.favicon = favicon
+  else delete (next as Partial<QuickLink>).favicon
+  return next
 }
 
 const sortHistory = (items: HistoryItem[]): HistoryItem[] => {
@@ -220,6 +239,24 @@ export async function getQuickLinks(): Promise<QuickLink[]> {
   // 如果之前没有存储，初始化存储默认列表，方便后续同步
   if (!stored.length) {
     await chrome.storage.local.set({ quickLinks: normalized })
+  } else {
+    // 轻量迁移：如果 normalizeQuickLink 清理/补齐了字段（例如去掉自动 favicon、补齐 domain、补齐可用本地 logo），
+    // 则把结果写回存储，保证“存储层”和“渲染层/编辑层”一致。
+    const changed = stored.some((prev, idx) => {
+      const next = normalized[idx]
+      if (!next) return true
+      return (
+        prev.url !== next.url ||
+        prev.title !== next.title ||
+        prev.domain !== next.domain ||
+        prev.logo !== next.logo ||
+        prev.favicon !== next.favicon ||
+        prev.category !== next.category
+      )
+    })
+    if (changed) {
+      await chrome.storage.local.set({ quickLinks: normalized })
+    }
   }
 
   return normalized

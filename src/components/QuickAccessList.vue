@@ -74,8 +74,7 @@
         <LinkCard
           :title="getLocalizedSiteTitle(link.url, getLocale(), link.title)"
           :subtitle="link.domain || link.url"
-          :logo="link.logo"
-          :favicon="link.logo ? undefined : getFavicon(link as FaviconItem)"
+          v-bind="getSiteIconProps(link)"
           :fallback-char="link.title.charAt(0).toUpperCase()"
           :card-style="cardStyle"
           :icon-only="settings?.iconOnlyLinkCards"
@@ -176,9 +175,10 @@ import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 
 import { getLocale } from '@/i18n'
 import { useI18n } from '@/i18n/composable'
-import { type FaviconItem, getFavicon, getSiteFavicon, getUnavatarFavicon, handleFaviconError } from '@/utils/favicon'
+import { type FaviconItem, getSiteFavicon, getUnavatarFavicon, handleFaviconError } from '@/utils/favicon'
 import { getLocalizedSiteTitle, PRESET_QUICK_LINKS } from '@/utils/presets'
 import { performSearch } from '@/utils/search'
+import { resolveSiteIcon } from '@/utils/siteIcon'
 import {
   addQuickLink,
   getQuickLinks,
@@ -210,6 +210,10 @@ const draggingKey = ref<string | null>(null)
 const dragOverKey = ref<string | null>(null)
 const hasDraggedOrderChange = ref(false)
 const isPersistingOrder = ref(false)
+
+const getSiteIconProps = (link: QuickLink): { logo?: string; favicon?: string } => {
+  return resolveSiteIcon({ url: link.url, domain: link.domain, logo: link.logo, favicon: link.favicon })
+}
 
 const buildPresetWithMeta = (preset: QuickLink): QuickLink => {
   const domain = preset.domain || extractDomainFromUrl(preset.url)

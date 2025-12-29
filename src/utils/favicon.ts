@@ -43,6 +43,30 @@ export function getFavicon(item: FaviconItem): string {
 }
 
 /**
+ * 判断一个 favicon 是否属于“自动生成的默认值”（而非用户显式填写的自定义图标 URL）。
+ *
+ * 目前自动值只来自：
+ * - `https://unavatar.io/{domain}`
+ * - `https://{domain}/favicon.ico`（以及部分历史数据可能是 http）
+ */
+export function isAutoFavicon(item: FaviconItem, favicon?: string): boolean {
+  const candidate = favicon ?? item.favicon
+  if (!candidate) return false
+
+  const domain = extractDomain(item)
+  if (!domain) return false
+
+  const unavatar = `https://unavatar.io/${domain}`
+  const siteHttps = `https://${domain}/favicon.ico`
+  const siteHttp = `http://${domain}/favicon.ico`
+
+  // 兼容未来可能的 querystring（例如 unavatar 的参数）
+  if (candidate === unavatar || candidate.startsWith(`${unavatar}?`)) return true
+  if (candidate === siteHttps || candidate === siteHttp) return true
+  return false
+}
+
+/**
  * 处理 favicon 加载错误，尝试回退到站点 favicon
  */
 export function handleFaviconError(item: FaviconItem, event: Event, fallbackTried: Record<string, boolean>): void {

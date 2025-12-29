@@ -52,6 +52,7 @@
 import { ref, watch } from 'vue'
 
 import { useI18n } from '@/i18n/composable'
+import { getFavicon, isAutoFavicon } from '@/utils/favicon'
 import { normalizeURL } from '@/utils/search'
 import type { QuickLink } from '@/utils/types'
 import { getTitleFromUrl } from '@/utils/url'
@@ -100,10 +101,15 @@ watch(
   () => props.editingLink,
   link => {
     if (link) {
+      const item = { domain: link.domain, url: link.url }
+      const shouldShowCustomIcon = !!(link.favicon && !isAutoFavicon(item, link.favicon))
+      const iconValue = link.logo ? (shouldShowCustomIcon ? link.favicon || '' : '') : link.favicon || getFavicon(item)
       formData.value = {
         title: link.title,
         url: link.url,
-        icon: link.favicon || '',
+        // 有本地 logo：仅回填“用户显式填写”的自定义图标 URL（不回填自动在线 favicon）
+        // 无本地 logo：回填在线 favicon URL（符合“在线获取”的初衷，也方便用户改成自定义 URL）
+        icon: iconValue,
       }
       isEditing.value = true
     } else if (props.editingLink === null) {

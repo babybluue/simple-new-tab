@@ -38,7 +38,7 @@
         <LinkCard
           :title="(item.title || item.domain || item.url).trim()"
           :subtitle="item.domain || item.url"
-          :favicon="getFavicon(item as FaviconItem)"
+          v-bind="getSiteIconProps(item)"
           :fallback-char="((item.title || item.domain || item.url || '?').trim().charAt(0) || '?').toUpperCase()"
           :card-style="cardStyle"
           :icon-only="settings?.iconOnlyLinkCards"
@@ -96,8 +96,9 @@
 import { computed, onMounted, ref } from 'vue'
 
 import { useI18n } from '@/i18n/composable'
-import { type FaviconItem, getFavicon, handleFaviconError } from '@/utils/favicon'
+import { type FaviconItem, handleFaviconError } from '@/utils/favicon'
 import { performSearch } from '@/utils/search'
+import { resolveSiteIcon } from '@/utils/siteIcon'
 import {
   addQuickLink,
   getHistory,
@@ -118,6 +119,10 @@ const settings = ref<Settings | null>(null)
 const isCollapsed = ref(false)
 const MIN_VISIT_THRESHOLD = 2
 const faviconFallbackTried = ref<Record<string, boolean>>({})
+
+const getSiteIconProps = (item: HistoryItem): { logo?: string; favicon?: string } => {
+  return resolveSiteIcon({ url: item.url, domain: item.domain, favicon: item.favicon })
+}
 
 onMounted(async () => {
   settings.value = await getSettings()
@@ -190,11 +195,9 @@ const handleRemove = async (item: HistoryItem) => {
 }
 
 const handlePin = async (item: HistoryItem) => {
-  const { getUnavatarFavicon } = await import('@/utils/favicon')
   await addQuickLink({
     title: item.title,
     url: item.url,
-    favicon: getUnavatarFavicon(item as FaviconItem),
   })
 }
 

@@ -578,7 +578,7 @@ const backupError = ref(false)
 
 const PRIMARY_PRESETS = [
   THEME_LIGHT_BG,
-  THEME_DARK_BG,
+  '#343639',
   'transparent',
   '#6200ea', // Deep Purple 500
   '#2962ff', // Blue A700
