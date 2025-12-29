@@ -125,6 +125,7 @@
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 :title="tFn('settings.customColor')"
                 @input="handleCustomColorInput"
+                @change="handleCustomColorChange"
               />
               <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <svg
@@ -142,6 +143,26 @@
                 </svg>
               </div>
             </button>
+          </div>
+
+          <div
+            class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between gap-3 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+          >
+            <span>{{ tFn('settings.backgroundOpacity') }}</span>
+            <div class="flex items-center gap-2">
+              <input
+                class="w-36"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                :value="backgroundOpacityDraft"
+                :disabled="applying || settings.backgroundColor.includes('gradient')"
+                @input="handleBackgroundOpacityInput"
+                @change="handleBackgroundOpacityChange"
+              />
+              <span class="text-app w-10 text-right tabular-nums">{{ backgroundOpacityDraft }}%</span>
+            </div>
           </div>
 
           <div
@@ -270,6 +291,26 @@
                 </svg>
               </div>
             </button>
+          </div>
+
+          <div
+            class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between gap-3 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+          >
+            <span>{{ tFn('settings.primaryOpacity') }}</span>
+            <div class="flex items-center gap-2">
+              <input
+                class="w-36"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                :value="primaryOpacityDraft"
+                :disabled="applying"
+                @input="handlePrimaryOpacityInput"
+                @change="handlePrimaryOpacityChange"
+              />
+              <span class="text-app w-10 text-right tabular-nums">{{ primaryOpacityDraft }}%</span>
+            </div>
           </div>
         </div>
 
@@ -546,8 +587,10 @@ const PRESET_BACKGROUNDS = [
 const isHexColor6 = (value: string) => /^#[0-9a-fA-F]{6}$/.test(value)
 
 // <input type="color"> 只接受 "#rrggbb"；gradient/transparent 之类会触发控制台警告
-const normalizeColorInput = (value: string) =>
-  value === 'transparent' || value.startsWith('linear') || value.startsWith('radial') ? '#667eea' : value
+const normalizeColorInput = (value?: string) => {
+  if (!value) return '#667eea'
+  return value === 'transparent' || value.startsWith('linear') || value.startsWith('radial') ? '#667eea' : value
+}
 
 const normalizeColorPickerValue = (value?: string, fallback = '#667eea') => {
   if (!value) return fallback
@@ -566,6 +609,8 @@ const isHttpUrl = (url: string): boolean => {
 const settings = ref<Settings>({ ...(props.initialSettings || DEFAULT_SETTINGS) })
 const customColor = ref(normalizeColorInput(settings.value.backgroundColor))
 const primaryCustomColor = ref(normalizeColorPickerValue(settings.value.primaryColor, '#667eea'))
+const backgroundOpacityDraft = ref(Math.round((settings.value.backgroundOpacity ?? 1) * 100))
+const primaryOpacityDraft = ref(Math.round((settings.value.primaryOpacity ?? 1) * 100))
 const customCssDraft = ref(settings.value.customCss || '')
 const onlineImageUrlDraft = ref(settings.value.backgroundType === 'url' ? settings.value.backgroundImageUrl || '' : '')
 const applying = ref(false)
@@ -621,19 +666,23 @@ const LANGUAGE_OPTIONS = computed(() => [
 ])
 
 const syncUiFromSettings = async (next: Settings) => {
-  settings.value = { ...DEFAULT_SETTINGS, ...next }
+  const merged = { ...DEFAULT_SETTINGS, ...next }
+  settings.value = merged
 
   // 同步语言（让 UI 立即切换）
-  if (next.language) {
-    await setLocale(next.language)
+  if (merged.language) {
+    await setLocale(merged.language)
   }
 
   // 同步颜色输入/草稿状态，避免面板显示滞后
   customColor.value =
-    next.backgroundType === 'custom' ? next.backgroundColor : normalizeColorInput(next.backgroundColor)
-  primaryCustomColor.value = normalizeColorPickerValue(next.primaryColor, '#667eea')
-  customCssDraft.value = next.customCss || ''
-  onlineImageUrlDraft.value = next.backgroundType === 'url' ? next.backgroundImageUrl || '' : onlineImageUrlDraft.value
+    merged.backgroundType === 'custom' ? merged.backgroundColor : normalizeColorInput(merged.backgroundColor)
+  primaryCustomColor.value = normalizeColorPickerValue(merged.primaryColor, '#667eea')
+  backgroundOpacityDraft.value = Math.round((merged.backgroundOpacity ?? 1) * 100)
+  primaryOpacityDraft.value = Math.round((merged.primaryOpacity ?? 1) * 100)
+  customCssDraft.value = merged.customCss || ''
+  onlineImageUrlDraft.value =
+    merged.backgroundType === 'url' ? merged.backgroundImageUrl || '' : onlineImageUrlDraft.value
 }
 
 const ensureSettings = async () => {
@@ -666,7 +715,7 @@ const ensureSettings = async () => {
   customCssDraft.value = stored.customCss || ''
   onlineImageUrlDraft.value = stored.backgroundType === 'url' ? stored.backgroundImageUrl || '' : ''
   await applyBackground(stored)
-  applyPrimaryColor(stored.primaryColor || '#667eea')
+  applyPrimaryColor(stored.primaryColor || '#667eea', stored.primaryOpacity ?? 1)
   applyTheme(stored.theme)
   applyCustomCss(stored)
   emit('settings-updated', stored)
@@ -837,7 +886,7 @@ const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false
     if (fetched) {
       settings.value.backgroundImageUrl = fetched
     }
-    applyPrimaryColor(settings.value.primaryColor || '#667eea')
+    applyPrimaryColor(settings.value.primaryColor || '#667eea', settings.value.primaryOpacity ?? 1)
     applyCustomCss(settings.value)
     await saveSettings(settings.value)
     emit('settings-updated', settings.value)
@@ -851,11 +900,47 @@ const usePreset = async (value: string) => {
   await persistAndApply({ backgroundType: 'preset', backgroundColor: value })
 }
 
-const handleCustomColorInput = async (event: Event) => {
+// Background Color：
+// - input：只做预览（更新背景）；不落盘，避免拖动时频繁写入导致闪烁
+// - change：用户确认后再一次性保存
+const handleCustomColorInput = (event: Event) => {
   const target = event.target as HTMLInputElement
-  // 确保使用最新的颜色值
-  customColor.value = target.value
-  await persistAndApply({ backgroundType: 'custom', backgroundColor: target.value })
+  const next = target.value
+  customColor.value = next
+  settings.value = {
+    ...settings.value,
+    backgroundType: 'custom',
+    backgroundColor: next,
+  }
+  void applyBackground(settings.value)
+}
+
+const handleCustomColorChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const next = target.value
+  customColor.value = next
+  await persistAndApply({ backgroundType: 'custom', backgroundColor: next })
+}
+
+// Background Opacity：
+// - input：只做预览（更新背景）；不落盘，避免拖动时频繁写入 storage
+// - change：用户确认后再一次性保存
+const handleBackgroundOpacityInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const n = Number.parseInt(target.value, 10)
+  const pct = Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 100
+  backgroundOpacityDraft.value = pct
+  const nextOpacity = pct / 100
+  settings.value = { ...settings.value, backgroundOpacity: nextOpacity }
+  void applyBackground(settings.value)
+}
+
+const handleBackgroundOpacityChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const n = Number.parseInt(target.value, 10)
+  const pct = Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 100
+  backgroundOpacityDraft.value = pct
+  await persistAndApply({ backgroundOpacity: pct / 100 })
 }
 
 const usePrimaryPreset = async (value: string) => {
@@ -874,7 +959,7 @@ const handlePrimaryColorInput = (event: Event) => {
     primaryColorType: 'custom',
     primaryColor: next,
   }
-  applyPrimaryColor(next)
+  applyPrimaryColor(next, settings.value.primaryOpacity ?? 1)
 }
 
 const handlePrimaryColorChange = async (event: Event) => {
@@ -882,6 +967,25 @@ const handlePrimaryColorChange = async (event: Event) => {
   const next = target.value
   primaryCustomColor.value = next
   await persistAndApply({ primaryColorType: 'custom', primaryColor: next })
+}
+
+// Primary Opacity：input 预览，change 保存
+const handlePrimaryOpacityInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const n = Number.parseInt(target.value, 10)
+  const pct = Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 100
+  primaryOpacityDraft.value = pct
+  const nextOpacity = pct / 100
+  settings.value = { ...settings.value, primaryOpacity: nextOpacity }
+  applyPrimaryColor(settings.value.primaryColor || '#667eea', nextOpacity)
+}
+
+const handlePrimaryOpacityChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const n = Number.parseInt(target.value, 10)
+  const pct = Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 100
+  primaryOpacityDraft.value = pct
+  await persistAndApply({ primaryOpacity: pct / 100 })
 }
 
 const refreshBing = async () => {

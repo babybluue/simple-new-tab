@@ -24,9 +24,13 @@ export interface Settings {
   maxHistoryItems: number
   backgroundType: BackgroundType
   backgroundColor: string
+  /** 背景色透明度（0~1）；仅对纯色背景生效（gradient 背景不做解析） */
+  backgroundOpacity: number
   backgroundImageUrl?: string
   primaryColorType: PrimaryColorType
   primaryColor: string
+  /** 主色透明度（0~1） */
+  primaryOpacity: number
   showDateTime: boolean
   showQuickAccess: boolean
   showHistory: boolean
@@ -48,9 +52,11 @@ export const DEFAULT_SETTINGS: Settings = {
   backgroundType: 'preset',
   // 默认背景色和主色会在 getSettings() 中根据系统主题动态设置
   backgroundColor: THEME_LIGHT_BG,
+  backgroundOpacity: 1,
   backgroundImageUrl: '',
   primaryColorType: 'preset',
   primaryColor: THEME_LIGHT_PRIMARY,
+  primaryOpacity: 1,
   showDateTime: true,
   showQuickAccess: true,
   showHistory: true,

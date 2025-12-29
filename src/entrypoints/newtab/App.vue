@@ -62,9 +62,11 @@ const isSameSettings = (a: SettingsModel | null, b: SettingsModel | null) => {
     a.maxHistoryItems === b.maxHistoryItems &&
     a.backgroundType === b.backgroundType &&
     a.backgroundColor === b.backgroundColor &&
+    (a.backgroundOpacity ?? 1) === (b.backgroundOpacity ?? 1) &&
     (a.backgroundImageUrl || '') === (b.backgroundImageUrl || '') &&
     a.primaryColorType === b.primaryColorType &&
     a.primaryColor === b.primaryColor &&
+    (a.primaryOpacity ?? 1) === (b.primaryOpacity ?? 1) &&
     a.showDateTime === b.showDateTime &&
     a.showQuickAccess === b.showQuickAccess &&
     a.showHistory === b.showHistory &&
@@ -80,7 +82,7 @@ const handleSettingsUpdate = async (updatedSettings: SettingsModel) => {
   settings.value = updatedSettings
   applyTheme(updatedSettings.theme)
   await applyBackground(updatedSettings)
-  applyPrimaryColor(updatedSettings.primaryColor || '#667eea')
+  applyPrimaryColor(updatedSettings.primaryColor || '#667eea', updatedSettings.primaryOpacity ?? 1)
   applyCustomCss(updatedSettings)
 }
 
@@ -90,7 +92,7 @@ onMounted(async () => {
     settings.value = loadedSettings
     applyTheme(loadedSettings.theme)
     await applyBackground(loadedSettings)
-    applyPrimaryColor(loadedSettings.primaryColor)
+    applyPrimaryColor(loadedSettings.primaryColor, loadedSettings.primaryOpacity)
     applyCustomCss(loadedSettings)
   }
 })

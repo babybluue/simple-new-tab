@@ -112,6 +112,31 @@ export const THEME_DARK_BG = '#000000'
 export const THEME_LIGHT_PRIMARY = '#ffffff'
 export const THEME_DARK_PRIMARY = '#343639'
 
+const clamp01 = (n: number): number => Math.min(1, Math.max(0, n))
+
+const toRgbaFromHex6 = (hex: string, alpha: number): string | null => {
+  if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return null
+  const r = Number.parseInt(hex.slice(1, 3), 16)
+  const g = Number.parseInt(hex.slice(3, 5), 16)
+  const b = Number.parseInt(hex.slice(5, 7), 16)
+  const a = clamp01(alpha)
+  return `rgba(${r}, ${g}, ${b}, ${a})`
+}
+
+const applyOpacityToCssColor = (color: string, opacity: number): string => {
+  const a = clamp01(opacity)
+  if (!color || color === 'transparent') return 'transparent'
+  if (a >= 1) return color
+
+  // 优先处理 #rrggbb，保证在不支持 color-mix 的环境里也能工作
+  const rgba = toRgbaFromHex6(color, a)
+  if (rgba) return rgba
+
+  // 兜底：对任意 CSS color 使用 color-mix 做透明度混合
+  const pct = Math.round(a * 100)
+  return `color-mix(in srgb, ${color} ${pct}%, transparent)`
+}
+
 export const applyTheme = (theme: Settings['theme']) => {
   const root = document.documentElement
   if (!root) return
@@ -242,7 +267,7 @@ const toCssUrl = (rawUrl: string): string => {
 }
 
 export const applyBackground = async (
-  settings: Pick<Settings, 'backgroundType' | 'backgroundColor' | 'backgroundImageUrl'>
+  settings: Pick<Settings, 'backgroundType' | 'backgroundColor' | 'backgroundImageUrl' | 'backgroundOpacity'>
 ): Promise<string | undefined> => {
   const root = document.documentElement
   if (!root) return
@@ -260,7 +285,12 @@ export const applyBackground = async (
 
   // 根据主题确定蒙层颜色和透明度
   const isLight = root.classList.contains('light')
-  const overlayColor = isLight ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'
+  // 图片背景下，通过 backgroundOpacity 控制“蒙层强度”：
+  // - opacity 越大 -> 蒙层越不透明 -> 图片越“淡”
+  // - opacity 越小 -> 蒙层越透明 -> 图片越“浓”
+  const overlayBaseAlpha = 0.3
+  const overlayAlpha = overlayBaseAlpha * clamp01(settings.backgroundOpacity ?? 1)
+  const overlayColor = isLight ? `rgba(255, 255, 255, ${overlayAlpha})` : `rgba(0, 0, 0, ${overlayAlpha})`
 
   if (settings.backgroundType === 'bing' || settings.backgroundType === 'upload' || settings.backgroundType === 'url') {
     let imageUrl: string | null = null
@@ -306,15 +336,18 @@ export const applyBackground = async (
   }
 
   // 判断是否是渐变背景（linear-gradient 或 radial-gradient）
-  const isGradient = settings.backgroundColor.includes('gradient')
+  const bgColor = settings.backgroundColor || ''
+  const isGradient = bgColor.includes('gradient')
+  const bgOpacity = clamp01(settings.backgroundOpacity ?? 1)
 
   if (isGradient) {
     // 渐变背景需要设置为 background-image
-    root.style.setProperty('background-image', settings.backgroundColor, 'important')
+    root.style.setProperty('background-image', bgColor, 'important')
     root.style.setProperty('background-color', 'transparent', 'important')
   } else {
     // 纯色背景设置为 background-color
-    root.style.setProperty('background-color', settings.backgroundColor, 'important')
+    const color = applyOpacityToCssColor(bgColor, bgOpacity)
+    root.style.setProperty('background-color', color, 'important')
     root.style.setProperty('background-image', 'none', 'important')
   }
 
@@ -326,20 +359,21 @@ export const applyBackground = async (
   return undefined
 }
 
-export const applyPrimaryColor = (color: string) => {
+export const applyPrimaryColor = (color: string, opacity = 1) => {
   const root = document.documentElement
   if (!root) return
   const fallback = '#667eea'
-  const base = color || fallback
+  const baseRaw = color || fallback
+  const base = applyOpacityToCssColor(baseRaw, opacity)
   const isLight = root.classList.contains('light')
   root.style.setProperty('--primary-color', base)
   root.style.setProperty('--primary-surface', base)
   // 边框颜色：复用 buildPrimarySurfaceStyle 的判定逻辑（用 CSS 变量驱动 LinkCard）
   let borderColor: string
-  if (base) {
-    if (isLight && (base === '#f1f3f5' || base === THEME_LIGHT_BG)) {
+  if (baseRaw) {
+    if (isLight && (baseRaw === '#f1f3f5' || baseRaw === THEME_LIGHT_BG)) {
       borderColor = 'rgba(33, 53, 71, 0.2)'
-    } else if (!isLight && (base === '#0f172a' || base === THEME_DARK_BG)) {
+    } else if (!isLight && (baseRaw === '#0f172a' || baseRaw === THEME_DARK_BG)) {
       borderColor = 'rgba(255, 255, 255, 0.15)'
     } else {
       borderColor = isLight ? 'rgba(33, 53, 71, 0.2)' : 'rgba(255, 255, 255, 0.2)'

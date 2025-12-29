@@ -16,7 +16,7 @@ import App from './App.vue'
   const settings = await getSettings()
   applyTheme(settings.theme)
   await applyBackground(settings)
-  applyPrimaryColor(settings.primaryColor)
+  applyPrimaryColor(settings.primaryColor, settings.primaryOpacity)
   applyCustomCss(settings)
 
   const app = createApp(App, { initialSettings: settings })

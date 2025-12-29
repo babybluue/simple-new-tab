@@ -33,6 +33,14 @@ const asInt = (v: unknown, min: number, max: number): number | undefined => {
   return n
 }
 
+const asOpacity01 = (v: unknown): number | undefined => {
+  if (typeof v !== 'number' || !Number.isFinite(v)) return undefined
+  // 兼容：允许传 0~1 或 0~100（百分比）
+  const raw = v > 1 ? v / 100 : v
+  const n = Math.min(1, Math.max(0, raw))
+  return n
+}
+
 const oneOf = <T extends string>(v: unknown, allowed: readonly T[]): T | undefined => {
   return typeof v === 'string' && (allowed as readonly string[]).includes(v) ? (v as T) : undefined
 }
@@ -103,12 +111,14 @@ export function parseAndSanitizeSettingsBackup(jsonText: string): ParseBackupRes
   next.backgroundType =
     oneOf(s.backgroundType, ['preset', 'custom', 'bing', 'upload', 'url'] as const) ?? next.backgroundType
   next.backgroundColor = asString(s.backgroundColor, 2000) ?? next.backgroundColor
+  next.backgroundOpacity = asOpacity01(s.backgroundOpacity) ?? next.backgroundOpacity
 
   const rawBgUrl = asString(s.backgroundImageUrl, 5_000_000)
   next.backgroundImageUrl = rawBgUrl ?? ''
 
   next.primaryColorType = oneOf(s.primaryColorType, ['preset', 'custom'] as const) ?? next.primaryColorType
   next.primaryColor = asString(s.primaryColor, 2000) ?? next.primaryColor
+  next.primaryOpacity = asOpacity01(s.primaryOpacity) ?? next.primaryOpacity
 
   next.showDateTime = asBoolean(s.showDateTime) ?? next.showDateTime
   next.showQuickAccess = asBoolean(s.showQuickAccess) ?? next.showQuickAccess
