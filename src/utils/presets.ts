@@ -96,6 +96,7 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'Perplexity', url: 'https://www.perplexity.ai', category: 'AI' },
   { title: 'Midjourney', url: 'https://www.midjourney.com', category: 'AI' },
   { title: 'DeepSeek', url: 'https://chat.deepseek.com', category: 'AI' },
+  { title: 'Grok', url: 'https://grok.com', category: 'AI' },
 ]
 
 /**
