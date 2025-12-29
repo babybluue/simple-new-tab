@@ -587,12 +587,23 @@ const PRESET_BACKGROUNDS = [
 const isHexColor6 = (value: string) => /^#[0-9a-fA-F]{6}$/.test(value)
 
 // <input type="color"> 只接受 "#rrggbb"；gradient/transparent 之类会触发控制台警告
-const normalizeColorInput = (value?: string) => {
-  if (!value) return '#667eea'
-  return value === 'transparent' || value.startsWith('linear') || value.startsWith('radial') ? '#667eea' : value
+const getEffectiveTheme = (theme: Settings['theme']): 'light' | 'dark' => {
+  if (theme === 'light' || theme === 'dark') return theme
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
-const normalizeColorPickerValue = (value?: string, fallback = '#667eea') => {
+const getDefaultBgHex = (theme: Settings['theme']) =>
+  getEffectiveTheme(theme) === 'dark' ? THEME_DARK_BG : THEME_LIGHT_BG
+
+const getDefaultPrimaryHex = (theme: Settings['theme']) =>
+  getEffectiveTheme(theme) === 'dark' ? THEME_DARK_PRIMARY : THEME_LIGHT_PRIMARY
+
+const normalizeColorInput = (value: string | undefined, fallback: string) => {
+  if (!value) return fallback
+  return value === 'transparent' || value.startsWith('linear') || value.startsWith('radial') ? fallback : value
+}
+
+const normalizeColorPickerValue = (value: string | undefined, fallback: string) => {
   if (!value) return fallback
   return isHexColor6(value) ? value : fallback
 }
@@ -607,8 +618,10 @@ const isHttpUrl = (url: string): boolean => {
 }
 
 const settings = ref<Settings>({ ...(props.initialSettings || DEFAULT_SETTINGS) })
-const customColor = ref(normalizeColorInput(settings.value.backgroundColor))
-const primaryCustomColor = ref(normalizeColorPickerValue(settings.value.primaryColor, '#667eea'))
+const customColor = ref(normalizeColorInput(settings.value.backgroundColor, getDefaultBgHex(settings.value.theme)))
+const primaryCustomColor = ref(
+  normalizeColorPickerValue(settings.value.primaryColor, getDefaultPrimaryHex(settings.value.theme))
+)
 const backgroundOpacityDraft = ref(Math.round((settings.value.backgroundOpacity ?? 1) * 100))
 const primaryOpacityDraft = ref(Math.round((settings.value.primaryOpacity ?? 1) * 100))
 const customCssDraft = ref(settings.value.customCss || '')
@@ -676,8 +689,10 @@ const syncUiFromSettings = async (next: Settings) => {
 
   // 同步颜色输入/草稿状态，避免面板显示滞后
   customColor.value =
-    merged.backgroundType === 'custom' ? merged.backgroundColor : normalizeColorInput(merged.backgroundColor)
-  primaryCustomColor.value = normalizeColorPickerValue(merged.primaryColor, '#667eea')
+    merged.backgroundType === 'custom'
+      ? merged.backgroundColor
+      : normalizeColorInput(merged.backgroundColor, getDefaultBgHex(merged.theme))
+  primaryCustomColor.value = normalizeColorPickerValue(merged.primaryColor, getDefaultPrimaryHex(merged.theme))
   backgroundOpacityDraft.value = Math.round((merged.backgroundOpacity ?? 1) * 100)
   primaryOpacityDraft.value = Math.round((merged.primaryOpacity ?? 1) * 100)
   customCssDraft.value = merged.customCss || ''
@@ -710,12 +725,14 @@ const ensureSettings = async () => {
   }
   // 如果是自定义颜色，直接使用存储的值；否则使用 normalizeColorInput 转换
   customColor.value =
-    stored.backgroundType === 'custom' ? stored.backgroundColor : normalizeColorInput(stored.backgroundColor)
-  primaryCustomColor.value = normalizeColorPickerValue(stored.primaryColor, '#667eea')
+    stored.backgroundType === 'custom'
+      ? stored.backgroundColor
+      : normalizeColorInput(stored.backgroundColor, getDefaultBgHex(stored.theme))
+  primaryCustomColor.value = normalizeColorPickerValue(stored.primaryColor, getDefaultPrimaryHex(stored.theme))
   customCssDraft.value = stored.customCss || ''
   onlineImageUrlDraft.value = stored.backgroundType === 'url' ? stored.backgroundImageUrl || '' : ''
   await applyBackground(stored)
-  applyPrimaryColor(stored.primaryColor || '#667eea', stored.primaryOpacity ?? 1)
+  applyPrimaryColor(stored.primaryColor, stored.primaryOpacity ?? 1)
   applyTheme(stored.theme)
   applyCustomCss(stored)
   emit('settings-updated', stored)
@@ -838,8 +855,11 @@ const handleImport = async (event: Event) => {
     customColor.value =
       settings.value.backgroundType === 'custom'
         ? settings.value.backgroundColor
-        : normalizeColorInput(settings.value.backgroundColor)
-    primaryCustomColor.value = settings.value.primaryColor || '#667eea'
+        : normalizeColorInput(settings.value.backgroundColor, getDefaultBgHex(settings.value.theme))
+    primaryCustomColor.value = normalizeColorPickerValue(
+      settings.value.primaryColor,
+      getDefaultPrimaryHex(settings.value.theme)
+    )
 
     backupMessage.value =
       parsed.warnings.length > 0
@@ -886,7 +906,7 @@ const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false
     if (fetched) {
       settings.value.backgroundImageUrl = fetched
     }
-    applyPrimaryColor(settings.value.primaryColor || '#667eea', settings.value.primaryOpacity ?? 1)
+    applyPrimaryColor(settings.value.primaryColor, settings.value.primaryOpacity ?? 1)
     applyCustomCss(settings.value)
     await saveSettings(settings.value)
     emit('settings-updated', settings.value)
@@ -977,7 +997,7 @@ const handlePrimaryOpacityInput = (event: Event) => {
   primaryOpacityDraft.value = pct
   const nextOpacity = pct / 100
   settings.value = { ...settings.value, primaryOpacity: nextOpacity }
-  applyPrimaryColor(settings.value.primaryColor || '#667eea', nextOpacity)
+  applyPrimaryColor(settings.value.primaryColor, nextOpacity)
 }
 
 const handlePrimaryOpacityChange = async (event: Event) => {
@@ -1059,7 +1079,7 @@ const toggleCustomCssEnabled = async () => {
 const getSwitchTrackStyle = (on: boolean) => {
   // ON：明显的主色系高亮；OFF：保持中性
   // 这里用 color-mix 让主色跟 overlay 融合，避免纯色过刺眼
-  const primary = 'var(--primary-color, #667eea)'
+  const primary = 'var(--primary-color)'
   const base = 'var(--app-bg-overlay)'
   const baseHover = 'var(--app-bg-overlay-hover)'
   return {

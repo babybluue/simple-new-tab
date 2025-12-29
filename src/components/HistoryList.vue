@@ -203,7 +203,7 @@ const handlePin = async (item: HistoryItem) => {
 
 const cardStyle = computed(() => {
   return {
-    background: 'var(--primary-surface, var(--primary-color, #667eea))',
+    background: 'var(--primary-surface, var(--primary-color))',
     borderColor: 'var(--primary-border, var(--app-border-color))',
   }
 })

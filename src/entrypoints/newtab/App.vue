@@ -82,7 +82,7 @@ const handleSettingsUpdate = async (updatedSettings: SettingsModel) => {
   settings.value = updatedSettings
   applyTheme(updatedSettings.theme)
   await applyBackground(updatedSettings)
-  applyPrimaryColor(updatedSettings.primaryColor || '#667eea', updatedSettings.primaryOpacity ?? 1)
+  applyPrimaryColor(updatedSettings.primaryColor, updatedSettings.primaryOpacity ?? 1)
   applyCustomCss(updatedSettings)
 }
 

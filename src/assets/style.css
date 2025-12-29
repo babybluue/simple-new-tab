@@ -49,10 +49,14 @@ body {
   --app-text-color-tertiary: rgba(255, 255, 255, 0.65);
   --app-text-muted: rgba(255, 255, 255, 0.6);
 
+  /* 主色默认值（不再使用历史默认色兜底） */
+  --primary-color: #343639;
+  --primary-surface: #343639;
+
   /* 背景和边框颜色变量 */
   /* 让 overlay 表面轻微跟随主色（不直接变成纯主色，避免可读性问题） */
-  --app-bg-overlay: color-mix(in srgb, var(--primary-color, #667eea) 16%, #1f2937);
-  --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color, #667eea) 22%, #374151);
+  --app-bg-overlay: color-mix(in srgb, var(--primary-color) 16%, #1f2937);
+  --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color) 22%, #374151);
   --app-border-color: rgba(255, 255, 255, 0.15);
   --app-border-color-hover: rgba(255, 255, 255, 0.3);
 
@@ -62,7 +66,7 @@ body {
   --app-shadow-md: 0 10px 28px rgba(0, 0, 0, 0.28);
   --app-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.38);
   --app-focus-ring: rgba(102, 126, 234, 0.35);
-  --app-focus-ring: color-mix(in srgb, var(--primary-color, #667eea) 45%, transparent);
+  --app-focus-ring: color-mix(in srgb, var(--primary-color) 45%, transparent);
 }
 
 /* Light 模式变量 */
@@ -72,8 +76,11 @@ body {
   --app-text-color-tertiary: rgba(33, 53, 71, 0.65);
   --app-text-muted: rgba(33, 53, 71, 0.6);
 
-  --app-bg-overlay: color-mix(in srgb, var(--primary-color, #667eea) 10%, rgba(255, 255, 255, 0.85));
-  --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color, #667eea) 14%, rgba(255, 255, 255, 0.95));
+  --primary-color: #ffffff;
+  --primary-surface: #ffffff;
+
+  --app-bg-overlay: color-mix(in srgb, var(--primary-color) 10%, rgba(255, 255, 255, 0.85));
+  --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color) 14%, rgba(255, 255, 255, 0.95));
   --app-border-color: rgba(33, 53, 71, 0.25);
   --app-border-color-hover: rgba(33, 53, 71, 0.35);
 
@@ -90,8 +97,11 @@ body {
   --app-text-color-tertiary: rgba(255, 255, 255, 0.65);
   --app-text-muted: rgba(255, 255, 255, 0.6);
 
-  --app-bg-overlay: color-mix(in srgb, var(--primary-color, #667eea) 16%, #1f2937);
-  --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color, #667eea) 22%, #374151);
+  --primary-color: #343639;
+  --primary-surface: #343639;
+
+  --app-bg-overlay: color-mix(in srgb, var(--primary-color) 16%, #1f2937);
+  --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color) 22%, #374151);
   --app-border-color: rgba(255, 255, 255, 0.15);
   --app-border-color-hover: rgba(255, 255, 255, 0.3);
 
@@ -162,6 +172,6 @@ body {
 /* 主要操作 badge：保证在任意主色/主题下都具备可读性 */
 .badge-primary {
   color: var(--app-text-color);
-  border: 1px solid color-mix(in srgb, var(--primary-color, #667eea) 55%, var(--app-border-color));
-  background-color: color-mix(in srgb, var(--primary-color, #667eea) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary-color) 55%, var(--app-border-color));
+  background-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
 }

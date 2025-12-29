@@ -137,7 +137,7 @@ const resolvedStyle = computed(() => (props.iconOnly ? {} : props.cardStyle || {
 
 const iconOnlyButtonStyle = computed<Record<string, string>>(() => {
   // icon-only 模式：背景跟随用户主色（来自 buildPrimarySurfaceStyle / primaryColor）
-  const background = props.cardStyle?.background || 'var(--primary-surface, var(--primary-color, #667eea))'
+  const background = props.cardStyle?.background || 'var(--primary-surface, var(--primary-color))'
   return { background }
 })
 

@@ -108,7 +108,6 @@ export const THEME_DARK_BG = '#000000'
 
 // Light 和 Dark 主题主色（accent/primary）常量
 // 注意：主色不要和背景色一致，否则在深色/浅色下会导致卡片/边框与 logo 对比不足。
-// 这里沿用历史默认主色 #667eea，保证整体风格一致且兼容旧设置迁移。
 export const THEME_LIGHT_PRIMARY = '#ffffff'
 export const THEME_DARK_PRIMARY = '#343639'
 
@@ -336,7 +335,15 @@ export const applyBackground = async (
   }
 
   // 判断是否是渐变背景（linear-gradient 或 radial-gradient）
-  const bgColor = settings.backgroundColor || ''
+  const defaultBg = root.classList.contains('light')
+    ? THEME_LIGHT_BG
+    : root.classList.contains('dark')
+      ? THEME_DARK_BG
+      : window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
+        ? THEME_DARK_BG
+        : THEME_LIGHT_BG
+
+  const bgColor = settings.backgroundColor || defaultBg
   const isGradient = bgColor.includes('gradient')
   const bgOpacity = clamp01(settings.backgroundOpacity ?? 1)
 
@@ -359,10 +366,16 @@ export const applyBackground = async (
   return undefined
 }
 
-export const applyPrimaryColor = (color: string, opacity = 1) => {
+export const applyPrimaryColor = (color?: string, opacity = 1) => {
   const root = document.documentElement
   if (!root) return
-  const fallback = '#667eea'
+  const fallback = root.classList.contains('light')
+    ? THEME_LIGHT_PRIMARY
+    : root.classList.contains('dark')
+      ? THEME_DARK_PRIMARY
+      : window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
+        ? THEME_DARK_PRIMARY
+        : THEME_LIGHT_PRIMARY
   const baseRaw = color || fallback
   const base = applyOpacityToCssColor(baseRaw, opacity)
   const isLight = root.classList.contains('light')

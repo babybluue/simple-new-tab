@@ -173,6 +173,25 @@ export async function getSettings(): Promise<Settings> {
       merged.primaryColor = systemThemePrimary
       merged.primaryColorType = 'preset'
     }
+
+    // 新默认：如果用户没有显式设置颜色（仍为主题预设），则始终跟随系统深浅色
+    if (
+      merged.backgroundType === 'preset' &&
+      (!merged.backgroundColor || merged.backgroundColor === THEME_LIGHT_BG || merged.backgroundColor === THEME_DARK_BG)
+    ) {
+      merged.backgroundColor = systemThemeBg
+    }
+
+    if (
+      merged.primaryColorType === 'preset' &&
+      (!merged.primaryColor ||
+        merged.primaryColor === THEME_LIGHT_PRIMARY ||
+        merged.primaryColor === THEME_DARK_PRIMARY ||
+        merged.primaryColor === THEME_LIGHT_BG ||
+        merged.primaryColor === THEME_DARK_BG)
+    ) {
+      merged.primaryColor = systemThemePrimary
+    }
   }
 
   // 迁移：历史版本把“主色 preset”错误地设成了主题背景色（THEME_LIGHT_BG/THEME_DARK_BG），
