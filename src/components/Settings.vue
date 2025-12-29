@@ -507,7 +507,9 @@ import {
   clearBingImageCache,
   fetchBingImageUrl,
   THEME_DARK_BG,
+  THEME_DARK_PRIMARY,
   THEME_LIGHT_BG,
+  THEME_LIGHT_PRIMARY,
 } from '@/utils/theme'
 
 const { t: tFn } = useI18n()
@@ -577,8 +579,8 @@ const backupMessage = ref('')
 const backupError = ref(false)
 
 const PRIMARY_PRESETS = [
-  THEME_LIGHT_BG,
-  '#343639',
+  THEME_LIGHT_PRIMARY,
+  THEME_DARK_PRIMARY,
   'transparent',
   '#6200ea', // Deep Purple 500
   '#2962ff', // Blue A700
@@ -973,8 +975,14 @@ const useTheme = async (theme: Settings['theme']) => {
           ? THEME_DARK_BG
           : THEME_LIGHT_BG
 
-  // 主色也联动到对应的主题背景色（PRIMARY_PRESETS 的前两个）
-  const newPrimary = newBg
+  const newPrimary =
+    theme === 'light'
+      ? THEME_LIGHT_PRIMARY
+      : theme === 'dark'
+        ? THEME_DARK_PRIMARY
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? THEME_DARK_PRIMARY
+          : THEME_LIGHT_PRIMARY
 
   // 更新主题、背景和主色，确保类型都是 preset
   await persistAndApply({

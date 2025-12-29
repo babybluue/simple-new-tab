@@ -2,7 +2,7 @@
 import { getUnavatarFavicon, isAutoFavicon } from './favicon'
 import { tryGetLogoForUrl } from './logo'
 import { PRESET_QUICK_LINKS } from './presets'
-import { THEME_DARK_BG, THEME_LIGHT_BG } from './theme'
+import { THEME_DARK_BG, THEME_DARK_PRIMARY, THEME_LIGHT_BG, THEME_LIGHT_PRIMARY } from './theme'
 import type { QuickLink } from './types'
 import { extractDomainFromUrl } from './url'
 
@@ -50,7 +50,7 @@ export const DEFAULT_SETTINGS: Settings = {
   backgroundColor: THEME_LIGHT_BG,
   backgroundImageUrl: '',
   primaryColorType: 'preset',
-  primaryColor: THEME_LIGHT_BG,
+  primaryColor: THEME_LIGHT_PRIMARY,
   showDateTime: true,
   showQuickAccess: true,
   showHistory: true,
@@ -136,13 +136,14 @@ export async function getSettings(): Promise<Settings> {
     }
   })()
   const systemThemeBg = prefersDark ? THEME_DARK_BG : THEME_LIGHT_BG
+  const systemThemePrimary = prefersDark ? THEME_DARK_PRIMARY : THEME_LIGHT_PRIMARY
 
   // 如果是首次加载（没有存储的设置），根据系统偏好设置默认背景和主色
   if (!stored) {
     return {
       ...DEFAULT_SETTINGS,
       backgroundColor: systemThemeBg,
-      primaryColor: systemThemeBg,
+      primaryColor: systemThemePrimary,
     }
   }
 
@@ -163,9 +164,30 @@ export async function getSettings(): Promise<Settings> {
 
     // 如果主色是旧的默认值，更新为系统主题对应的主色
     if (merged.primaryColor === oldDefaultPrimary) {
-      merged.primaryColor = systemThemeBg
+      merged.primaryColor = systemThemePrimary
       merged.primaryColorType = 'preset'
     }
+  }
+
+  // 迁移：历史版本把“主色 preset”错误地设成了主题背景色（THEME_LIGHT_BG/THEME_DARK_BG），
+  // 导致深色模式下部分 logo/边框对比度不足。
+  // 这里仅在“主色=背景且主色属于主题背景常量”时自动纠正为主题主色常量，避免误伤用户自定义配色。
+  const themePrimaryForCurrentSetting =
+    merged.theme === 'light'
+      ? THEME_LIGHT_PRIMARY
+      : merged.theme === 'dark'
+        ? THEME_DARK_PRIMARY
+        : systemThemePrimary
+
+  const isThemeBgConstant = (v: string) => v === THEME_LIGHT_BG || v === THEME_DARK_BG
+  if (
+    merged.primaryColorType === 'preset' &&
+    merged.primaryColor &&
+    merged.backgroundColor &&
+    merged.primaryColor === merged.backgroundColor &&
+    isThemeBgConstant(merged.primaryColor)
+  ) {
+    merged.primaryColor = themePrimaryForCurrentSetting
   }
 
   return merged

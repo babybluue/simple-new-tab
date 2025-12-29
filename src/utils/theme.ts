@@ -104,7 +104,13 @@ export async function clearBingImageCache(): Promise<void> {
 // Light 和 Dark 主题背景色常量
 // 使用稍微偏灰的浅色，避免纯白色显得过于空泛
 export const THEME_LIGHT_BG = '#f1f3f5'
-export const THEME_DARK_BG = '#0f172a'
+export const THEME_DARK_BG = '#000000'
+
+// Light 和 Dark 主题主色（accent/primary）常量
+// 注意：主色不要和背景色一致，否则在深色/浅色下会导致卡片/边框与 logo 对比不足。
+// 这里沿用历史默认主色 #667eea，保证整体风格一致且兼容旧设置迁移。
+export const THEME_LIGHT_PRIMARY = '#ffffff'
+export const THEME_DARK_PRIMARY = '#343639'
 
 export const applyTheme = (theme: Settings['theme']) => {
   const root = document.documentElement
