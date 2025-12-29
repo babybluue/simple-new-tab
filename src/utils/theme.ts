@@ -426,3 +426,14 @@ export const buildPrimarySurfaceStyle = (primaryColor?: string) => {
     borderColor,
   }
 }
+
+/**
+ * 获取卡片样式（使用 CSS 变量）
+ * 用于 LinkCard 组件，统一卡片背景和边框颜色
+ */
+export const getCardStyle = () => {
+  return {
+    background: 'var(--primary-surface, var(--primary-color))',
+    borderColor: 'var(--primary-border, var(--app-border-color))',
+  }
+}

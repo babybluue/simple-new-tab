@@ -5,7 +5,7 @@
       role="main"
     >
       <Settings
-        :initial-settings="initialSettings"
+        :initial-settings="props.initialSettings"
         :synced-settings="settings"
         @settings-updated="handleSettingsUpdate"
       />
@@ -44,7 +44,6 @@ import { applyBackground, applyPrimaryColor, applyTheme } from '@/utils/theme'
 const { t } = useI18n()
 
 const props = defineProps<{ initialSettings?: SettingsModel }>()
-const initialSettings = props.initialSettings
 
 const settings = ref<SettingsModel | null>(props.initialSettings || null)
 
@@ -86,17 +85,6 @@ const handleSettingsUpdate = async (updatedSettings: SettingsModel) => {
   applyCustomCss(updatedSettings)
 }
 
-onMounted(async () => {
-  if (!props.initialSettings) {
-    const loadedSettings = await getSettings()
-    settings.value = loadedSettings
-    applyTheme(loadedSettings.theme)
-    await applyBackground(loadedSettings)
-    applyPrimaryColor(loadedSettings.primaryColor, loadedSettings.primaryOpacity)
-    applyCustomCss(loadedSettings)
-  }
-})
-
 const onStorageChanged = (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => {
   if (areaName !== 'local') return
   const change = changes.settings
@@ -106,7 +94,15 @@ const onStorageChanged = (changes: Record<string, chrome.storage.StorageChange>,
   void handleSettingsUpdate(next)
 }
 
-onMounted(() => {
+onMounted(async () => {
+  if (!props.initialSettings) {
+    const loadedSettings = await getSettings()
+    settings.value = loadedSettings
+    applyTheme(loadedSettings.theme)
+    await applyBackground(loadedSettings)
+    applyPrimaryColor(loadedSettings.primaryColor, loadedSettings.primaryOpacity)
+    applyCustomCss(loadedSettings)
+  }
   chrome.storage.onChanged.addListener(onStorageChanged)
 })
 

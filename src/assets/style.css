@@ -55,7 +55,7 @@ body {
 
   /* 背景和边框颜色变量 */
   /* 让 overlay 表面轻微跟随主色（不直接变成纯主色，避免可读性问题） */
-  --app-bg-overlay: color-mix(in srgb, var(--primary-color) 16%, #1f2937);
+  --app-bg-overlay: color-mix(in srgb, var(--primary-color) 50%, #1f2937);
   --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color) 22%, #374151);
   --app-border-color: rgba(255, 255, 255, 0.15);
   --app-border-color-hover: rgba(255, 255, 255, 0.3);
