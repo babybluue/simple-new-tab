@@ -1,5 +1,9 @@
 <template>
-  <aside class="settings-anchor fixed z-50 flex flex-col items-end gap-3" :aria-label="tFn('settings.title')">
+  <aside
+    ref="anchorEl"
+    class="settings-anchor fixed z-50 flex flex-col items-end gap-3"
+    :aria-label="tFn('settings.title')"
+  >
     <button
       class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl border shadow-(--app-shadow-sm) backdrop-blur-lg transition-all duration-300 hover:scale-[1.06] hover:rotate-45 hover:shadow-(--app-shadow-md)"
       :title="tFn('common.settings')"
@@ -487,7 +491,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 import type { SupportedLocale } from '@/i18n'
 import { getLocale, setLocale, t } from '@/i18n'
@@ -565,6 +569,7 @@ const onlineImageUrlDraft = ref(settings.value.backgroundType === 'url' ? settin
 const applying = ref(false)
 const bingLoading = ref(false)
 const open = ref(false)
+const anchorEl = ref<HTMLElement | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const backupFileInput = ref<HTMLInputElement | null>(null)
 const backupBusy = ref(false)
@@ -667,6 +672,28 @@ const ensureSettings = async () => {
 
 onMounted(async () => {
   await ensureSettings()
+})
+
+const handleGlobalPointerDown = (event: PointerEvent) => {
+  if (!open.value) return
+  const anchor = anchorEl.value
+  if (!anchor) return
+  const target = event.target as Node | null
+  if (!target) return
+
+  // 点击设置区域（按钮/面板）内部不关闭；点击其它区域自动关闭
+  if (!anchor.contains(target)) {
+    open.value = false
+  }
+}
+
+onMounted(() => {
+  // capture：更贴近“点外部就关”的 dropdown 行为，也能覆盖触摸/笔场景
+  document.addEventListener('pointerdown', handleGlobalPointerDown, true)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('pointerdown', handleGlobalPointerDown, true)
 })
 
 watch(
