@@ -29,7 +29,6 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'YouTube', url: 'https://www.youtube.com', category: '视频', default: true },
   { title: 'Netflix', url: 'https://www.netflix.com', category: '视频', default: true },
   { title: 'Disney+', url: 'https://www.disneyplus.com', category: '视频' },
-  { title: 'Prime Video', url: 'https://www.primevideo.com', category: '视频' },
   { title: 'Hulu', url: 'https://www.hulu.com', category: '视频' },
   { title: 'Max', url: 'https://www.max.com', category: '视频' },
   { title: 'Twitch', url: 'https://www.twitch.tv', category: '直播' },
@@ -39,7 +38,6 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: '优酷', url: 'https://www.youku.com', category: '视频' },
   { title: '抖音', url: 'https://www.douyin.com', category: '短视频' },
   { title: '快手', url: 'https://www.kuaishou.com', category: '短视频' },
-  { title: '斗鱼', url: 'https://www.douyu.com', category: '直播' },
 
   // 音乐 / 音频
   { title: 'Spotify', url: 'https://open.spotify.com', category: '音乐' },
@@ -78,7 +76,6 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'Hacker News', url: 'https://news.ycombinator.com', category: '资讯' },
   { title: '掘金', url: 'https://juejin.cn', category: '社区' },
   { title: 'CSDN', url: 'https://www.csdn.net', category: '社区' },
-  { title: 'SegmentFault', url: 'https://segmentfault.com', category: '社区' },
   { title: 'V2EX', url: 'https://www.v2ex.com', category: '社区' },
   { title: '开源中国', url: 'https://www.oschina.net', category: '社区' },
 
@@ -92,12 +89,9 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   // 购物
   { title: 'Amazon', url: 'https://www.amazon.com', category: '购物', default: true },
   { title: 'eBay', url: 'https://www.ebay.com', category: '购物' },
-  { title: 'Walmart', url: 'https://www.walmart.com', category: '购物' },
-  { title: 'Alibaba', url: 'https://www.alibaba.com', category: '购物' },
   { title: '淘宝', url: 'https://www.taobao.com', category: '购物', default: true },
   { title: '天猫', url: 'https://www.tmall.com', category: '购物' },
   { title: '京东', url: 'https://www.jd.com', category: '购物' },
-  { title: '拼多多', url: 'https://www.pinduoduo.com', category: '购物' },
 
   // AI
   { title: 'ChatGPT', url: 'https://chat.openai.com', category: 'AI', default: true },
@@ -188,4 +182,3 @@ export function getLocalizedCategory(category: string | undefined, locale: 'zh' 
   }
   return category
 }
-
