@@ -23,7 +23,6 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: '豆瓣', url: 'https://www.douban.com', category: '社区' },
   { title: '百度贴吧', url: 'https://tieba.baidu.com', category: '论坛' },
   { title: 'Medium', url: 'https://medium.com', category: '博客' },
-  { title: '抖音', url: 'https://www.douyin.com', category: '短视频' },
 
   // 视频 / 娱乐
   { title: 'YouTube', url: 'https://www.youtube.com', category: '视频', default: true },
@@ -52,8 +51,6 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'Google Drive', url: 'https://drive.google.com', category: '办公' },
   { title: 'Google Docs', url: 'https://docs.google.com', category: '办公' },
   { title: 'Google Sheets', url: 'https://sheets.google.com', category: '办公' },
-  { title: 'Google Calendar', url: 'https://calendar.google.com', category: '办公' },
-  { title: 'Google Meet', url: 'https://meet.google.com', category: '办公' },
   { title: 'Microsoft Teams', url: 'https://teams.microsoft.com', category: '办公' },
   { title: 'Slack', url: 'https://slack.com', category: '办公' },
   { title: 'Zoom', url: 'https://zoom.us', category: '办公' },
@@ -69,7 +66,6 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'MDN', url: 'https://developer.mozilla.org', category: '开发' },
   { title: 'AWS 控制台', url: 'https://aws.amazon.com/console/', category: '云' },
   { title: 'Azure Portal', url: 'https://portal.azure.com', category: '云' },
-  { title: 'Google Cloud Console', url: 'https://console.cloud.google.com', category: '云' },
   { title: 'Vercel', url: 'https://vercel.com', category: '开发' },
   { title: 'Netlify', url: 'https://www.netlify.com', category: '开发' },
   { title: 'Cloudflare', url: 'https://dash.cloudflare.com', category: '云' },
@@ -125,7 +121,6 @@ export const PRESET_SITE_TITLES: Record<string, { zh: string; en: string }> = {
   'www.youku.com': { zh: '优酷', en: 'Youku' },
   'www.douyin.com': { zh: '抖音', en: 'Douyin' },
   'www.kuaishou.com': { zh: '快手', en: 'Kuaishou' },
-  'www.douyu.com': { zh: '斗鱼', en: 'Douyu' },
   'y.qq.com': { zh: 'QQ 音乐', en: 'QQ Music' },
   'music.163.com': { zh: '网易云音乐', en: 'NetEase Cloud Music' },
   'aws.amazon.com': { zh: 'AWS 控制台', en: 'AWS Console' },
