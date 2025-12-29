@@ -77,7 +77,7 @@
           v-if="isSuggestionListVisible && suggestions.length > 0"
           id="search-suggestions"
           data-suggestions-menu
-          class="border-app menu-app absolute top-full left-0 z-500 mt-2 w-full rounded-lg border shadow-(--app-shadow-md) backdrop-blur-xl"
+          class="border-app menu-app absolute top-full left-0 z-10000 mt-2 w-full rounded-lg border shadow-(--app-shadow-md) backdrop-blur-xl"
           role="listbox"
         >
           <ul>

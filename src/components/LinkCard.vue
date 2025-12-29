@@ -17,7 +17,7 @@
       <span
         aria-hidden="true"
         class="absolute inset-0 rounded-[28px] border transition-all duration-200 group-hover:shadow-(--app-shadow-xs) group-hover:ring-2"
-        :style="cardBorderStyle"
+        :style="iconOnlyBorderStyle"
       />
       <!-- hover/focus tooltip -->
       <div
@@ -25,7 +25,7 @@
       >
         <div
           class="bg-app-overlay border-app text-app truncate rounded-lg border px-2 py-1 text-[11px] font-medium shadow-(--app-shadow-md) backdrop-blur-xl"
-          :style="cardBorderStyle"
+          :style="iconOnlyBorderStyle"
         >
           {{ title }}
         </div>
@@ -59,23 +59,12 @@
   <!-- default card -->
   <article
     v-else
-    class="group relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border-0 p-4 shadow-(--app-shadow-xs) transition-all duration-300 hover:-translate-y-0.5 hover:shadow-(--app-shadow-md) md:gap-3 md:p-3.5"
+    class="group relative flex cursor-pointer items-center gap-4 rounded-2xl border p-4 shadow-(--app-shadow-xs) backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-(--app-shadow-md) md:gap-3 md:p-3.5"
     :style="resolvedStyle"
     @click="$emit('select')"
   >
-    <!-- subtle hover surface (match icon-only) -->
-    <span
-      aria-hidden="true"
-      class="bg-app-overlay absolute inset-0 rounded-2xl opacity-[0.12] backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-[0.22]"
-    />
-    <!-- border layer: keep border fully visible (match icon-only) -->
-    <span
-      aria-hidden="true"
-      class="absolute inset-0 rounded-2xl border transition-all duration-200 group-hover:shadow-(--app-shadow-xs) group-hover:ring-2"
-      :style="cardBorderStyle"
-    />
     <figure
-      class="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl md:h-11 md:w-11"
+      class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl md:h-11 md:w-11"
       :aria-label="`${title} ${t('common.icon')}`"
     >
       <img
@@ -92,7 +81,7 @@
         {{ fallbackChar }}
       </div>
     </figure>
-    <div class="relative z-10 min-w-0 flex-1">
+    <div class="min-w-0 flex-1">
       <h4
         class="text-app mb-1.5 overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap md:mb-1 md:text-[13px]"
       >
@@ -106,7 +95,7 @@
     </div>
     <div
       v-if="$slots.actions"
-      class="absolute top-3 right-3 z-10 flex gap-2 opacity-0 transition-all duration-200 group-hover:opacity-100 md:top-2.5 md:right-2.5"
+      class="absolute top-3 right-3 flex gap-2 opacity-0 transition-all duration-200 group-hover:opacity-100 md:top-2.5 md:right-2.5"
     >
       <slot name="actions" />
     </div>
@@ -152,7 +141,7 @@ const iconOnlyButtonStyle = computed<Record<string, string>>(() => {
   return { background }
 })
 
-const cardBorderStyle = computed<Record<string, string>>(() => {
+const iconOnlyBorderStyle = computed<Record<string, string>>(() => {
   const borderColor = props.cardStyle?.borderColor || 'var(--app-border-color)'
   return {
     borderColor,
