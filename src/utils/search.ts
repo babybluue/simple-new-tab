@@ -1,7 +1,11 @@
+import { getLogoForUrl } from './logo'
+
 // 搜索引擎配置
 export interface SearchEngine {
   name: string
   url: string
+  /** 本地内置 logo（优先） */
+  logo?: string
   icon: string
 }
 
@@ -9,22 +13,26 @@ export const SEARCH_ENGINES: Record<string, SearchEngine> = {
   google: {
     name: 'Google',
     url: 'https://www.google.com/search?q=',
-    icon: 'https://www.google.com/favicon.ico',
+    logo: getLogoForUrl('https://www.google.com'),
+    icon: getLogoForUrl('https://www.google.com'),
   },
   bing: {
     name: 'Bing',
     url: 'https://www.bing.com/search?q=',
-    icon: 'https://www.bing.com/favicon.ico',
+    logo: getLogoForUrl('https://www.bing.com'),
+    icon: getLogoForUrl('https://www.bing.com'),
   },
   baidu: {
     name: '百度',
     url: 'https://www.baidu.com/s?wd=',
-    icon: 'https://www.baidu.com/favicon.ico',
+    logo: getLogoForUrl('https://www.baidu.com'),
+    icon: getLogoForUrl('https://www.baidu.com'),
   },
   duckduckgo: {
     name: 'DuckDuckGo',
     url: 'https://duckduckgo.com/?q=',
-    icon: 'https://duckduckgo.com/favicon.ico',
+    logo: getLogoForUrl('https://duckduckgo.com'),
+    icon: getLogoForUrl('https://duckduckgo.com'),
   },
 }
 

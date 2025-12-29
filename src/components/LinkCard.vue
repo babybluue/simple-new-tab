@@ -17,7 +17,7 @@
       <span
         aria-hidden="true"
         class="absolute inset-0 rounded-[28px] border transition-all duration-200 group-hover:shadow-(--app-shadow-xs) group-hover:ring-2"
-        :style="iconOnlyBorderStyle"
+        :style="cardBorderStyle"
       />
       <!-- hover/focus tooltip -->
       <div
@@ -25,17 +25,17 @@
       >
         <div
           class="bg-app-overlay border-app text-app truncate rounded-lg border px-2 py-1 text-[11px] font-medium shadow-(--app-shadow-md) backdrop-blur-xl"
-          :style="iconOnlyBorderStyle"
+          :style="cardBorderStyle"
         >
           {{ title }}
         </div>
       </div>
       <img
-        v-if="favicon"
-        :src="favicon"
+        v-if="iconSrc"
+        :src="iconSrc"
         :alt="`${title} ${t('common.icon')}`"
-        class="relative h-[64px] w-[64px] rounded-2xl object-contain shadow-(--app-shadow-xs) transition-transform duration-200 group-hover:scale-[1.02] md:h-[56px] md:w-[56px]"
-        @error="$emit('icon-error', $event)"
+        class="relative h-[64px] w-[64px] rounded-2xl object-contain transition-transform duration-200 group-hover:scale-[1.02] md:h-[56px] md:w-[56px]"
+        @error="handleIconError"
       />
       <div
         v-else
@@ -59,21 +59,31 @@
   <!-- default card -->
   <article
     v-else
-    class="group relative flex cursor-pointer items-center gap-4 rounded-2xl border p-4 shadow-(--app-shadow-xs) backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-(--app-shadow-md) md:gap-3 md:p-3.5"
+    class="group relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border-0 p-4 shadow-(--app-shadow-xs) transition-all duration-300 hover:-translate-y-0.5 hover:shadow-(--app-shadow-md) md:gap-3 md:p-3.5"
     :style="resolvedStyle"
     @click="$emit('select')"
   >
+    <!-- subtle hover surface (match icon-only) -->
+    <span
+      aria-hidden="true"
+      class="bg-app-overlay absolute inset-0 rounded-2xl opacity-[0.12] backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-[0.22]"
+    />
+    <!-- border layer: keep border fully visible (match icon-only) -->
+    <span
+      aria-hidden="true"
+      class="absolute inset-0 rounded-2xl border transition-all duration-200 group-hover:shadow-(--app-shadow-xs) group-hover:ring-2"
+      :style="cardBorderStyle"
+    />
     <figure
-      class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-(--app-shadow-xs) md:h-11 md:w-11"
-      :style="figureStyle"
+      class="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl md:h-11 md:w-11"
       :aria-label="`${title} ${t('common.icon')}`"
     >
       <img
-        v-if="favicon"
-        :src="favicon"
+        v-if="iconSrc"
+        :src="iconSrc"
         :alt="`${title} ${t('common.icon')}`"
-        class="h-full w-full object-cover"
-        @error="$emit('icon-error', $event)"
+        class="h-full w-full object-contain"
+        @error="handleIconError"
       />
       <div
         v-else
@@ -82,7 +92,7 @@
         {{ fallbackChar }}
       </div>
     </figure>
-    <div class="min-w-0 flex-1">
+    <div class="relative z-10 min-w-0 flex-1">
       <h4
         class="text-app mb-1.5 overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap md:mb-1 md:text-[13px]"
       >
@@ -96,7 +106,7 @@
     </div>
     <div
       v-if="$slots.actions"
-      class="absolute top-3 right-3 flex gap-2 opacity-0 transition-all duration-200 group-hover:opacity-100 md:top-2.5 md:right-2.5"
+      class="absolute top-3 right-3 z-10 flex gap-2 opacity-0 transition-all duration-200 group-hover:opacity-100 md:top-2.5 md:right-2.5"
     >
       <slot name="actions" />
     </div>
@@ -104,7 +114,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { useI18n } from '@/i18n/composable'
 
@@ -113,24 +123,28 @@ const { t } = useI18n()
 const props = defineProps<{
   title: string
   subtitle: string
+  /** 本地内置 logo（优先展示） */
+  logo?: string
   favicon?: string
   fallbackChar: string
   cardStyle?: Record<string, string>
   iconOnly?: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   select: []
   'icon-error': [event: Event]
 }>()
 
-const resolvedStyle = computed(() => (props.iconOnly ? {} : props.cardStyle || {}))
+const iconSrc = ref<string | undefined>(props.logo || props.favicon)
+watch(
+  () => [props.logo, props.favicon],
+  () => {
+    iconSrc.value = props.logo || props.favicon
+  }
+)
 
-const figureStyle = computed<Record<string, string>>(() => {
-  // 默认卡片的图标容器底色：跟随主色（避免受 bg-app-overlay 影响）
-  const background = props.cardStyle?.background || 'var(--primary-color, #667eea)'
-  return { background }
-})
+const resolvedStyle = computed(() => (props.iconOnly ? {} : props.cardStyle || {}))
 
 const iconOnlyButtonStyle = computed<Record<string, string>>(() => {
   // icon-only 模式：背景跟随用户主色（来自 buildPrimarySurfaceStyle / primaryColor）
@@ -138,11 +152,20 @@ const iconOnlyButtonStyle = computed<Record<string, string>>(() => {
   return { background }
 })
 
-const iconOnlyBorderStyle = computed<Record<string, string>>(() => {
+const cardBorderStyle = computed<Record<string, string>>(() => {
   const borderColor = props.cardStyle?.borderColor || 'var(--app-border-color)'
   return {
     borderColor,
     '--tw-ring-color': borderColor,
   }
 })
+
+const handleIconError = (e: Event) => {
+  // 若本地 logo 加载失败且存在 favicon，则回退到 favicon；否则抛给外部继续处理
+  if (props.logo && props.favicon && iconSrc.value !== props.favicon) {
+    iconSrc.value = props.favicon
+    return
+  }
+  emit('icon-error', e)
+}
 </script>

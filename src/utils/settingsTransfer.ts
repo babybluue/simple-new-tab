@@ -92,7 +92,12 @@ export function parseAndSanitizeSettingsBackup(jsonText: string): ParseBackupRes
   const next: Settings = { ...DEFAULT_SETTINGS }
 
   next.searchEngine = oneOf(s.searchEngine, ['google', 'bing', 'baidu', 'duckduckgo'] as const) ?? next.searchEngine
-  next.theme = oneOf(s.theme, ['light', 'dark', 'auto'] as const) ?? next.theme
+
+  // 兼容旧版本：theme 曾允许 'auto'（当前 Settings 类型已移除）
+  const themeRaw = oneOf(s.theme, ['light', 'dark', 'auto'] as const)
+  if (themeRaw && themeRaw !== 'auto') {
+    next.theme = themeRaw
+  }
   next.maxHistoryItems = asInt(s.maxHistoryItems, 0, 50) ?? next.maxHistoryItems
 
   next.backgroundType =

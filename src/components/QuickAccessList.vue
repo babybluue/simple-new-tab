@@ -74,7 +74,8 @@
         <LinkCard
           :title="getLocalizedSiteTitle(link.url, getLocale(), link.title)"
           :subtitle="link.domain || link.url"
-          :favicon="getFavicon(link as FaviconItem)"
+          :logo="link.logo"
+          :favicon="link.logo ? undefined : getFavicon(link as FaviconItem)"
           :fallback-char="link.title.charAt(0).toUpperCase()"
           :card-style="cardStyle"
           :icon-only="settings?.iconOnlyLinkCards"
@@ -212,8 +213,9 @@ const isPersistingOrder = ref(false)
 
 const buildPresetWithMeta = (preset: QuickLink): QuickLink => {
   const domain = preset.domain || extractDomainFromUrl(preset.url)
-  const favicon =
-    preset.favicon || getUnavatarFavicon({ domain, url: preset.url }) || getSiteFavicon({ domain, url: preset.url })
+  const favicon = preset.logo
+    ? undefined
+    : preset.favicon || getUnavatarFavicon({ domain, url: preset.url }) || getSiteFavicon({ domain, url: preset.url })
   return { ...preset, domain, favicon }
 }
 

@@ -33,8 +33,8 @@
           @click.stop="$emit('select', preset)"
         >
           <img
-            v-if="preset.favicon"
-            :src="preset.favicon"
+            v-if="preset.logo || preset.favicon"
+            :src="preset.logo || preset.favicon"
             :alt="preset.title"
             class="h-5 w-5 rounded transition group-hover:scale-105"
           />

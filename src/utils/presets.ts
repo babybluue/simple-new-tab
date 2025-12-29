@@ -1,7 +1,8 @@
+import { getLogoForUrl } from './logo'
 import type { QuickLink } from './types'
 import { extractDomainFromUrl } from './url'
 
-export const PRESET_QUICK_LINKS: QuickLink[] = [
+const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   // 论坛 / 社交网络
   { title: 'Facebook', url: 'https://www.facebook.com', category: '社交' },
   { title: 'Instagram', url: 'https://www.instagram.com', category: '社交' },
@@ -107,6 +108,15 @@ export const PRESET_QUICK_LINKS: QuickLink[] = [
   { title: 'DeepSeek', url: 'https://chat.deepseek.com', category: 'AI' },
 ]
 
+/**
+ * 预设站点：补齐本地 logo（优先本地，缺失则为 generic.svg）。
+ * 说明：这不会引入网络请求；真正的“网络 favicon”仅在没有本地 logo 时才会被使用。
+ */
+export const PRESET_QUICK_LINKS: QuickLink[] = PRESET_QUICK_LINKS_RAW.map(link => ({
+  ...link,
+  logo: link.logo || getLogoForUrl(link.url),
+}))
+
 // 网站标题的 i18n 映射（基于 URL）
 // 如果网站标题在两种语言下相同，则不需要添加
 export const PRESET_SITE_TITLES: Record<string, { zh: string; en: string }> = {
@@ -178,3 +188,4 @@ export function getLocalizedCategory(category: string | undefined, locale: 'zh' 
   }
   return category
 }
+

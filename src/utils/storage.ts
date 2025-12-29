@@ -71,8 +71,8 @@ export const DEFAULT_QUICK_LINKS: QuickLink[] = (() => {
   // 默认快速访问站点来自预设模板中标记了 default: true 的条目
   const defaultsFromPresets = PRESET_QUICK_LINKS.filter(link => link.default).map(link => {
     // 不把 default 字段写入 quickLinks 存储，避免后续把它当成“用户自定义字段”
-    const { title, url, favicon, domain, category } = link
-    return { title, url, favicon, domain, category }
+    const { title, url, logo, favicon, domain, category } = link
+    return { title, url, logo, favicon, domain, category }
   })
 
   return defaultsFromPresets.length ? defaultsFromPresets : FALLBACK_DEFAULT_QUICK_LINKS
