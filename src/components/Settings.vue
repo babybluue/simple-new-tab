@@ -38,9 +38,9 @@
               v-if="LANGUAGE_OPTIONS.length > FIRST_ROW_LANGUAGES.length"
               class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border transition focus:outline-none"
               type="button"
-              @click="languageExpanded = !languageExpanded"
               :aria-expanded="languageExpanded"
               :aria-label="languageExpanded ? tFn('common.collapse') : tFn('common.expand')"
+              @click="languageExpanded = !languageExpanded"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -106,446 +106,571 @@
           </div>
         </div>
         <div class="mt-4">
-          <div class="text-base font-semibold">{{ tFn('settings.background') }}</div>
-
-          <div class="mt-4 grid w-full grid-cols-[repeat(auto-fit,2.5rem)] justify-between gap-2">
+          <div class="mb-4 flex items-center justify-between">
+            <div class="text-base font-semibold">{{ tFn('settings.background') }}</div>
             <button
-              v-for="bg in PRESET_BACKGROUNDS"
-              :key="bg"
-              class="border-app h-10 w-10 cursor-pointer rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
-              :class="{ 'ring-2': isPresetActive(bg) }"
-              :style="{
-                background: bg,
-                ...(isPresetActive(bg)
-                  ? {
-                      '--tw-ring-color': 'var(--app-border-color-hover)',
-                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
-                    }
-                  : {}),
-              }"
+              class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border transition focus:outline-none"
               type="button"
-              :disabled="applying"
-              @click="usePreset(bg)"
-            />
-            <button
-              class="border-app bg-app-overlay relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
-              :class="{ 'ring-2': isCustomActive() }"
-              :style="
-                isCustomActive()
-                  ? {
-                      '--tw-ring-color': 'var(--app-border-color-hover)',
-                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
-                    }
-                  : {}
-              "
-              type="button"
+              :aria-expanded="backgroundExpanded"
+              :aria-label="backgroundExpanded ? tFn('common.collapse') : tFn('common.expand')"
+              @click="backgroundExpanded = !backgroundExpanded"
             >
-              <input
-                v-model="customColor"
-                type="color"
-                class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                :title="tFn('settings.customColor')"
-                @input="handleCustomColorInput"
-                @change="handleCustomColorChange"
-              />
-              <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <svg
-                  class="text-app-secondary h-5 w-5 drop-shadow"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 transition-transform duration-200"
+                :class="{ 'rotate-180': backgroundExpanded }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+
+          <Transition name="collapse">
+            <div v-show="backgroundExpanded">
+              <div class="grid w-full grid-cols-[repeat(auto-fit,2.5rem)] justify-between gap-2">
+                <button
+                  v-for="bg in PRESET_BACKGROUNDS"
+                  :key="bg"
+                  class="border-app h-10 w-10 cursor-pointer rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
+                  :class="{ 'ring-2': isPresetActive(bg) }"
+                  :style="{
+                    background: bg,
+                    ...(isPresetActive(bg)
+                      ? {
+                          '--tw-ring-color': 'var(--app-border-color-hover)',
+                          '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                        }
+                      : {}),
+                  }"
+                  type="button"
+                  :disabled="applying"
+                  @click="usePreset(bg)"
+                />
+                <button
+                  class="border-app bg-app-overlay relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
+                  :class="{ 'ring-2': isCustomActive() }"
+                  :style="
+                    isCustomActive()
+                      ? {
+                          '--tw-ring-color': 'var(--app-border-color-hover)',
+                          '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                        }
+                      : {}
+                  "
+                  type="button"
                 >
-                  <path d="M3 21v-3.5L14.5 6.9l3.6 3.6L6.6 21H3z" />
-                  <path d="M14 7l3 3" />
-                  <path d="M12.5 5.5l2-2a1.5 1.5 0 0 1 2.1 0l2.4 2.4a1.5 1.5 0 0 1 0 2.1l-2 2" />
-                </svg>
+                  <input
+                    v-model="customColor"
+                    type="color"
+                    class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    :title="tFn('settings.customColor')"
+                    @input="handleCustomColorInput"
+                    @change="handleCustomColorChange"
+                  />
+                  <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <svg
+                      class="text-app-secondary h-5 w-5 drop-shadow"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 21v-3.5L14.5 6.9l3.6 3.6L6.6 21H3z" />
+                      <path d="M14 7l3 3" />
+                      <path d="M12.5 5.5l2-2a1.5 1.5 0 0 1 2.1 0l2.4 2.4a1.5 1.5 0 0 1 0 2.1l-2 2" />
+                    </svg>
+                  </div>
+                </button>
               </div>
-            </button>
-          </div>
 
-          <div
-            class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between gap-3 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
-          >
-            <span>{{ tFn('settings.backgroundOpacity') }}</span>
-            <div class="flex items-center gap-2">
-              <input
-                class="w-36"
-                type="range"
-                min="0"
-                max="100"
-                step="1"
-                :value="backgroundOpacityDraft"
-                :disabled="applying || settings.backgroundColor.includes('gradient')"
-                @input="handleBackgroundOpacityInput"
-                @change="handleBackgroundOpacityChange"
-              />
-              <span class="text-app w-10 text-right tabular-nums">{{ backgroundOpacityDraft }}%</span>
-            </div>
-          </div>
+              <div
+                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between gap-3 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+              >
+                <span>{{ tFn('settings.backgroundOpacity') }}</span>
+                <div class="flex items-center gap-2">
+                  <input
+                    class="w-36"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    :value="backgroundOpacityDraft"
+                    :disabled="applying || settings.backgroundColor.includes('gradient')"
+                    @input="handleBackgroundOpacityInput"
+                    @change="handleBackgroundOpacityChange"
+                  />
+                  <span class="text-app w-10 text-right tabular-nums">{{ backgroundOpacityDraft }}%</span>
+                </div>
+              </div>
 
-          <div
-            class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
-          >
-            <span>{{ tFn('settings.refreshBingWallpaper') }}</span>
-            <button
-              class="border-app text-app bg-app-overlay bg-app-overlay-hover flex min-w-18 cursor-pointer items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
-              type="button"
-              :disabled="bingLoading || applying"
-              @click="refreshBing"
-            >
-              {{ tFn('common.refresh') }}
-            </button>
-          </div>
-
-          <div
-            class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
-          >
-            <span>{{ tFn('settings.uploadImage') }}</span>
-            <button
-              class="border-app text-app bg-app-overlay bg-app-overlay-hover relative flex min-w-18 cursor-pointer items-center justify-center gap-1 overflow-hidden rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
-              type="button"
-              :disabled="applying"
-              :title="tFn('settings.uploadImage')"
-            >
-              <input
-                ref="fileInput"
-                type="file"
-                accept="image/*"
-                class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                @click.stop
-                @change="handleUpload"
-              />
-              {{ tFn('common.upload') }}
-            </button>
-          </div>
-        </div>
-
-        <div class="border-app bg-app-overlay mt-3 rounded-xl border p-3 shadow-(--app-shadow-xs) backdrop-blur-sm">
-          <div class="text-app-secondary mb-2 text-xs">
-            {{ tFn('settings.onlineImage') }}
-          </div>
-          <div class="flex items-center gap-2">
-            <input
-              v-model="onlineImageUrlDraft"
-              class="border-app bg-app-overlay text-app placeholder:text-app-secondary min-w-0 flex-1 rounded-lg border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-(--app-focus-ring)"
-              type="url"
-              inputmode="url"
-              autocomplete="off"
-              autocapitalize="off"
-              spellcheck="false"
-              :placeholder="tFn('settings.onlineImagePlaceholder')"
-              :disabled="applying"
-              @keydown.enter.prevent="useOnlineImageUrl"
-            />
-            <button
-              class="border-app text-app bg-app-overlay bg-app-overlay-hover flex min-w-18 cursor-pointer items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
-              type="button"
-              :disabled="applying"
-              @click="useOnlineImageUrl"
-            >
-              {{ tFn('common.save') }}
-            </button>
-          </div>
-          <div v-if="onlineUrlInvalid" class="mt-2 text-[11px] leading-relaxed text-red-400">
-            {{ tFn('settings.onlineImageInvalid') }}
-          </div>
-        </div>
-
-        <div class="mt-4">
-          <div class="mb-4 text-base font-semibold">{{ tFn('settings.primaryColor') }}</div>
-          <div class="grid w-full grid-cols-[repeat(auto-fit,2.5rem)] justify-between gap-2">
-            <button
-              v-for="color in PRIMARY_PRESETS"
-              :key="color"
-              class="border-app h-10 w-10 cursor-pointer rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
-              :class="{ 'ring-2': isPrimaryActive(color) }"
-              :style="{
-                ...getPrimaryPresetStyle(color),
-                ...(isPrimaryActive(color)
-                  ? {
-                      '--tw-ring-color': 'var(--app-border-color-hover)',
-                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
-                    }
-                  : {}),
-              }"
-              type="button"
-              :disabled="applying"
-              @click="usePrimaryPreset(color)"
-            />
-            <button
-              class="border-app bg-app-overlay relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
-              :class="{ 'ring-2': isPrimaryCustomActive() }"
-              :style="
-                isPrimaryCustomActive()
-                  ? {
-                      '--tw-ring-color': 'var(--app-border-color-hover)',
-                      '--tw-ring-offset-color': 'var(--app-bg-overlay)',
-                    }
-                  : {}
-              "
-              type="button"
-            >
-              <input
-                v-model="primaryCustomColor"
-                type="color"
-                class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                :title="tFn('settings.primaryColorCustom')"
-                @input="handlePrimaryColorInput"
-                @change="handlePrimaryColorChange"
-              />
-              <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <svg
-                  class="text-app-secondary h-5 w-5 drop-shadow"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+              <div
+                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+              >
+                <span>{{ tFn('settings.refreshBingWallpaper') }}</span>
+                <button
+                  class="border-app text-app bg-app-overlay bg-app-overlay-hover flex min-w-18 cursor-pointer items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+                  type="button"
+                  :disabled="bingLoading || applying"
+                  @click="refreshBing"
                 >
-                  <path d="M3 21v-3.5L14.5 6.9l3.6 3.6L6.6 21H3z" />
-                  <path d="M14 7l3 3" />
-                  <path d="M12.5 5.5l2-2a1.5 1.5 0 0 1 2.1 0l2.4 2.4a1.5 1.5 0 0 1 0 2.1l-2 2" />
-                </svg>
+                  {{ tFn('common.refresh') }}
+                </button>
               </div>
-            </button>
-          </div>
 
-          <div
-            class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between gap-3 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
-          >
-            <span>{{ tFn('settings.primaryOpacity') }}</span>
-            <div class="flex items-center gap-2">
-              <input
-                class="w-36"
-                type="range"
-                min="0"
-                max="100"
-                step="1"
-                :value="primaryOpacityDraft"
-                :disabled="applying"
-                @input="handlePrimaryOpacityInput"
-                @change="handlePrimaryOpacityChange"
-              />
-              <span class="text-app w-10 text-right tabular-nums">{{ primaryOpacityDraft }}%</span>
+              <div
+                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+              >
+                <span>{{ tFn('settings.uploadImage') }}</span>
+                <button
+                  class="border-app text-app bg-app-overlay bg-app-overlay-hover relative flex min-w-18 cursor-pointer items-center justify-center gap-1 overflow-hidden rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+                  type="button"
+                  :disabled="applying"
+                  :title="tFn('settings.uploadImage')"
+                >
+                  <input
+                    ref="fileInput"
+                    type="file"
+                    accept="image/*"
+                    class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    @click.stop
+                    @change="handleUpload"
+                  />
+                  {{ tFn('common.upload') }}
+                </button>
+              </div>
+
+              <div
+                class="border-app bg-app-overlay mt-3 rounded-xl border p-3 shadow-(--app-shadow-xs) backdrop-blur-sm"
+              >
+                <div class="text-app-secondary mb-2 text-xs">
+                  {{ tFn('settings.onlineImage') }}
+                </div>
+                <div class="flex items-center gap-2">
+                  <input
+                    v-model="onlineImageUrlDraft"
+                    class="border-app bg-app-overlay text-app placeholder:text-app-secondary min-w-0 flex-1 rounded-lg border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-(--app-focus-ring)"
+                    type="url"
+                    inputmode="url"
+                    autocomplete="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    :placeholder="tFn('settings.onlineImagePlaceholder')"
+                    :disabled="applying"
+                    @keydown.enter.prevent="useOnlineImageUrl"
+                  />
+                  <button
+                    class="border-app text-app bg-app-overlay bg-app-overlay-hover flex min-w-18 cursor-pointer items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+                    type="button"
+                    :disabled="applying"
+                    @click="useOnlineImageUrl"
+                  >
+                    {{ tFn('common.save') }}
+                  </button>
+                </div>
+                <div v-if="onlineUrlInvalid" class="mt-2 text-[11px] leading-relaxed text-red-400">
+                  {{ tFn('settings.onlineImageInvalid') }}
+                </div>
+              </div>
             </div>
-          </div>
+          </Transition>
         </div>
 
         <div class="mt-4">
-          <div class="mb-4 text-base font-semibold">{{ tFn('settings.controls') }}</div>
-          <div class="space-y-3">
-            <label
-              class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
-            >
-              <span>{{ tFn('settings.dateTime') }}</span>
-              <button
-                type="button"
-                role="switch"
-                :aria-checked="settings.showDateTime"
-                class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
-                :style="getSwitchTrackStyle(settings.showDateTime)"
-                :disabled="applying"
-                @click="toggleVisibility('showDateTime')"
-              >
-                <span
-                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
-                  style="background-color: var(--app-text-color)"
-                  :class="settings.showDateTime ? 'translate-x-5' : 'translate-x-0'"
-                />
-              </button>
-            </label>
-            <label
-              class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
-            >
-              <span>{{ tFn('settings.quickAccess') }}</span>
-              <button
-                type="button"
-                role="switch"
-                :aria-checked="settings.showQuickAccess"
-                class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
-                :style="getSwitchTrackStyle(settings.showQuickAccess)"
-                :disabled="applying"
-                @click="toggleVisibility('showQuickAccess')"
-              >
-                <span
-                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
-                  style="background-color: var(--app-text-color)"
-                  :class="settings.showQuickAccess ? 'translate-x-5' : 'translate-x-0'"
-                />
-              </button>
-            </label>
-            <label
-              class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
-            >
-              <span>{{ tFn('settings.recentVisits') }}</span>
-              <button
-                type="button"
-                role="switch"
-                :aria-checked="settings.showHistory"
-                class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
-                :style="getSwitchTrackStyle(settings.showHistory)"
-                :disabled="applying"
-                @click="toggleVisibility('showHistory')"
-              >
-                <span
-                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
-                  style="background-color: var(--app-text-color)"
-                  :class="settings.showHistory ? 'translate-x-5' : 'translate-x-0'"
-                />
-              </button>
-            </label>
-            <label
-              class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
-            >
-              <span>{{ tFn('settings.openLinksInNewTab') }}</span>
-              <button
-                type="button"
-                role="switch"
-                :aria-checked="settings.openLinksInNewTab"
-                class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
-                :style="getSwitchTrackStyle(settings.openLinksInNewTab)"
-                :disabled="applying"
-                @click="toggleVisibility('openLinksInNewTab')"
-              >
-                <span
-                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
-                  style="background-color: var(--app-text-color)"
-                  :class="settings.openLinksInNewTab ? 'translate-x-5' : 'translate-x-0'"
-                />
-              </button>
-            </label>
-            <label
-              class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
-            >
-              <span>{{ tFn('settings.iconOnlyLinkCards') }}</span>
-              <button
-                type="button"
-                role="switch"
-                :aria-checked="settings.iconOnlyLinkCards"
-                class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
-                :style="getSwitchTrackStyle(settings.iconOnlyLinkCards)"
-                :disabled="applying"
-                @click="toggleVisibility('iconOnlyLinkCards')"
-              >
-                <span
-                  class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
-                  style="background-color: var(--app-text-color)"
-                  :class="settings.iconOnlyLinkCards ? 'translate-x-5' : 'translate-x-0'"
-                />
-              </button>
-            </label>
-          </div>
-        </div>
-
-        <div class="mt-4">
-          <div class="mb-4 text-base font-semibold">{{ tFn('settings.customCss') }}</div>
-
-          <label
-            class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
-          >
-            <span>{{ tFn('settings.customCssEnable') }}</span>
+          <div class="mb-4 flex items-center justify-between">
+            <div class="text-base font-semibold">{{ tFn('settings.primaryColor') }}</div>
             <button
+              class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border transition focus:outline-none"
               type="button"
-              role="switch"
-              :aria-checked="settings.customCssEnabled"
-              class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
-              :style="getSwitchTrackStyle(settings.customCssEnabled)"
-              :disabled="applying"
-              @click="toggleCustomCssEnabled"
+              :aria-expanded="primaryColorExpanded"
+              :aria-label="primaryColorExpanded ? tFn('common.collapse') : tFn('common.expand')"
+              @click="primaryColorExpanded = !primaryColorExpanded"
             >
-              <span
-                class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
-                style="background-color: var(--app-text-color)"
-                :class="settings.customCssEnabled ? 'translate-x-5' : 'translate-x-0'"
-              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 transition-transform duration-200"
+                :class="{ 'rotate-180': primaryColorExpanded }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
             </button>
-          </label>
-
-          <div class="border-app bg-app-overlay mt-3 rounded-xl border p-3 shadow-(--app-shadow-xs) backdrop-blur-sm">
-            <textarea
-              v-model="customCssDraft"
-              class="border-app bg-app-overlay text-app placeholder:text-app-secondary w-full resize-y rounded-lg border p-3 text-xs leading-relaxed outline-none focus:ring-2 focus:ring-(--app-focus-ring)"
-              :placeholder="tFn('settings.customCssPlaceholder')"
-              rows="7"
-              spellcheck="false"
-              autocapitalize="off"
-              autocomplete="off"
-              :disabled="applying"
-            />
-
-            <div class="text-app-secondary mt-2 text-[11px] leading-relaxed">
-              {{ tFn('settings.customCssHint') }}
-            </div>
-
-            <div class="mt-3 flex items-center justify-end gap-2">
-              <button
-                class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
-                type="button"
-                :disabled="applying || (!customCssDraft && !settings.customCss)"
-                @click="clearCustomCss"
-              >
-                {{ tFn('common.clear') }}
-              </button>
-              <button
-                class="border-app text-app bg-app-overlay bg-app-overlay-hover inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
-                type="button"
-                :disabled="applying || !customCssChanged"
-                @click="saveCustomCss"
-              >
-                {{ tFn('common.save') }}
-              </button>
-            </div>
           </div>
+
+          <Transition name="collapse">
+            <div v-show="primaryColorExpanded">
+              <div class="grid w-full grid-cols-[repeat(auto-fit,2.5rem)] justify-between gap-2">
+                <button
+                  v-for="color in PRIMARY_PRESETS"
+                  :key="color"
+                  class="border-app h-10 w-10 cursor-pointer rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
+                  :class="{ 'ring-2': isPrimaryActive(color) }"
+                  :style="{
+                    ...getPrimaryPresetStyle(color),
+                    ...(isPrimaryActive(color)
+                      ? {
+                          '--tw-ring-color': 'var(--app-border-color-hover)',
+                          '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                        }
+                      : {}),
+                  }"
+                  type="button"
+                  :disabled="applying"
+                  @click="usePrimaryPreset(color)"
+                />
+                <button
+                  class="border-app bg-app-overlay relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border shadow-(--app-shadow-xs) transition hover:scale-[1.04] hover:shadow-(--app-shadow-sm) focus:outline-none disabled:opacity-60"
+                  :class="{ 'ring-2': isPrimaryCustomActive() }"
+                  :style="
+                    isPrimaryCustomActive()
+                      ? {
+                          '--tw-ring-color': 'var(--app-border-color-hover)',
+                          '--tw-ring-offset-color': 'var(--app-bg-overlay)',
+                        }
+                      : {}
+                  "
+                  type="button"
+                >
+                  <input
+                    v-model="primaryCustomColor"
+                    type="color"
+                    class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    :title="tFn('settings.primaryColorCustom')"
+                    @input="handlePrimaryColorInput"
+                    @change="handlePrimaryColorChange"
+                  />
+                  <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <svg
+                      class="text-app-secondary h-5 w-5 drop-shadow"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 21v-3.5L14.5 6.9l3.6 3.6L6.6 21H3z" />
+                      <path d="M14 7l3 3" />
+                      <path d="M12.5 5.5l2-2a1.5 1.5 0 0 1 2.1 0l2.4 2.4a1.5 1.5 0 0 1 0 2.1l-2 2" />
+                    </svg>
+                  </div>
+                </button>
+              </div>
+
+              <div
+                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between gap-3 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+              >
+                <span>{{ tFn('settings.primaryOpacity') }}</span>
+                <div class="flex items-center gap-2">
+                  <input
+                    class="w-36"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    :value="primaryOpacityDraft"
+                    :disabled="applying"
+                    @input="handlePrimaryOpacityInput"
+                    @change="handlePrimaryOpacityChange"
+                  />
+                  <span class="text-app w-10 text-right tabular-nums">{{ primaryOpacityDraft }}%</span>
+                </div>
+              </div>
+            </div>
+          </Transition>
         </div>
 
         <div class="mt-4">
-          <div class="mb-4 text-base font-semibold">{{ tFn('settings.backup') }}</div>
-          <div
-            class="border-app bg-app-overlay text-app-secondary flex flex-col gap-2 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
-          >
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <button
-                class="border-app text-app bg-app-overlay bg-app-overlay-hover inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
-                type="button"
-                :disabled="applying || backupBusy"
-                @click="exportBackup"
-              >
-                {{ tFn('settings.exportBackup') }}
-              </button>
-
-              <button
-                class="border-app text-app bg-app-overlay bg-app-overlay-hover relative inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
-                type="button"
-                :disabled="applying || backupBusy"
-                @click="triggerImport"
-              >
-                <input
-                  ref="backupFileInput"
-                  type="file"
-                  accept="application/json,.json"
-                  class="hidden"
-                  @change="handleImport"
-                />
-                {{ tFn('settings.importBackup') }}
-              </button>
-            </div>
-
-            <div class="text-app-secondary text-[11px] leading-relaxed">
-              {{ tFn('settings.backupHint') }}
-            </div>
-
-            <div
-              v-if="backupMessage"
-              class="text-[11px] leading-relaxed"
-              :class="backupError ? 'text-red-400' : 'text-app-secondary'"
+          <div class="mb-4 flex items-center justify-between">
+            <div class="text-base font-semibold">{{ tFn('settings.controls') }}</div>
+            <button
+              class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border transition focus:outline-none"
+              type="button"
+              :aria-expanded="controlsExpanded"
+              :aria-label="controlsExpanded ? tFn('common.collapse') : tFn('common.expand')"
+              @click="controlsExpanded = !controlsExpanded"
             >
-              {{ backupMessage }}
-            </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 transition-transform duration-200"
+                :class="{ 'rotate-180': controlsExpanded }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </div>
+
+          <Transition name="collapse">
+            <div v-show="controlsExpanded" class="space-y-3">
+              <label
+                class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
+              >
+                <span>{{ tFn('settings.dateTime') }}</span>
+                <button
+                  type="button"
+                  role="switch"
+                  :aria-checked="settings.showDateTime"
+                  class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                  :style="getSwitchTrackStyle(settings.showDateTime)"
+                  :disabled="applying"
+                  @click="toggleVisibility('showDateTime')"
+                >
+                  <span
+                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    style="background-color: var(--app-text-color)"
+                    :class="settings.showDateTime ? 'translate-x-5' : 'translate-x-0'"
+                  />
+                </button>
+              </label>
+              <label
+                class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
+              >
+                <span>{{ tFn('settings.quickAccess') }}</span>
+                <button
+                  type="button"
+                  role="switch"
+                  :aria-checked="settings.showQuickAccess"
+                  class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                  :style="getSwitchTrackStyle(settings.showQuickAccess)"
+                  :disabled="applying"
+                  @click="toggleVisibility('showQuickAccess')"
+                >
+                  <span
+                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    style="background-color: var(--app-text-color)"
+                    :class="settings.showQuickAccess ? 'translate-x-5' : 'translate-x-0'"
+                  />
+                </button>
+              </label>
+              <label
+                class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
+              >
+                <span>{{ tFn('settings.recentVisits') }}</span>
+                <button
+                  type="button"
+                  role="switch"
+                  :aria-checked="settings.showHistory"
+                  class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                  :style="getSwitchTrackStyle(settings.showHistory)"
+                  :disabled="applying"
+                  @click="toggleVisibility('showHistory')"
+                >
+                  <span
+                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    style="background-color: var(--app-text-color)"
+                    :class="settings.showHistory ? 'translate-x-5' : 'translate-x-0'"
+                  />
+                </button>
+              </label>
+              <label
+                class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
+              >
+                <span>{{ tFn('settings.openLinksInNewTab') }}</span>
+                <button
+                  type="button"
+                  role="switch"
+                  :aria-checked="settings.openLinksInNewTab"
+                  class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                  :style="getSwitchTrackStyle(settings.openLinksInNewTab)"
+                  :disabled="applying"
+                  @click="toggleVisibility('openLinksInNewTab')"
+                >
+                  <span
+                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    style="background-color: var(--app-text-color)"
+                    :class="settings.openLinksInNewTab ? 'translate-x-5' : 'translate-x-0'"
+                  />
+                </button>
+              </label>
+              <label
+                class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
+              >
+                <span>{{ tFn('settings.iconOnlyLinkCards') }}</span>
+                <button
+                  type="button"
+                  role="switch"
+                  :aria-checked="settings.iconOnlyLinkCards"
+                  class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                  :style="getSwitchTrackStyle(settings.iconOnlyLinkCards)"
+                  :disabled="applying"
+                  @click="toggleVisibility('iconOnlyLinkCards')"
+                >
+                  <span
+                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    style="background-color: var(--app-text-color)"
+                    :class="settings.iconOnlyLinkCards ? 'translate-x-5' : 'translate-x-0'"
+                  />
+                </button>
+              </label>
+            </div>
+          </Transition>
+        </div>
+
+        <div class="mt-4">
+          <div class="mb-4 flex items-center justify-between">
+            <div class="text-base font-semibold">{{ tFn('settings.customCss') }}</div>
+            <button
+              class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border transition focus:outline-none"
+              type="button"
+              :aria-expanded="customCssExpanded"
+              :aria-label="customCssExpanded ? tFn('common.collapse') : tFn('common.expand')"
+              @click="customCssExpanded = !customCssExpanded"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 transition-transform duration-200"
+                :class="{ 'rotate-180': customCssExpanded }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+
+          <Transition name="collapse">
+            <div v-show="customCssExpanded">
+              <label
+                class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
+              >
+                <span>{{ tFn('settings.customCssEnable') }}</span>
+                <button
+                  type="button"
+                  role="switch"
+                  :aria-checked="settings.customCssEnabled"
+                  class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                  :style="getSwitchTrackStyle(settings.customCssEnabled)"
+                  :disabled="applying"
+                  @click="toggleCustomCssEnabled"
+                >
+                  <span
+                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    style="background-color: var(--app-text-color)"
+                    :class="settings.customCssEnabled ? 'translate-x-5' : 'translate-x-0'"
+                  />
+                </button>
+              </label>
+
+              <div
+                class="border-app bg-app-overlay mt-3 rounded-xl border p-3 shadow-(--app-shadow-xs) backdrop-blur-sm"
+              >
+                <textarea
+                  v-model="customCssDraft"
+                  class="border-app bg-app-overlay text-app placeholder:text-app-secondary w-full resize-y rounded-lg border p-3 text-xs leading-relaxed outline-none focus:ring-2 focus:ring-(--app-focus-ring)"
+                  :placeholder="tFn('settings.customCssPlaceholder')"
+                  rows="7"
+                  spellcheck="false"
+                  autocapitalize="off"
+                  autocomplete="off"
+                  :disabled="applying"
+                />
+
+                <div class="text-app-secondary mt-2 text-[11px] leading-relaxed">
+                  {{ tFn('settings.customCssHint') }}
+                </div>
+
+                <div class="mt-3 flex items-center justify-end gap-2">
+                  <button
+                    class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
+                    type="button"
+                    :disabled="applying || (!customCssDraft && !settings.customCss)"
+                    @click="clearCustomCss"
+                  >
+                    {{ tFn('common.clear') }}
+                  </button>
+                  <button
+                    class="border-app text-app bg-app-overlay bg-app-overlay-hover inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
+                    type="button"
+                    :disabled="applying || !customCssChanged"
+                    @click="saveCustomCss"
+                  >
+                    {{ tFn('common.save') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Transition>
+        </div>
+
+        <div class="mt-4">
+          <div class="mb-4 flex items-center justify-between">
+            <div class="text-base font-semibold">{{ tFn('settings.backup') }}</div>
+            <button
+              class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border transition focus:outline-none"
+              type="button"
+              :aria-expanded="backupExpanded"
+              :aria-label="backupExpanded ? tFn('common.collapse') : tFn('common.expand')"
+              @click="backupExpanded = !backupExpanded"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 transition-transform duration-200"
+                :class="{ 'rotate-180': backupExpanded }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+
+          <Transition name="collapse">
+            <div v-show="backupExpanded">
+              <div
+                class="border-app bg-app-overlay text-app-secondary flex flex-col gap-2 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+              >
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <button
+                    class="border-app text-app bg-app-overlay bg-app-overlay-hover inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
+                    type="button"
+                    :disabled="applying || backupBusy"
+                    @click="exportBackup"
+                  >
+                    {{ tFn('settings.exportBackup') }}
+                  </button>
+
+                  <button
+                    class="border-app text-app bg-app-overlay bg-app-overlay-hover relative inline-flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
+                    type="button"
+                    :disabled="applying || backupBusy"
+                    @click="triggerImport"
+                  >
+                    <input
+                      ref="backupFileInput"
+                      type="file"
+                      accept="application/json,.json"
+                      class="hidden"
+                      @change="handleImport"
+                    />
+                    {{ tFn('settings.importBackup') }}
+                  </button>
+                </div>
+
+                <div class="text-app-secondary text-[11px] leading-relaxed">
+                  {{ tFn('settings.backupHint') }}
+                </div>
+
+                <div
+                  v-if="backupMessage"
+                  class="text-[11px] leading-relaxed"
+                  :class="backupError ? 'text-red-400' : 'text-app-secondary'"
+                >
+                  {{ backupMessage }}
+                </div>
+              </div>
+            </div>
+          </Transition>
         </div>
       </section>
     </Transition>
@@ -651,6 +776,11 @@ const applying = ref(false)
 const bingLoading = ref(false)
 const open = ref(false)
 const languageExpanded = ref(false)
+const backgroundExpanded = ref(true)
+const primaryColorExpanded = ref(true)
+const controlsExpanded = ref(false)
+const customCssExpanded = ref(false)
+const backupExpanded = ref(false)
 const anchorEl = ref<HTMLElement | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const backupFileInput = ref<HTMLInputElement | null>(null)
@@ -708,7 +838,7 @@ const LANGUAGE_OPTIONS = computed(() => [
 ])
 
 // 第一行显示的语言（简体中文、繁体中文、英文）
-const FIRST_ROW_LANGUAGES = ['zh_CN', 'zh_TW', 'en'] as const
+const FIRST_ROW_LANGUAGES: readonly SupportedLocale[] = ['zh_CN', 'zh_TW', 'en'] as const
 
 // 根据展开状态返回可见的语言选项
 const visibleLanguageOptions = computed(() => {
@@ -1185,5 +1315,23 @@ const useLanguage = async (lang: SupportedLocale) => {
 .fade-leave-to {
   opacity: 0;
   transform: translateY(-6px);
+}
+
+.collapse-enter-active,
+.collapse-leave-active {
+  transition:
+    opacity 0.2s ease,
+    max-height 0.3s ease;
+  overflow: hidden;
+}
+.collapse-enter-from,
+.collapse-leave-to {
+  opacity: 0;
+  max-height: 0;
+}
+.collapse-enter-to,
+.collapse-leave-from {
+  opacity: 1;
+  max-height: 2000px;
 }
 </style>
