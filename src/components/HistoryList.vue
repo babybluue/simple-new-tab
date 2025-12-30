@@ -125,26 +125,7 @@ const DEFAULT_VISIT_COUNT = 1
 
 
 const getSiteIconProps = (item: HistoryItem): { logo?: string; favicon?: string } => {
-  // 提取主域名用于匹配 logo
-  const domain = item.domain || extractDomainFromUrl(item.url) || item.url
-  const rootDomain = extractRootDomain(domain)
-  
-  // 使用主域名构建 URL 用于匹配 logo
-  let rootDomainUrl = item.url
-  try {
-    const urlObj = new URL(item.url.startsWith('http') ? item.url : `https://${item.url}`)
-    urlObj.hostname = rootDomain
-    rootDomainUrl = urlObj.toString()
-  } catch {
-    // 如果 URL 解析失败，使用简单的字符串替换
-    rootDomainUrl = item.url.replace(domain, rootDomain)
-  }
-  
-  return resolveSiteIcon({ 
-    url: rootDomainUrl, 
-    domain: rootDomain, 
-    favicon: item.favicon 
-  })
+  return resolveSiteIcon({ url: item.url, domain: item.domain, favicon: item.favicon })
 }
 
 onMounted(async () => {
