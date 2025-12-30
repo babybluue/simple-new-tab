@@ -151,13 +151,24 @@ export const PRESET_CATEGORIES: Record<string, { zh: string; en: string }> = {
 /**
  * 根据 URL 和当前语言获取本地化的网站标题
  */
-export function getLocalizedSiteTitle(url: string, locale: 'zh' | 'en', fallbackTitle: string): string {
+export function getLocalizedSiteTitle(
+  url: string,
+  locale: 'zh_CN' | 'zh_TW' | 'en' | 'ja' | 'ko' | 'fr' | 'de' | 'es' | 'ru',
+  fallbackTitle?: string
+): string {
   const domain = extractDomainFromUrl(url) || url
   const mapping = PRESET_SITE_TITLES[domain]
   if (mapping) {
-    return mapping[locale]
+    // zh_CN 和 zh_TW 都使用 'zh' 映射，其他语言使用 'en' 映射
+    const localeKey = locale === 'zh_CN' || locale === 'zh_TW' ? 'zh' : 'en'
+    return mapping[localeKey]
   }
-  return fallbackTitle
+  // 如果 fallbackTitle 为空，使用域名作为后备
+  if (fallbackTitle) {
+    return fallbackTitle
+  }
+  // 使用域名作为最后的后备
+  return domain || url
 }
 
 /**

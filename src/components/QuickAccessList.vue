@@ -72,10 +72,10 @@
         @drop.prevent="handleDrop"
       >
         <LinkCard
-          :title="getLocalizedSiteTitle(link.url, getLocale(), link.title)"
+          :title="getLocalizedSiteTitle(link.url, getLocale(), link.title) || link.domain || link.url"
           :subtitle="link.domain || link.url"
           v-bind="getSiteIconProps(link)"
-          :fallback-char="link.title.charAt(0).toUpperCase()"
+          :fallback-char="(link.title || link.domain || link.url).charAt(0).toUpperCase()"
           :card-style="cardStyle"
           :icon-only="settings?.iconOnlyLinkCards"
           @select="handleQuickLinkSelect(link)"
