@@ -14,9 +14,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 
-import { getLocale } from '@/i18n'
+import type { SupportedLocale } from '@/i18n'
+import { getLocaleRef } from '@/i18n'
 
 const timeHour = ref('')
 const timeMinute = ref('')
@@ -28,6 +29,24 @@ let timer: ReturnType<typeof setInterval> | null = null
 const UPDATE_INTERVAL_MS = 1000
 
 /**
+ * 将 SupportedLocale 格式转换为浏览器 locale 格式
+ */
+const toBrowserLocale = (locale: SupportedLocale): string => {
+  const localeMap: Record<SupportedLocale, string> = {
+    zh_CN: 'zh-CN',
+    zh_TW: 'zh-TW',
+    en: 'en-US',
+    ja: 'ja-JP',
+    ko: 'ko-KR',
+    fr: 'fr-FR',
+    de: 'de-DE',
+    es: 'es-ES',
+    ru: 'ru-RU',
+  }
+  return localeMap[locale] || 'en-US'
+}
+
+/**
  * 从日期格式化部分中获取指定类型的值
  */
 const getDateTimePart = (parts: Intl.DateTimeFormatPart[], type: Intl.DateTimeFormatPartTypes): string => {
@@ -36,9 +55,10 @@ const getDateTimePart = (parts: Intl.DateTimeFormatPart[], type: Intl.DateTimeFo
 
 const updateTime = () => {
   const now = new Date()
-  const currentLocale = getLocale() === 'zh' ? 'zh-CN' : 'en-US'
+  const currentLocale = getLocaleRef().value
+  const browserLocale = toBrowserLocale(currentLocale)
 
-  const parts = new Intl.DateTimeFormat(currentLocale, {
+  const parts = new Intl.DateTimeFormat(browserLocale, {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
@@ -51,13 +71,18 @@ const updateTime = () => {
   const dayPeriod = getDateTimePart(parts, 'dayPeriod')
   timeSuffix.value = dayPeriod ? ` ${dayPeriod}` : ''
 
-  date.value = now.toLocaleDateString(currentLocale, {
+  date.value = now.toLocaleDateString(browserLocale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     weekday: 'long',
   })
 }
+
+// 监听语言变化，立即更新时间
+watch(getLocaleRef(), () => {
+  updateTime()
+})
 
 onMounted(async () => {
   updateTime()
