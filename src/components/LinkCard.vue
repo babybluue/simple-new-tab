@@ -34,7 +34,7 @@
         v-if="iconSrc"
         :src="iconSrc"
         :alt="`${title} ${t('common.icon')}`"
-        class="relative h-[64px] w-[64px] rounded-2xl object-contain transition-transform duration-200 group-hover:scale-[1.02] md:h-[56px] md:w-[56px]"
+        class="bg-app-overlay relative h-[64px] w-[64px] rounded-2xl object-contain p-1.5 transition-transform duration-200 group-hover:scale-[1.02] md:h-[56px] md:w-[56px]"
         @error="handleIconError"
       />
       <div
@@ -71,7 +71,7 @@
         v-if="iconSrc"
         :src="iconSrc"
         :alt="`${title} ${t('common.icon')}`"
-        class="h-full w-full object-contain"
+        class="bg-app-overlay h-full w-full rounded-xl object-contain p-1.5"
         @error="handleIconError"
       />
       <div
