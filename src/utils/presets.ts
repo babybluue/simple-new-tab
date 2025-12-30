@@ -1,4 +1,5 @@
-import { getLogoForUrl } from './logo'
+import { getSiteFavicon, getUnavatarFavicon } from './favicon'
+import { tryGetLogoForUrl } from './logo'
 import type { QuickLink } from './types'
 import { extractDomainFromUrl } from './url'
 
@@ -83,23 +84,94 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: '微博', url: 'https://weibo.com', category: '社交', default: true },
   { title: '网易云音乐', url: 'https://music.163.com', category: '音乐' },
   { title: '微信读书', url: 'https://weread.qq.com', category: '阅读' },
+  { title: '闲鱼', url: 'https://www.goofish.com', category: '购物' },
   { title: '小红书', url: 'https://www.xiaohongshu.com', category: '社区' },
   { title: '优酷', url: 'https://www.youku.com', category: '视频' },
   { title: '知乎', url: 'https://www.zhihu.com', category: '社区', default: true },
+  // 日本主流站点
+  { title: 'Rakuten', url: 'https://www.rakuten.co.jp', category: '购物' },
+  { title: 'Mercari', url: 'https://www.mercari.com/jp', category: '购物' },
+  { title: 'Yahoo! Japan', url: 'https://www.yahoo.co.jp', category: '资讯', default: true },
+  { title: 'LINE', url: 'https://line.me', category: '社交', default: true },
+  { title: 'NicoNico', url: 'https://www.nicovideo.jp', category: '视频' },
+  { title: 'AbemaTV', url: 'https://abema.tv', category: '视频' },
+  { title: 'NHK', url: 'https://www.nhk.or.jp', category: '资讯' },
+  { title: 'Qiita', url: 'https://qiita.com', category: '开发' },
+  { title: 'Zenn', url: 'https://zenn.dev', category: '开发' },
+  // 韩国主流站点
+  { title: 'Naver', url: 'https://www.naver.com', category: '资讯', default: true },
+  { title: 'Daum', url: 'https://www.daum.net', category: '资讯' },
+  { title: 'Coupang', url: 'https://www.coupang.com', category: '购物', default: true },
+  { title: 'Gmarket', url: 'https://www.gmarket.co.kr', category: '购物' },
+  { title: 'KakaoTalk', url: 'https://www.kakaocorp.com', category: '社交', default: true },
+  { title: 'Melon', url: 'https://www.melon.com', category: '音乐' },
+  { title: 'Genie Music', url: 'https://www.genie.co.kr', category: '音乐' },
+  { title: 'Velog', url: 'https://velog.io', category: '开发' },
+  // 法国主流站点
+  { title: 'Amazon.fr', url: 'https://www.amazon.fr', category: '购物' },
+  { title: 'Cdiscount', url: 'https://www.cdiscount.com', category: '购物' },
+  { title: 'Fnac', url: 'https://www.fnac.com', category: '购物' },
+  { title: 'Le Monde', url: 'https://www.lemonde.fr', category: '资讯' },
+  { title: 'Le Figaro', url: 'https://www.lefigaro.fr', category: '资讯' },
+  { title: 'Deezer', url: 'https://www.deezer.com', category: '音乐' },
+  // 德国主流站点
+  { title: 'Amazon.de', url: 'https://www.amazon.de', category: '购物' },
+  { title: 'Otto', url: 'https://www.otto.de', category: '购物' },
+  { title: 'Spiegel Online', url: 'https://www.spiegel.de', category: '资讯' },
+  { title: 'Bild', url: 'https://www.bild.de', category: '资讯' },
+  // 西班牙主流站点
+  { title: 'Amazon.es', url: 'https://www.amazon.es', category: '购物' },
+  { title: 'El Corte Inglés', url: 'https://www.elcorteingles.es', category: '购物' },
+  { title: 'El País', url: 'https://elpais.com', category: '资讯' },
+  { title: 'El Mundo', url: 'https://www.elmundo.es', category: '资讯' },
+  // 俄罗斯主流站点
+  { title: 'Yandex', url: 'https://yandex.ru', category: '资讯', default: true },
+  { title: 'VK', url: 'https://vk.com', category: '社交', default: true },
+  { title: 'Odnoklassniki', url: 'https://ok.ru', category: '社交' },
+  { title: 'Wildberries', url: 'https://www.wildberries.ru', category: '购物', default: true },
+  { title: 'Ozon', url: 'https://www.ozon.ru', category: '购物' },
+  { title: 'Rutube', url: 'https://rutube.ru', category: '视频' },
+  { title: 'Yandex Music', url: 'https://music.yandex.ru', category: '音乐' },
 ]
 
 /**
- * 预设站点：补齐本地 logo（优先本地，缺失则为 generic.svg）。
- * 说明：这不会引入网络请求；真正的“网络 favicon”仅在没有本地 logo 时才会被使用。
+ * 预设站点：补齐本地 logo 或在线 favicon。
+ * - 优先使用本地 logo（如果存在对应域名 svg）
+ * - 如果没有本地 logo，则使用在线 favicon（unavatar 或站点 favicon.ico）
+ * 说明：这不会在构建时引入网络请求；在线 favicon 会在运行时按需加载。
  */
-export const PRESET_QUICK_LINKS: QuickLink[] = PRESET_QUICK_LINKS_RAW.map(link => ({
-  ...link,
-  logo: link.logo || getLogoForUrl(link.url),
-}))
+export const PRESET_QUICK_LINKS: QuickLink[] = PRESET_QUICK_LINKS_RAW.map(link => {
+  const domain = link.domain || extractDomainFromUrl(link.url)
+  const logo = link.logo || tryGetLogoForUrl(link.url)
+
+  // 如果没有本地 logo，使用在线 favicon
+  const favicon = logo
+    ? link.favicon // 如果有本地 logo，保留已有的 favicon（如果有）
+    : link.favicon || getUnavatarFavicon({ domain, url: link.url }) || getSiteFavicon({ domain, url: link.url })
+
+  return {
+    ...link,
+    domain,
+    ...(logo ? { logo } : {}),
+    ...(favicon ? { favicon } : {}),
+  }
+})
 
 // 网站标题的 i18n 映射（基于 URL）
-// 如果网站标题在两种语言下相同，则不需要添加
-export const PRESET_SITE_TITLES: Record<string, { zh: string; en: string }> = {
+// 如果网站标题在多种语言下相同，则不需要添加
+export const PRESET_SITE_TITLES: Record<
+  string,
+  {
+    zh?: string
+    en?: string
+    ja?: string
+    ko?: string
+    fr?: string
+    de?: string
+    es?: string
+    ru?: string
+  }
+> = {
   'weibo.com': { zh: '微博', en: 'Weibo' },
   'www.zhihu.com': { zh: '知乎', en: 'Zhihu' },
   'www.xiaohongshu.com': { zh: '小红书', en: 'Xiaohongshu' },
@@ -126,6 +198,51 @@ export const PRESET_SITE_TITLES: Record<string, { zh: string; en: string }> = {
   'weread.qq.com': { zh: '微信读书', en: 'WeChat Reading' },
   'www.feishu.cn': { zh: '飞书', en: 'Feishu' },
   'mail.qq.com': { zh: 'QQ 邮箱', en: 'QQ Email' },
+  'www.goofish.com': { zh: '闲鱼', en: 'Xianyu' },
+  // 日本站点
+  'www.rakuten.co.jp': { zh: '乐天', en: 'Rakuten', ja: '楽天' },
+  'www.mercari.com': { zh: 'Mercari', en: 'Mercari', ja: 'メルカリ' },
+  'www.yahoo.co.jp': { zh: 'Yahoo! Japan', en: 'Yahoo! Japan', ja: 'Yahoo! JAPAN' },
+  'line.me': { zh: 'LINE', en: 'LINE', ja: 'LINE' },
+  'www.nicovideo.jp': { zh: 'NicoNico', en: 'NicoNico', ja: 'ニコニコ動画' },
+  'abema.tv': { zh: 'AbemaTV', en: 'AbemaTV', ja: 'ABEMA' },
+  'www.nhk.or.jp': { zh: 'NHK', en: 'NHK', ja: 'NHK' },
+  'qiita.com': { zh: 'Qiita', en: 'Qiita', ja: 'Qiita' },
+  'zenn.dev': { zh: 'Zenn', en: 'Zenn', ja: 'Zenn' },
+  // 韩国站点
+  'www.naver.com': { zh: 'Naver', en: 'Naver', ko: '네이버' },
+  'www.daum.net': { zh: 'Daum', en: 'Daum', ko: '다음' },
+  'www.coupang.com': { zh: 'Coupang', en: 'Coupang', ko: '쿠팡' },
+  'www.gmarket.co.kr': { zh: 'Gmarket', en: 'Gmarket', ko: '지마켓' },
+  'www.kakaocorp.com': { zh: 'Kakao', en: 'Kakao', ko: '카카오' },
+  'www.melon.com': { zh: 'Melon', en: 'Melon', ko: '멜론' },
+  'www.genie.co.kr': { zh: 'Genie Music', en: 'Genie Music', ko: '지니뮤직' },
+  'velog.io': { zh: 'Velog', en: 'Velog', ko: '벨로그' },
+  // 法国站点
+  'www.amazon.fr': { zh: 'Amazon 法国', en: 'Amazon France', fr: 'Amazon France' },
+  'www.cdiscount.com': { zh: 'Cdiscount', en: 'Cdiscount', fr: 'Cdiscount' },
+  'www.fnac.com': { zh: 'Fnac', en: 'Fnac', fr: 'Fnac' },
+  'www.lemonde.fr': { zh: '世界报', en: 'Le Monde', fr: 'Le Monde' },
+  'www.lefigaro.fr': { zh: '费加罗报', en: 'Le Figaro', fr: 'Le Figaro' },
+  'www.deezer.com': { zh: 'Deezer', en: 'Deezer', fr: 'Deezer' },
+  // 德国站点
+  'www.amazon.de': { zh: 'Amazon 德国', en: 'Amazon Germany', de: 'Amazon Deutschland' },
+  'www.otto.de': { zh: 'Otto', en: 'Otto', de: 'Otto' },
+  'www.spiegel.de': { zh: '明镜周刊', en: 'Der Spiegel', de: 'Der Spiegel' },
+  'www.bild.de': { zh: '图片报', en: 'Bild', de: 'Bild' },
+  // 西班牙站点
+  'www.amazon.es': { zh: 'Amazon 西班牙', en: 'Amazon Spain', es: 'Amazon España' },
+  'www.elcorteingles.es': { zh: 'El Corte Inglés', en: 'El Corte Inglés', es: 'El Corte Inglés' },
+  'elpais.com': { zh: '国家报', en: 'El País', es: 'El País' },
+  'www.elmundo.es': { zh: '世界报', en: 'El Mundo', es: 'El Mundo' },
+  // 俄罗斯站点
+  'yandex.ru': { zh: 'Yandex', en: 'Yandex', ru: 'Яндекс' },
+  'vk.com': { zh: 'VK', en: 'VK', ru: 'ВКонтакте' },
+  'ok.ru': { zh: 'Odnoklassniki', en: 'Odnoklassniki', ru: 'Одноклассники' },
+  'www.wildberries.ru': { zh: 'Wildberries', en: 'Wildberries', ru: 'Wildberries' },
+  'www.ozon.ru': { zh: 'Ozon', en: 'Ozon', ru: 'Ozon' },
+  'rutube.ru': { zh: 'Rutube', en: 'Rutube', ru: 'Rutube' },
+  'music.yandex.ru': { zh: 'Yandex Music', en: 'Yandex Music', ru: 'Яндекс Музыка' },
 }
 
 // 分类的 i18n 映射
@@ -159,9 +276,28 @@ export function getLocalizedSiteTitle(
   const domain = extractDomainFromUrl(url) || url
   const mapping = PRESET_SITE_TITLES[domain]
   if (mapping) {
-    // zh_CN 和 zh_TW 都使用 'zh' 映射，其他语言使用 'en' 映射
-    const localeKey = locale === 'zh_CN' || locale === 'zh_TW' ? 'zh' : 'en'
-    return mapping[localeKey]
+    // 根据语言选择对应的标题
+    let localeKey: keyof typeof mapping
+    if (locale === 'zh_CN' || locale === 'zh_TW') {
+      localeKey = 'zh'
+    } else {
+      localeKey = locale
+    }
+
+    // 如果当前语言有映射，直接返回
+    if (mapping[localeKey]) {
+      return mapping[localeKey]!
+    }
+
+    // 如果当前语言没有映射，尝试使用英文作为后备
+    if (mapping.en) {
+      return mapping.en
+    }
+
+    // 如果英文也没有，尝试使用中文作为后备
+    if (mapping.zh) {
+      return mapping.zh
+    }
   }
   // 如果 fallbackTitle 为空，使用域名作为后备
   if (fallbackTitle) {
