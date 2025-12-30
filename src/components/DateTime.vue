@@ -1,9 +1,12 @@
 <template>
   <div class="pt-2 text-center">
-    <h1 class="text-app mb-2 flex items-end justify-center gap-1 text-5xl font-semibold tracking-tight md:text-4xl">
-      <span class="tabular-nums">{{ timeMain }}</span>
-      <span class="text-app-tertiary pb-1 text-2xl font-medium tabular-nums md:text-xl">:{{ timeSeconds }}</span>
-      <span v-if="timeSuffix" class="text-app-tertiary pb-1 text-lg font-medium md:text-base">{{ timeSuffix }}</span>
+    <h1 class="text-app mb-2 flex items-center justify-center gap-1 text-5xl font-bold tracking-tight md:text-4xl">
+      <span class="tabular-nums">{{ timeHour }}</span>
+      <span class="text-app-tertiary mx-1 text-2xl font-medium tabular-nums md:text-xl">:</span>
+      <span class="tabular-nums">{{ timeMinute }}</span>
+      <span class="text-app-tertiary mx-1 text-2xl font-medium tabular-nums md:text-xl">:</span>
+      <span class="text-app-tertiary mt-1 text-2xl font-medium tabular-nums md:text-xl">{{ timeSeconds }}</span>
+      <span v-if="timeSuffix" class="text-app-tertiary mt-1 text-lg font-medium md:text-base">{{ timeSuffix }}</span>
     </h1>
     <p class="text-app-tertiary text-lg font-normal tracking-wide md:text-[1.05rem]">
       {{ date }}
@@ -15,7 +18,8 @@ import { onMounted, onUnmounted, ref } from 'vue'
 
 import { getLocale } from '@/i18n'
 
-const timeMain = ref('')
+const timeHour = ref('')
+const timeMinute = ref('')
 const timeSeconds = ref('')
 const timeSuffix = ref('')
 const date = ref('')
@@ -37,7 +41,8 @@ const updateTime = () => {
   const second = getPart('second')
   const dayPeriod = getPart('dayPeriod')
 
-  timeMain.value = `${hour}:${minute}`
+  timeHour.value = hour
+  timeMinute.value = minute
   timeSeconds.value = second
   timeSuffix.value = dayPeriod ? ` ${dayPeriod}` : ''
 

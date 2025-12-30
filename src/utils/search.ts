@@ -34,6 +34,18 @@ export const SEARCH_ENGINES: Record<string, SearchEngine> = {
     logo: getLogoForUrl('https://duckduckgo.com'),
     icon: getLogoForUrl('https://duckduckgo.com'),
   },
+  yahoo: {
+    name: 'Yahoo',
+    url: 'https://search.yahoo.com/search?p=',
+    logo: getLogoForUrl('https://search.yahoo.com'),
+    icon: getLogoForUrl('https://search.yahoo.com'),
+  },
+  yandex: {
+    name: 'Yandex',
+    url: 'https://yandex.com/search/?text=',
+    logo: getLogoForUrl('https://yandex.com'),
+    icon: getLogoForUrl('https://yandex.com'),
+  },
 }
 
 // 检查是否是 URL
@@ -139,6 +151,42 @@ export async function getSearchSuggestions(query: string, searchEngine: string =
           return data.map((item: any) => item.phrase || item).filter(Boolean)
         }
         return []
+      }
+      case 'yahoo': {
+        try {
+          const response = await fetch(
+            `https://search.yahoo.com/sugg/gossip/gossip-us-ura/?output=fxjson&command=${encodeURIComponent(trimmedQuery)}`
+          )
+          if (!response.ok) return []
+          const text = await response.text()
+          // Yahoo 返回 JSONP 格式，需要提取 JSON 部分
+          const jsonMatch = text.match(/\[.*\]/)
+          if (jsonMatch) {
+            const data = JSON.parse(jsonMatch[0])
+            return Array.isArray(data) && data[1] ? data[1] : []
+          }
+          return []
+        } catch {
+          return []
+        }
+      }
+      case 'yandex': {
+        try {
+          const response = await fetch(
+            `https://suggest.yandex.com/suggest-ff.cgi?part=${encodeURIComponent(trimmedQuery)}`
+          )
+          if (!response.ok) return []
+          const text = await response.text()
+          // Yandex 返回 JSONP 格式，需要提取 JSON 部分
+          const jsonMatch = text.match(/\[.*\]/)
+          if (jsonMatch) {
+            const data = JSON.parse(jsonMatch[0])
+            return Array.isArray(data) && data[1] ? data[1] : []
+          }
+          return []
+        } catch {
+          return []
+        }
       }
       default: {
         const response = await fetch(
