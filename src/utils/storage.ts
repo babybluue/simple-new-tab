@@ -42,7 +42,7 @@ export interface Settings {
   customCssEnabled: boolean
   /** 用户自定义 CSS 文本 */
   customCss: string
-  language?: 'zh' | 'en'
+  language?: 'zh_CN' | 'zh_TW' | 'en' | 'ja' | 'ko' | 'fr' | 'de' | 'es' | 'ru'
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -160,6 +160,11 @@ export async function getSettings(): Promise<Settings> {
 
   // 合并存储的设置
   const merged = { ...DEFAULT_SETTINGS, ...stored }
+  
+  // 向后兼容：将旧的 'zh' 映射到 'zh_CN'
+  if (merged.language === 'zh' as any) {
+    merged.language = 'zh_CN'
+  }
 
   // 如果主题是 'auto'，且背景色/主色还是旧的默认值（渐变），
   // 则根据当前系统偏好更新它们，确保与主题模式一致

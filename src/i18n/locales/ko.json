@@ -1,0 +1,105 @@
+{
+  "common": {
+    "settings": "설정",
+    "search": "검색",
+    "add": "추가",
+    "save": "저장",
+    "cancel": "취소",
+    "edit": "편집",
+    "delete": "삭제",
+    "clear": "지우기",
+    "refresh": "새로고침",
+    "expand": "펼치기",
+    "collapse": "접기",
+    "upload": "업로드",
+    "custom": "사용자 지정",
+    "icon": "아이콘"
+  },
+  "settings": {
+    "title": "설정",
+    "theme": "테마",
+    "themeLight": "라이트",
+    "themeDark": "다크",
+    "themeAuto": "자동",
+    "background": "배경",
+    "backgroundOpacity": "불투명도",
+    "customColor": "사용자 지정 색상",
+    "onlineImage": "온라인 이미지 URL",
+    "onlineImagePlaceholder": "https://example.com/background.jpg",
+    "onlineImageInvalid": "유효한 http(s) 이미지 URL을 입력하세요.",
+    "uploadImage": "이미지 업로드",
+    "refreshBingWallpaper": "Bing 배경화면 새로고침",
+    "primaryColor": "주요 색상",
+    "primaryColorCustom": "사용자 지정 주요 색상",
+    "primaryOpacity": "불투명도",
+    "controls": "컨트롤",
+    "dateTime": "날짜 및 시간",
+    "quickAccess": "빠른 액세스",
+    "recentVisits": "최근 방문",
+    "openLinksInNewTab": "새 탭에서 링크 열기",
+    "iconOnlyLinkCards": "아이콘만",
+    "customCss": "사용자 지정 CSS",
+    "customCssEnable": "사용자 지정 CSS 사용",
+    "customCssPlaceholder": "/* 여기에 CSS를 붙여넣으세요 */",
+    "customCssHint": "팁: 이 CSS는 새 탭이 로드될 때마다 주입됩니다. 잘못된 CSS는 UI가 잘못 보이게 만들 수 있으므로 백업을 유지하세요.",
+    "language": "언어",
+    "languageZhCN": "简体中文",
+    "languageZhTW": "繁體中文",
+    "languageEn": "English",
+    "languageJa": "日本語",
+    "languageKo": "한국어",
+    "languageFr": "Français",
+    "languageDe": "Deutsch",
+    "languageEs": "Español",
+    "languageRu": "Русский",
+    "backup": "가져오기 / 내보내기",
+    "exportBackup": "JSON 내보내기",
+    "importBackup": "JSON 가져오기",
+    "backupHint": "현재 설정과 빠른 액세스를 JSON 파일로 저장하고 다른 기기에서 가져와 복원할 수 있습니다.",
+    "exportSuccess": "백업을 내보냈습니다.",
+    "exportFailed": "내보내기 실패. 다시 시도하세요.",
+    "importInvalid": "가져오기 실패: 잘못된 파일 또는 지원되지 않는 버전입니다.",
+    "importTooLarge": "가져오기 실패: 파일이 너무 큽니다.",
+    "importSuccess": "가져오기 성공. 설정이 적용되었습니다.",
+    "importWithWarnings": "일부 항목이 건너뛰어졌습니다"
+  },
+  "search": {
+    "placeholder": "검색 또는 URL 입력...",
+    "searchBox": "검색 상자",
+    "selectEngine": "검색 엔진 선택",
+    "clearSearch": "검색 지우기",
+    "siteSearch": "사이트 검색"
+  },
+  "quickAccess": {
+    "title": "빠른 액세스",
+    "addPreset": "사전 설정 추가",
+    "addCustom": "사용자 지정 추가",
+    "collapseForm": "양식 접기",
+    "emptyMessage": "빠른 액세스 사이트가 아직 없습니다. 위의 버튼을 클릭하여 추가하세요!",
+    "websiteName": "웹사이트 이름 (선택 사항)",
+    "websiteUrl": "웹사이트 URL, 예: https://example.com",
+    "customIconUrl": "사용자 지정 아이콘 URL (선택 사항)",
+    "dragToReorder": "드래그하여 재정렬"
+  },
+  "presetMenu": {
+    "selectCommonSites": "일반 사이트 선택",
+    "clickToAdd": "클릭하여 추가",
+    "allAdded": "모두 추가됨",
+    "searchOrFilter": "검색 또는 키워드로 필터링",
+    "added": "추가됨",
+    "add": "추가",
+    "noMatches": "일치하는 사이트를 찾을 수 없습니다",
+    "allSitesAdded": "일반 사이트가 모두 추가되었습니다"
+  },
+  "history": {
+    "title": "최근 방문",
+    "emptyMessage": "방문 기록이 아직 없습니다. 일부 웹사이트를 방문하면 자주 방문하는 사이트가 여기에 표시됩니다"
+  },
+  "dateTime": {
+    "format": {
+      "time": "HH:mm:ss",
+      "date": "yyyy년 M월 d일 EEEE"
+    }
+  }
+}
+

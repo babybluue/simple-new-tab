@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "Tablite",
+    "description": "확장 프로그램 이름"
+  },
+  "extDescription": {
+    "message": "검색, 빠른 링크, 자주 방문하는 사이트, 아름다운 테마가 있는 깔끔하고 사용자 지정 가능한 새 탭 페이지(사용자 지정 CSS 지원).",
+    "description": "확장 프로그램 설명"
+  }
+}
+

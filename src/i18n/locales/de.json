@@ -1,0 +1,105 @@
+{
+  "common": {
+    "settings": "Einstellungen",
+    "search": "Suchen",
+    "add": "Hinzufügen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "clear": "Löschen",
+    "refresh": "Aktualisieren",
+    "expand": "Erweitern",
+    "collapse": "Einklappen",
+    "upload": "Hochladen",
+    "custom": "Benutzerdefiniert",
+    "icon": "Symbol"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "theme": "Design",
+    "themeLight": "Hell",
+    "themeDark": "Dunkel",
+    "themeAuto": "Automatisch",
+    "background": "Hintergrund",
+    "backgroundOpacity": "Deckkraft",
+    "customColor": "Benutzerdefinierte Farbe",
+    "onlineImage": "Online-Bild-URL",
+    "onlineImagePlaceholder": "https://example.com/background.jpg",
+    "onlineImageInvalid": "Bitte geben Sie eine gültige http(s)-Bild-URL ein.",
+    "uploadImage": "Bild hochladen",
+    "refreshBingWallpaper": "Bing-Hintergrundbild aktualisieren",
+    "primaryColor": "Primärfarbe",
+    "primaryColorCustom": "Benutzerdefinierte Primärfarbe",
+    "primaryOpacity": "Deckkraft",
+    "controls": "Steuerung",
+    "dateTime": "Datum und Uhrzeit",
+    "quickAccess": "Schnellzugriff",
+    "recentVisits": "Letzte Besuche",
+    "openLinksInNewTab": "Links in neuem Tab öffnen",
+    "iconOnlyLinkCards": "Nur Symbole",
+    "customCss": "Benutzerdefiniertes CSS",
+    "customCssEnable": "Benutzerdefiniertes CSS aktivieren",
+    "customCssPlaceholder": "/* Fügen Sie hier Ihr CSS ein */",
+    "customCssHint": "Tipp: Dieses CSS wird bei jedem Laden eines neuen Tabs injiziert. Defektes CSS kann die Benutzeroberfläche falsch aussehen lassen—behalten Sie ein Backup.",
+    "language": "Sprache",
+    "languageZhCN": "简体中文",
+    "languageZhTW": "繁體中文",
+    "languageEn": "English",
+    "languageJa": "日本語",
+    "languageKo": "한국어",
+    "languageFr": "Français",
+    "languageDe": "Deutsch",
+    "languageEs": "Español",
+    "languageRu": "Русский",
+    "backup": "Importieren / Exportieren",
+    "exportBackup": "JSON exportieren",
+    "importBackup": "JSON importieren",
+    "backupHint": "Speichern Sie Ihre aktuellen Einstellungen und den Schnellzugriff in einer JSON-Datei und importieren Sie sie auf einem anderen Gerät, um wiederherzustellen.",
+    "exportSuccess": "Backup exportiert.",
+    "exportFailed": "Export fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "importInvalid": "Import fehlgeschlagen: Ungültige Datei oder nicht unterstützte Version.",
+    "importTooLarge": "Import fehlgeschlagen: Datei ist zu groß.",
+    "importSuccess": "Erfolgreich importiert. Einstellungen angewendet.",
+    "importWithWarnings": "einige Elemente wurden übersprungen"
+  },
+  "search": {
+    "placeholder": "Suchen oder URL eingeben...",
+    "searchBox": "Suchfeld",
+    "selectEngine": "Suchmaschine auswählen",
+    "clearSearch": "Suche löschen",
+    "siteSearch": "Website-Suche"
+  },
+  "quickAccess": {
+    "title": "Schnellzugriff",
+    "addPreset": "Voreinstellung hinzufügen",
+    "addCustom": "Benutzerdefiniert hinzufügen",
+    "collapseForm": "Formular einklappen",
+    "emptyMessage": "Noch keine Schnellzugriffs-Websites. Klicken Sie auf die Schaltfläche oben, um eine hinzuzufügen!",
+    "websiteName": "Website-Name (optional)",
+    "websiteUrl": "Website-URL, z.B. https://example.com",
+    "customIconUrl": "Benutzerdefinierte Symbol-URL (optional)",
+    "dragToReorder": "Zum Neuordnen ziehen"
+  },
+  "presetMenu": {
+    "selectCommonSites": "Häufige Websites auswählen",
+    "clickToAdd": "Zum Hinzufügen klicken",
+    "allAdded": "Alle hinzugefügt",
+    "searchOrFilter": "Suchen oder nach Stichwort filtern",
+    "added": "Hinzugefügt",
+    "add": "Hinzufügen",
+    "noMatches": "Keine passenden Websites gefunden",
+    "allSitesAdded": "Alle häufigen Websites wurden hinzugefügt"
+  },
+  "history": {
+    "title": "Letzte Besuche",
+    "emptyMessage": "Noch kein Besuchsverlauf. Besuchen Sie einige Websites und häufig besuchte Websites werden hier angezeigt"
+  },
+  "dateTime": {
+    "format": {
+      "time": "HH:mm:ss",
+      "date": "EEEE, d. MMMM yyyy"
+    }
+  }
+}
+

@@ -1,0 +1,105 @@
+{
+  "common": {
+    "settings": "Configuración",
+    "search": "Buscar",
+    "add": "Añadir",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "clear": "Limpiar",
+    "refresh": "Actualizar",
+    "expand": "Expandir",
+    "collapse": "Contraer",
+    "upload": "Subir",
+    "custom": "Personalizado",
+    "icon": "Icono"
+  },
+  "settings": {
+    "title": "Configuración",
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeAuto": "Automático",
+    "background": "Fondo",
+    "backgroundOpacity": "Opacidad",
+    "customColor": "Color personalizado",
+    "onlineImage": "URL de imagen en línea",
+    "onlineImagePlaceholder": "https://example.com/background.jpg",
+    "onlineImageInvalid": "Por favor, ingrese una URL de imagen http(s) válida.",
+    "uploadImage": "Subir imagen",
+    "refreshBingWallpaper": "Actualizar fondo de pantalla de Bing",
+    "primaryColor": "Color principal",
+    "primaryColorCustom": "Color principal personalizado",
+    "primaryOpacity": "Opacidad",
+    "controls": "Controles",
+    "dateTime": "Fecha y hora",
+    "quickAccess": "Acceso rápido",
+    "recentVisits": "Visitas recientes",
+    "openLinksInNewTab": "Abrir enlaces en nueva pestaña",
+    "iconOnlyLinkCards": "Solo iconos",
+    "customCss": "CSS personalizado",
+    "customCssEnable": "Habilitar CSS personalizado",
+    "customCssPlaceholder": "/* Pegue su CSS aquí */",
+    "customCssHint": "Consejo: Este CSS se inyecta cada vez que se carga una nueva pestaña. CSS roto puede hacer que la interfaz se vea mal—mantenga una copia de seguridad.",
+    "language": "Idioma",
+    "languageZhCN": "简体中文",
+    "languageZhTW": "繁體中文",
+    "languageEn": "English",
+    "languageJa": "日本語",
+    "languageKo": "한국어",
+    "languageFr": "Français",
+    "languageDe": "Deutsch",
+    "languageEs": "Español",
+    "languageRu": "Русский",
+    "backup": "Importar / Exportar",
+    "exportBackup": "Exportar JSON",
+    "importBackup": "Importar JSON",
+    "backupHint": "Guarde su configuración actual y acceso rápido en un archivo JSON, luego impórtelo en otro dispositivo para restaurar.",
+    "exportSuccess": "Copia de seguridad exportada.",
+    "exportFailed": "Error al exportar. Por favor, intente de nuevo.",
+    "importInvalid": "Error al importar: archivo inválido o versión no compatible.",
+    "importTooLarge": "Error al importar: el archivo es demasiado grande.",
+    "importSuccess": "Importado con éxito. Configuración aplicada.",
+    "importWithWarnings": "algunos elementos fueron omitidos"
+  },
+  "search": {
+    "placeholder": "Buscar o ingresar URL...",
+    "searchBox": "Caja de búsqueda",
+    "selectEngine": "Seleccionar motor de búsqueda",
+    "clearSearch": "Limpiar búsqueda",
+    "siteSearch": "Búsqueda del sitio"
+  },
+  "quickAccess": {
+    "title": "Acceso rápido",
+    "addPreset": "Añadir preestablecido",
+    "addCustom": "Añadir personalizado",
+    "collapseForm": "Contraer formulario",
+    "emptyMessage": "Aún no hay sitios de acceso rápido. ¡Haga clic en el botón de arriba para añadir uno!",
+    "websiteName": "Nombre del sitio web (opcional)",
+    "websiteUrl": "URL del sitio web, ej. https://example.com",
+    "customIconUrl": "URL de icono personalizado (opcional)",
+    "dragToReorder": "Arrastrar para reordenar"
+  },
+  "presetMenu": {
+    "selectCommonSites": "Seleccionar sitios comunes",
+    "clickToAdd": "Clic para añadir",
+    "allAdded": "Todos añadidos",
+    "searchOrFilter": "Buscar o filtrar por palabra clave",
+    "added": "Añadido",
+    "add": "Añadir",
+    "noMatches": "No se encontraron sitios coincidentes",
+    "allSitesAdded": "Todos los sitios comunes han sido añadidos"
+  },
+  "history": {
+    "title": "Visitas recientes",
+    "emptyMessage": "Aún no hay historial de visitas. Visite algunos sitios web y los sitios visitados con frecuencia aparecerán aquí"
+  },
+  "dateTime": {
+    "format": {
+      "time": "HH:mm:ss",
+      "date": "EEEE, d 'de' MMMM 'de' yyyy"
+    }
+  }
+}
+

@@ -1,0 +1,105 @@
+{
+  "common": {
+    "settings": "設定",
+    "search": "搜尋",
+    "add": "新增",
+    "save": "儲存",
+    "cancel": "取消",
+    "edit": "編輯",
+    "delete": "刪除",
+    "clear": "清除",
+    "refresh": "重新整理",
+    "expand": "展開",
+    "collapse": "收合",
+    "upload": "上傳",
+    "custom": "自訂",
+    "icon": "圖示"
+  },
+  "settings": {
+    "title": "設定",
+    "theme": "主題",
+    "themeLight": "淺色",
+    "themeDark": "深色",
+    "themeAuto": "自動",
+    "background": "背景",
+    "backgroundOpacity": "不透明度",
+    "customColor": "自訂顏色",
+    "onlineImage": "線上圖片 URL",
+    "onlineImagePlaceholder": "https://example.com/background.jpg",
+    "onlineImageInvalid": "請輸入有效的 http(s) 圖片連結。",
+    "uploadImage": "上傳圖片",
+    "refreshBingWallpaper": "重新整理 Bing 桌布",
+    "primaryColor": "主色",
+    "primaryColorCustom": "主色自訂",
+    "primaryOpacity": "不透明度",
+    "controls": "控制項",
+    "dateTime": "時間",
+    "quickAccess": "快速存取",
+    "recentVisits": "最近造訪",
+    "openLinksInNewTab": "在新分頁開啟",
+    "iconOnlyLinkCards": "僅顯示圖示",
+    "customCss": "自訂 CSS",
+    "customCssEnable": "啟用自訂 CSS",
+    "customCssPlaceholder": "/* 在這裡貼上你的 CSS */",
+    "customCssHint": "提示：這段 CSS 會在每次新分頁載入時注入。寫錯樣式可能導致頁面顯示異常，建議先儲存一份備份。",
+    "language": "語言",
+    "languageZhCN": "简体中文",
+    "languageZhTW": "繁體中文",
+    "languageEn": "English",
+    "languageJa": "日本語",
+    "languageKo": "한국어",
+    "languageFr": "Français",
+    "languageDe": "Deutsch",
+    "languageEs": "Español",
+    "languageRu": "Русский",
+    "backup": "匯入 / 匯出",
+    "exportBackup": "匯出 JSON",
+    "importBackup": "匯入 JSON",
+    "backupHint": "可將目前設定與快速存取儲存為 JSON 檔案，並在其他裝置匯入還原。",
+    "exportSuccess": "已匯出備份檔案。",
+    "exportFailed": "匯出失敗，請稍後再試。",
+    "importInvalid": "匯入失敗：檔案格式不正確或版本不支援。",
+    "importTooLarge": "匯入失敗：檔案過大。",
+    "importSuccess": "匯入成功，設定已套用。",
+    "importWithWarnings": "部分內容被忽略"
+  },
+  "search": {
+    "placeholder": "搜尋或輸入網址...",
+    "searchBox": "搜尋框",
+    "selectEngine": "選擇搜尋引擎",
+    "clearSearch": "清除搜尋內容",
+    "siteSearch": "站內搜尋"
+  },
+  "quickAccess": {
+    "title": "快速存取",
+    "addPreset": "新增預設",
+    "addCustom": "新增表單",
+    "collapseForm": "收合表單",
+    "emptyMessage": "尚無快速存取網站，點選上方按鈕新增一個吧～",
+    "websiteName": "網站名稱（選用）",
+    "websiteUrl": "網站連結，例如 https://example.com",
+    "customIconUrl": "自訂圖示 URL（選用）",
+    "dragToReorder": "拖曳排序"
+  },
+  "presetMenu": {
+    "selectCommonSites": "選擇常用網站",
+    "clickToAdd": "點選即可新增",
+    "allAdded": "已全部新增",
+    "searchOrFilter": "搜尋或輸入關鍵字篩選",
+    "added": "已新增",
+    "add": "新增",
+    "noMatches": "找不到符合的網站",
+    "allSitesAdded": "常用網站已全部新增"
+  },
+  "history": {
+    "title": "最近造訪",
+    "emptyMessage": "尚無造訪記錄，造訪一些網站後這裡會顯示您經常造訪的網站"
+  },
+  "dateTime": {
+    "format": {
+      "time": "HH:mm:ss",
+      "date": "yyyy 年 M 月 d 日 EEEE"
+    }
+  }
+}
+

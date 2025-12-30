@@ -43,8 +43,15 @@
     "customCssPlaceholder": "/* 在这里粘贴你的 CSS */",
     "customCssHint": "提示：这段 CSS 会在每次新标签页加载时注入。写错样式可能导致页面显示异常，建议先保存一份备份。",
     "language": "语言",
-    "languageZh": "中文",
+    "languageZhCN": "简体中文",
+    "languageZhTW": "繁體中文",
     "languageEn": "English",
+    "languageJa": "日本語",
+    "languageKo": "한국어",
+    "languageFr": "Français",
+    "languageDe": "Deutsch",
+    "languageEs": "Español",
+    "languageRu": "Русский",
     "backup": "导入 / 导出",
     "exportBackup": "导出 JSON",
     "importBackup": "导入 JSON",
@@ -95,3 +102,4 @@
     }
   }
 }
+

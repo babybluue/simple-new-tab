@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "Tablite",
+    "description": "拡張機能名"
+  },
+  "extDescription": {
+    "message": "検索、クイックリンク、よく使うサイト、美しいテーマを備えたクリーンでカスタマイズ可能な新しいタブページ（カスタム CSS 対応）。",
+    "description": "拡張機能の説明"
+  }
+}
+

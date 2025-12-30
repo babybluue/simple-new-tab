@@ -1,0 +1,105 @@
+{
+  "common": {
+    "settings": "Paramètres",
+    "search": "Rechercher",
+    "add": "Ajouter",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "clear": "Effacer",
+    "refresh": "Actualiser",
+    "expand": "Développer",
+    "collapse": "Réduire",
+    "upload": "Télécharger",
+    "custom": "Personnalisé",
+    "icon": "Icône"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "theme": "Thème",
+    "themeLight": "Clair",
+    "themeDark": "Sombre",
+    "themeAuto": "Automatique",
+    "background": "Arrière-plan",
+    "backgroundOpacity": "Opacité",
+    "customColor": "Couleur personnalisée",
+    "onlineImage": "URL d'image en ligne",
+    "onlineImagePlaceholder": "https://example.com/background.jpg",
+    "onlineImageInvalid": "Veuillez entrer une URL d'image http(s) valide.",
+    "uploadImage": "Télécharger une image",
+    "refreshBingWallpaper": "Actualiser le fond d'écran Bing",
+    "primaryColor": "Couleur principale",
+    "primaryColorCustom": "Couleur principale personnalisée",
+    "primaryOpacity": "Opacité",
+    "controls": "Contrôles",
+    "dateTime": "Date et heure",
+    "quickAccess": "Accès rapide",
+    "recentVisits": "Visites récentes",
+    "openLinksInNewTab": "Ouvrir les liens dans un nouvel onglet",
+    "iconOnlyLinkCards": "Icônes uniquement",
+    "customCss": "CSS personnalisé",
+    "customCssEnable": "Activer le CSS personnalisé",
+    "customCssPlaceholder": "/* Collez votre CSS ici */",
+    "customCssHint": "Astuce : Ce CSS est injecté à chaque chargement d'un nouvel onglet. Un CSS cassé peut rendre l'interface incorrecte—gardez une sauvegarde.",
+    "language": "Langue",
+    "languageZhCN": "简体中文",
+    "languageZhTW": "繁體中文",
+    "languageEn": "English",
+    "languageJa": "日本語",
+    "languageKo": "한국어",
+    "languageFr": "Français",
+    "languageDe": "Deutsch",
+    "languageEs": "Español",
+    "languageRu": "Русский",
+    "backup": "Importer / Exporter",
+    "exportBackup": "Exporter JSON",
+    "importBackup": "Importer JSON",
+    "backupHint": "Enregistrez vos paramètres actuels et l'accès rapide dans un fichier JSON, puis importez-le sur un autre appareil pour restaurer.",
+    "exportSuccess": "Sauvegarde exportée.",
+    "exportFailed": "Échec de l'exportation. Veuillez réessayer.",
+    "importInvalid": "Échec de l'importation : fichier invalide ou version non prise en charge.",
+    "importTooLarge": "Échec de l'importation : fichier trop volumineux.",
+    "importSuccess": "Importation réussie. Paramètres appliqués.",
+    "importWithWarnings": "certains éléments ont été ignorés"
+  },
+  "search": {
+    "placeholder": "Rechercher ou entrer une URL...",
+    "searchBox": "Zone de recherche",
+    "selectEngine": "Sélectionner un moteur de recherche",
+    "clearSearch": "Effacer la recherche",
+    "siteSearch": "Recherche sur le site"
+  },
+  "quickAccess": {
+    "title": "Accès rapide",
+    "addPreset": "Ajouter un préréglage",
+    "addCustom": "Ajouter personnalisé",
+    "collapseForm": "Réduire le formulaire",
+    "emptyMessage": "Aucun site d'accès rapide pour le moment. Cliquez sur le bouton ci-dessus pour en ajouter un !",
+    "websiteName": "Nom du site web (optionnel)",
+    "websiteUrl": "URL du site web, ex. https://example.com",
+    "customIconUrl": "URL d'icône personnalisée (optionnel)",
+    "dragToReorder": "Glisser pour réorganiser"
+  },
+  "presetMenu": {
+    "selectCommonSites": "Sélectionner des sites courants",
+    "clickToAdd": "Cliquer pour ajouter",
+    "allAdded": "Tous ajoutés",
+    "searchOrFilter": "Rechercher ou filtrer par mot-clé",
+    "added": "Ajouté",
+    "add": "Ajouter",
+    "noMatches": "Aucun site correspondant trouvé",
+    "allSitesAdded": "Tous les sites courants ont été ajoutés"
+  },
+  "history": {
+    "title": "Visites récentes",
+    "emptyMessage": "Aucun historique de visite pour le moment. Visitez quelques sites web et les sites fréquemment visités apparaîtront ici"
+  },
+  "dateTime": {
+    "format": {
+      "time": "HH:mm:ss",
+      "date": "EEEE, d MMMM yyyy"
+    }
+  }
+}
+

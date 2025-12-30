@@ -1,0 +1,105 @@
+{
+  "common": {
+    "settings": "Настройки",
+    "search": "Поиск",
+    "add": "Добавить",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "clear": "Очистить",
+    "refresh": "Обновить",
+    "expand": "Развернуть",
+    "collapse": "Свернуть",
+    "upload": "Загрузить",
+    "custom": "Пользовательский",
+    "icon": "Иконка"
+  },
+  "settings": {
+    "title": "Настройки",
+    "theme": "Тема",
+    "themeLight": "Светлая",
+    "themeDark": "Тёмная",
+    "themeAuto": "Автоматически",
+    "background": "Фон",
+    "backgroundOpacity": "Непрозрачность",
+    "customColor": "Пользовательский цвет",
+    "onlineImage": "URL изображения в интернете",
+    "onlineImagePlaceholder": "https://example.com/background.jpg",
+    "onlineImageInvalid": "Пожалуйста, введите действительный URL изображения http(s).",
+    "uploadImage": "Загрузить изображение",
+    "refreshBingWallpaper": "Обновить обои Bing",
+    "primaryColor": "Основной цвет",
+    "primaryColorCustom": "Пользовательский основной цвет",
+    "primaryOpacity": "Непрозрачность",
+    "controls": "Элементы управления",
+    "dateTime": "Дата и время",
+    "quickAccess": "Быстрый доступ",
+    "recentVisits": "Недавние посещения",
+    "openLinksInNewTab": "Открывать ссылки в новой вкладке",
+    "iconOnlyLinkCards": "Только иконки",
+    "customCss": "Пользовательский CSS",
+    "customCssEnable": "Включить пользовательский CSS",
+    "customCssPlaceholder": "/* Вставьте ваш CSS здесь */",
+    "customCssHint": "Совет: Этот CSS внедряется при каждой загрузке новой вкладки. Неправильный CSS может сделать интерфейс некорректным—сохраните резервную копию.",
+    "language": "Язык",
+    "languageZhCN": "简体中文",
+    "languageZhTW": "繁體中文",
+    "languageEn": "English",
+    "languageJa": "日本語",
+    "languageKo": "한국어",
+    "languageFr": "Français",
+    "languageDe": "Deutsch",
+    "languageEs": "Español",
+    "languageRu": "Русский",
+    "backup": "Импорт / Экспорт",
+    "exportBackup": "Экспорт JSON",
+    "importBackup": "Импорт JSON",
+    "backupHint": "Сохраните ваши текущие настройки и быстрый доступ в JSON файл, затем импортируйте его на другом устройстве для восстановления.",
+    "exportSuccess": "Резервная копия экспортирована.",
+    "exportFailed": "Ошибка экспорта. Пожалуйста, попробуйте снова.",
+    "importInvalid": "Ошибка импорта: неверный файл или неподдерживаемая версия.",
+    "importTooLarge": "Ошибка импорта: файл слишком большой.",
+    "importSuccess": "Импорт выполнен успешно. Настройки применены.",
+    "importWithWarnings": "некоторые элементы были пропущены"
+  },
+  "search": {
+    "placeholder": "Поиск или введите URL...",
+    "searchBox": "Поле поиска",
+    "selectEngine": "Выбрать поисковую систему",
+    "clearSearch": "Очистить поиск",
+    "siteSearch": "Поиск на сайте"
+  },
+  "quickAccess": {
+    "title": "Быстрый доступ",
+    "addPreset": "Добавить предустановку",
+    "addCustom": "Добавить пользовательский",
+    "collapseForm": "Свернуть форму",
+    "emptyMessage": "Пока нет сайтов быстрого доступа. Нажмите кнопку выше, чтобы добавить один!",
+    "websiteName": "Название веб-сайта (необязательно)",
+    "websiteUrl": "URL веб-сайта, например https://example.com",
+    "customIconUrl": "URL пользовательской иконки (необязательно)",
+    "dragToReorder": "Перетащите для изменения порядка"
+  },
+  "presetMenu": {
+    "selectCommonSites": "Выбрать популярные сайты",
+    "clickToAdd": "Нажмите, чтобы добавить",
+    "allAdded": "Все добавлены",
+    "searchOrFilter": "Поиск или фильтр по ключевому слову",
+    "added": "Добавлено",
+    "add": "Добавить",
+    "noMatches": "Совпадений не найдено",
+    "allSitesAdded": "Все популярные сайты были добавлены"
+  },
+  "history": {
+    "title": "Недавние посещения",
+    "emptyMessage": "Пока нет истории посещений. Посетите несколько веб-сайтов, и часто посещаемые сайты появятся здесь"
+  },
+  "dateTime": {
+    "format": {
+      "time": "HH:mm:ss",
+      "date": "EEEE, d MMMM yyyy"
+    }
+  }
+}
+

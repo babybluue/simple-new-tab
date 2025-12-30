@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "Tablite",
+    "description": "Erweiterungsname"
+  },
+  "extDescription": {
+    "message": "Eine saubere, anpassbare neue Registerkartenseite mit Suche, Schnelllinks, häufig besuchten Websites und schönen Designs (plus benutzerdefiniertes CSS).",
+    "description": "Erweiterungsbeschreibung"
+  }
+}
+

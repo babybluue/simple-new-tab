@@ -1,0 +1,105 @@
+{
+  "common": {
+    "settings": "設定",
+    "search": "検索",
+    "add": "追加",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "edit": "編集",
+    "delete": "削除",
+    "clear": "クリア",
+    "refresh": "更新",
+    "expand": "展開",
+    "collapse": "折りたたむ",
+    "upload": "アップロード",
+    "custom": "カスタム",
+    "icon": "アイコン"
+  },
+  "settings": {
+    "title": "設定",
+    "theme": "テーマ",
+    "themeLight": "ライト",
+    "themeDark": "ダーク",
+    "themeAuto": "自動",
+    "background": "背景",
+    "backgroundOpacity": "不透明度",
+    "customColor": "カスタムカラー",
+    "onlineImage": "オンライン画像 URL",
+    "onlineImagePlaceholder": "https://example.com/background.jpg",
+    "onlineImageInvalid": "有効な http(s) 画像 URL を入力してください。",
+    "uploadImage": "画像をアップロード",
+    "refreshBingWallpaper": "Bing 壁紙を更新",
+    "primaryColor": "プライマリカラー",
+    "primaryColorCustom": "カスタムプライマリカラー",
+    "primaryOpacity": "不透明度",
+    "controls": "コントロール",
+    "dateTime": "日時",
+    "quickAccess": "クイックアクセス",
+    "recentVisits": "最近の訪問",
+    "openLinksInNewTab": "リンクを新しいタブで開く",
+    "iconOnlyLinkCards": "アイコンのみ",
+    "customCss": "カスタム CSS",
+    "customCssEnable": "カスタム CSS を有効にする",
+    "customCssPlaceholder": "/* ここに CSS を貼り付けてください */",
+    "customCssHint": "ヒント：この CSS は新しいタブが読み込まれるたびに注入されます。壊れた CSS は UI を正しく表示できなくする可能性があるため、バックアップを保持してください。",
+    "language": "言語",
+    "languageZhCN": "简体中文",
+    "languageZhTW": "繁體中文",
+    "languageEn": "English",
+    "languageJa": "日本語",
+    "languageKo": "한국어",
+    "languageFr": "Français",
+    "languageDe": "Deutsch",
+    "languageEs": "Español",
+    "languageRu": "Русский",
+    "backup": "インポート / エクスポート",
+    "exportBackup": "JSON をエクスポート",
+    "importBackup": "JSON をインポート",
+    "backupHint": "現在の設定とクイックアクセスを JSON ファイルに保存し、別のデバイスでインポートして復元できます。",
+    "exportSuccess": "バックアップをエクスポートしました。",
+    "exportFailed": "エクスポートに失敗しました。もう一度お試しください。",
+    "importInvalid": "インポートに失敗しました：ファイルが無効またはサポートされていないバージョンです。",
+    "importTooLarge": "インポートに失敗しました：ファイルが大きすぎます。",
+    "importSuccess": "インポートに成功しました。設定が適用されました。",
+    "importWithWarnings": "一部のアイテムがスキップされました"
+  },
+  "search": {
+    "placeholder": "検索または URL を入力...",
+    "searchBox": "検索ボックス",
+    "selectEngine": "検索エンジンを選択",
+    "clearSearch": "検索をクリア",
+    "siteSearch": "サイト検索"
+  },
+  "quickAccess": {
+    "title": "クイックアクセス",
+    "addPreset": "プリセットを追加",
+    "addCustom": "カスタムを追加",
+    "collapseForm": "フォームを折りたたむ",
+    "emptyMessage": "クイックアクセスサイトがまだありません。上のボタンをクリックして追加してください！",
+    "websiteName": "ウェブサイト名（オプション）",
+    "websiteUrl": "ウェブサイト URL、例：https://example.com",
+    "customIconUrl": "カスタムアイコン URL（オプション）",
+    "dragToReorder": "ドラッグして並べ替え"
+  },
+  "presetMenu": {
+    "selectCommonSites": "一般的なサイトを選択",
+    "clickToAdd": "クリックして追加",
+    "allAdded": "すべて追加済み",
+    "searchOrFilter": "検索またはキーワードでフィルタ",
+    "added": "追加済み",
+    "add": "追加",
+    "noMatches": "一致するサイトが見つかりません",
+    "allSitesAdded": "一般的なサイトがすべて追加されました"
+  },
+  "history": {
+    "title": "最近の訪問",
+    "emptyMessage": "訪問履歴がまだありません。いくつかのウェブサイトを訪問すると、よく訪問するサイトがここに表示されます"
+  },
+  "dateTime": {
+    "format": {
+      "time": "HH:mm:ss",
+      "date": "yyyy年M月d日 EEEE"
+    }
+  }
+}
+

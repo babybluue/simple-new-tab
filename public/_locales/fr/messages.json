@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "Tablite",
+    "description": "Nom de l'extension"
+  },
+  "extDescription": {
+    "message": "Une page d'onglet nouvelle, propre et personnalisable avec recherche, liens rapides, sites fréquents et beaux thèmes (plus CSS personnalisé).",
+    "description": "Description de l'extension"
+  }
+}
+

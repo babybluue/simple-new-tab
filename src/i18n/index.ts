@@ -2,16 +2,30 @@ import { ref } from 'vue'
 
 import { getSettings, saveSettings } from '@/utils/storage'
 
+import de from './locales/de.json'
 import en from './locales/en.json'
-import zh from './locales/zh.json'
+import es from './locales/es.json'
+import fr from './locales/fr.json'
+import ja from './locales/ja.json'
+import ko from './locales/ko.json'
+import ru from './locales/ru.json'
+import zh_CN from './locales/zh_CN.json'
+import zh_TW from './locales/zh_TW.json'
 
-export type SupportedLocale = 'zh' | 'en'
+export type SupportedLocale = 'zh_CN' | 'zh_TW' | 'en' | 'ja' | 'ko' | 'fr' | 'de' | 'es' | 'ru'
 
-type Messages = typeof zh
+type Messages = typeof zh_CN
 
 const messages: Record<SupportedLocale, Messages> = {
-  zh,
+  zh_CN,
+  zh_TW,
   en,
+  ja,
+  ko,
+  fr,
+  de,
+  es,
+  ru,
 }
 
 const currentLocale = ref<SupportedLocale>('en')
@@ -20,7 +34,29 @@ const currentLocale = ref<SupportedLocale>('en')
 function getDefaultLocale(): SupportedLocale {
   const browserLang = navigator.language.toLowerCase()
   if (browserLang.startsWith('zh')) {
-    return 'zh'
+    // zh-TW, zh-HK, zh-MO 等使用繁体中文，其他使用简体中文
+    if (browserLang.includes('tw') || browserLang.includes('hk') || browserLang.includes('mo')) {
+      return 'zh_TW'
+    }
+    return 'zh_CN'
+  }
+  if (browserLang.startsWith('ja')) {
+    return 'ja'
+  }
+  if (browserLang.startsWith('ko')) {
+    return 'ko'
+  }
+  if (browserLang.startsWith('fr')) {
+    return 'fr'
+  }
+  if (browserLang.startsWith('de')) {
+    return 'de'
+  }
+  if (browserLang.startsWith('es')) {
+    return 'es'
+  }
+  if (browserLang.startsWith('ru')) {
+    return 'ru'
   }
   return 'en'
 }
@@ -30,7 +66,8 @@ export async function initLocale() {
   try {
     const result = await chrome.storage.local.get('settings')
     const settings = result.settings as { language?: SupportedLocale } | undefined
-    if (settings?.language === 'zh' || settings?.language === 'en') {
+    const supportedLocales: SupportedLocale[] = ['zh_CN', 'zh_TW', 'en', 'ja', 'ko', 'fr', 'de', 'es', 'ru']
+    if (settings?.language && supportedLocales.includes(settings.language)) {
       currentLocale.value = settings.language
       return
     }

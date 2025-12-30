@@ -32,10 +32,31 @@
         :aria-label="tFn('settings.title')"
       >
         <div>
-          <div class="mb-4 text-base font-semibold">{{ tFn('settings.language') }}</div>
+          <div class="mb-4 flex items-center justify-between">
+            <div class="text-base font-semibold">{{ tFn('settings.language') }}</div>
+            <button
+              v-if="LANGUAGE_OPTIONS.length > FIRST_ROW_LANGUAGES.length"
+              class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border transition focus:outline-none"
+              type="button"
+              @click="languageExpanded = !languageExpanded"
+              :aria-expanded="languageExpanded"
+              :aria-label="languageExpanded ? tFn('common.collapse') : tFn('common.expand')"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 transition-transform duration-200"
+                :class="{ 'rotate-180': languageExpanded }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
           <div class="flex flex-wrap items-center gap-2">
             <button
-              v-for="langOption in LANGUAGE_OPTIONS"
+              v-for="langOption in visibleLanguageOptions"
               :key="langOption.value"
               class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-2 text-sm transition focus:outline-none disabled:opacity-60"
               :class="{
@@ -629,6 +650,7 @@ const onlineImageUrlDraft = ref(settings.value.backgroundType === 'url' ? settin
 const applying = ref(false)
 const bingLoading = ref(false)
 const open = ref(false)
+const languageExpanded = ref(false)
 const anchorEl = ref<HTMLElement | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const backupFileInput = ref<HTMLInputElement | null>(null)
@@ -674,9 +696,27 @@ const THEME_OPTIONS = computed(() => [
 ])
 
 const LANGUAGE_OPTIONS = computed(() => [
-  { value: 'zh' as const, label: t('settings.languageZh') },
+  { value: 'zh_CN' as const, label: t('settings.languageZhCN') },
+  { value: 'zh_TW' as const, label: t('settings.languageZhTW') },
   { value: 'en' as const, label: t('settings.languageEn') },
+  { value: 'ja' as const, label: t('settings.languageJa') },
+  { value: 'ko' as const, label: t('settings.languageKo') },
+  { value: 'fr' as const, label: t('settings.languageFr') },
+  { value: 'de' as const, label: t('settings.languageDe') },
+  { value: 'es' as const, label: t('settings.languageEs') },
+  { value: 'ru' as const, label: t('settings.languageRu') },
 ])
+
+// 第一行显示的语言（简体中文、繁体中文、英文）
+const FIRST_ROW_LANGUAGES = ['zh_CN', 'zh_TW', 'en'] as const
+
+// 根据展开状态返回可见的语言选项
+const visibleLanguageOptions = computed(() => {
+  if (languageExpanded.value) {
+    return LANGUAGE_OPTIONS.value
+  }
+  return LANGUAGE_OPTIONS.value.filter(lang => FIRST_ROW_LANGUAGES.includes(lang.value))
+})
 
 const syncUiFromSettings = async (next: Settings) => {
   const merged = { ...DEFAULT_SETTINGS, ...next }
