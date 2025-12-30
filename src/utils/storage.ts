@@ -67,6 +67,11 @@ export const DEFAULT_SETTINGS: Settings = {
   language: undefined, // 默认根据浏览器语言自动选择
 }
 
+// 常量
+const MAX_QUICK_LINKS = 30
+const DEFAULT_OPACITY = 1
+const DEFAULT_VISIT_COUNT = 1
+
 const FALLBACK_DEFAULT_QUICK_LINKS: QuickLink[] = [
   { title: 'Google', url: 'https://www.google.com' },
   { title: 'GitHub', url: 'https://github.com' },
@@ -87,7 +92,7 @@ export const DEFAULT_QUICK_LINKS: QuickLink[] = (() => {
 
 const normalizeHistoryItem = (item: HistoryItem): HistoryItem => {
   const domain = item.domain || extractDomainFromUrl(item.url)
-  const visitCount = item.visitCount ?? 1
+  const visitCount = item.visitCount ?? DEFAULT_VISIT_COUNT
   const timestamp = item.timestamp || Date.now()
 
   return { ...item, domain, visitCount, timestamp }
@@ -120,7 +125,7 @@ const normalizeQuickLink = (link: QuickLink): QuickLink => {
 
 const sortHistory = (items: HistoryItem[]): HistoryItem[] => {
   return [...items].sort((a, b) => {
-    const countDiff = (b.visitCount ?? 1) - (a.visitCount ?? 1)
+    const countDiff = (b.visitCount ?? DEFAULT_VISIT_COUNT) - (a.visitCount ?? DEFAULT_VISIT_COUNT)
     if (countDiff !== 0) return countDiff
     return (b.timestamp || 0) - (a.timestamp || 0)
   })
@@ -329,7 +334,7 @@ export async function addQuickLink(link: QuickLink): Promise<QuickLink[]> {
     updated = [normalized, ...links]
   }
 
-  const limited = updated.slice(0, 30)
+  const limited = updated.slice(0, MAX_QUICK_LINKS)
   await saveQuickLinks(limited)
   return limited
 }

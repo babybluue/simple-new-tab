@@ -150,6 +150,11 @@ const isSuggestionListVisible = ref(false)
 const selectedSuggestionIndex = ref(-1)
 let suggestionTimer: ReturnType<typeof setTimeout> | null = null
 
+// 常量
+const SUGGESTION_DEBOUNCE_MS = 300
+const SUGGESTION_DELAY_MS = 200
+const MAX_SUGGESTIONS = 8
+
 const currentEngine = computed<SearchEngine | null>(() => {
   if (!settings.value) return null
   return SEARCH_ENGINES[settings.value.searchEngine] || SEARCH_ENGINES.google
@@ -188,19 +193,17 @@ const toggleEngineMenu = () => {
 
 const handleClickOutside = (e: MouseEvent) => {
   const target = e.target as HTMLElement
+
+  // 如果点击在搜索框外部，关闭所有菜单
   if (searchBoxRef.value && !searchBoxRef.value.contains(target)) {
     isEngineMenuOpen.value = false
     isSuggestionListVisible.value = false
     return
   }
-  // 检查是否点击在搜索引擎菜单区域
-  const engineMenu = target.closest('[data-engine-menu]')
-  // 检查是否点击在搜索建议区域
-  const suggestionsMenu = target.closest('[data-suggestions-menu]')
-  // 检查是否点击在搜索引擎按钮上
-  const engineButton = target.closest('button')
 
-  if (!engineMenu && !suggestionsMenu && !engineButton) {
+  // 检查是否点击在菜单或按钮区域内
+  const isInsideMenu = target.closest('[data-engine-menu], [data-suggestions-menu], button')
+  if (!isInsideMenu) {
     isEngineMenuOpen.value = false
     isSuggestionListVisible.value = false
   }
@@ -234,7 +237,7 @@ const handleInput = () => {
   if (query.value.trim()) {
     suggestionTimer = setTimeout(() => {
       loadSuggestions()
-    }, 300)
+    }, SUGGESTION_DEBOUNCE_MS)
   } else {
     suggestions.value = []
     isSuggestionListVisible.value = false
@@ -255,7 +258,7 @@ const handleBlur = () => {
   // 延迟关闭，以便点击建议项
   setTimeout(() => {
     isSuggestionListVisible.value = false
-  }, 200)
+  }, SUGGESTION_DELAY_MS)
 }
 
 const loadSuggestions = async () => {
@@ -266,7 +269,7 @@ const loadSuggestions = async () => {
   }
   try {
     const results = await getSearchSuggestions(query.value, settings.value.searchEngine)
-    suggestions.value = results.slice(0, 8)
+    suggestions.value = results.slice(0, MAX_SUGGESTIONS)
     isSuggestionListVisible.value = results.length > 0
   } catch {
     // Failed to load suggestions
@@ -284,7 +287,7 @@ const selectSuggestion = (suggestion: string) => {
 const handleSearch = () => {
   if (!query.value.trim() || !settings.value) return
   isSuggestionListVisible.value = false
-  performSearch(query.value, settings.value.searchEngine)
+  performSearch(query.value, settings.value.searchEngine, settings.value.openLinksInNewTab ?? false)
 }
 
 const handleKeydown = (e: KeyboardEvent) => {

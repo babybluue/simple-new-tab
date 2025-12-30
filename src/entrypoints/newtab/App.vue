@@ -53,19 +53,32 @@ const displaySettings = computed(() => ({
   showHistory: settings.value?.showHistory ?? true,
 }))
 
-const isSameSettings = (a: SettingsModel | null, b: SettingsModel | null) => {
+/**
+ * 比较两个设置对象是否相同
+ * 使用规范化后的值进行比较，处理 undefined/null 的情况
+ */
+const isSameSettings = (a: SettingsModel | null, b: SettingsModel | null): boolean => {
   if (!a || !b) return false
+
+  // 规范化可选字段的默认值
+  const normalize = {
+    backgroundOpacity: (v: number | undefined) => v ?? 1,
+    primaryOpacity: (v: number | undefined) => v ?? 1,
+    backgroundImageUrl: (v: string | undefined) => v || '',
+    language: (v: string | undefined) => v || '',
+  }
+
   return (
     a.searchEngine === b.searchEngine &&
     a.theme === b.theme &&
     a.maxHistoryItems === b.maxHistoryItems &&
     a.backgroundType === b.backgroundType &&
     a.backgroundColor === b.backgroundColor &&
-    (a.backgroundOpacity ?? 1) === (b.backgroundOpacity ?? 1) &&
-    (a.backgroundImageUrl || '') === (b.backgroundImageUrl || '') &&
+    normalize.backgroundOpacity(a.backgroundOpacity) === normalize.backgroundOpacity(b.backgroundOpacity) &&
+    normalize.backgroundImageUrl(a.backgroundImageUrl) === normalize.backgroundImageUrl(b.backgroundImageUrl) &&
     a.primaryColorType === b.primaryColorType &&
     a.primaryColor === b.primaryColor &&
-    (a.primaryOpacity ?? 1) === (b.primaryOpacity ?? 1) &&
+    normalize.primaryOpacity(a.primaryOpacity) === normalize.primaryOpacity(b.primaryOpacity) &&
     a.showDateTime === b.showDateTime &&
     a.showQuickAccess === b.showQuickAccess &&
     a.showHistory === b.showHistory &&
@@ -73,7 +86,7 @@ const isSameSettings = (a: SettingsModel | null, b: SettingsModel | null) => {
     a.iconOnlyLinkCards === b.iconOnlyLinkCards &&
     a.customCssEnabled === b.customCssEnabled &&
     a.customCss === b.customCss &&
-    (a.language || '') === (b.language || '')
+    normalize.language(a.language) === normalize.language(b.language)
   )
 }
 

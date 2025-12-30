@@ -108,7 +108,7 @@ import {
   type Settings,
 } from '@/utils/storage'
 import { getCardStyle } from '@/utils/theme'
-import { extractDomainFromUrl } from '@/utils/url'
+import { extractDomainFromUrl, extractRootDomain } from '@/utils/url'
 
 import LinkCard from './LinkCard.vue'
 
@@ -117,11 +117,34 @@ const { t } = useI18n()
 const history = ref<HistoryItem[]>([])
 const settings = ref<Settings | null>(null)
 const isCollapsed = ref(false)
-const MIN_VISIT_THRESHOLD = 2
 const faviconFallbackTried = ref<Record<string, boolean>>({})
 
+// 常量
+const MIN_VISIT_THRESHOLD = 2
+const DEFAULT_VISIT_COUNT = 1
+
+
 const getSiteIconProps = (item: HistoryItem): { logo?: string; favicon?: string } => {
-  return resolveSiteIcon({ url: item.url, domain: item.domain, favicon: item.favicon })
+  // 提取主域名用于匹配 logo
+  const domain = item.domain || extractDomainFromUrl(item.url) || item.url
+  const rootDomain = extractRootDomain(domain)
+  
+  // 使用主域名构建 URL 用于匹配 logo
+  let rootDomainUrl = item.url
+  try {
+    const urlObj = new URL(item.url.startsWith('http') ? item.url : `https://${item.url}`)
+    urlObj.hostname = rootDomain
+    rootDomainUrl = urlObj.toString()
+  } catch {
+    // 如果 URL 解析失败，使用简单的字符串替换
+    rootDomainUrl = item.url.replace(domain, rootDomain)
+  }
+  
+  return resolveSiteIcon({ 
+    url: rootDomainUrl, 
+    domain: rootDomain, 
+    favicon: item.favicon 
+  })
 }
 
 onMounted(async () => {
@@ -145,19 +168,21 @@ const deduplicateByDomain = (items: HistoryItem[]): HistoryItem[] => {
 
   for (const item of items) {
     const domain = item.domain || extractDomainFromUrl(item.url) || item.url
-    const existing = domainMap.get(domain)
+    // 使用主域名进行去重判断
+    const rootDomain = extractRootDomain(domain)
+    const existing = domainMap.get(rootDomain)
 
     if (!existing) {
-      domainMap.set(domain, item)
+      domainMap.set(rootDomain, item)
     } else {
       // 保留访问次数最多的，如果访问次数相同则保留最近访问的
-      const existingCount = existing.visitCount ?? 1
-      const currentCount = item.visitCount ?? 1
+      const existingCount = existing.visitCount ?? DEFAULT_VISIT_COUNT
+      const currentCount = item.visitCount ?? DEFAULT_VISIT_COUNT
       const existingTimestamp = existing.timestamp || 0
       const currentTimestamp = item.timestamp || 0
 
       if (currentCount > existingCount || (currentCount === existingCount && currentTimestamp > existingTimestamp)) {
-        domainMap.set(domain, item)
+        domainMap.set(rootDomain, item)
       }
     }
   }
@@ -167,7 +192,9 @@ const deduplicateByDomain = (items: HistoryItem[]): HistoryItem[] => {
 
 const loadHistory = async () => {
   const allHistory = await getHistory()
-  const frequentSites = allHistory.filter(item => (item.visitCount ?? 1) >= MIN_VISIT_THRESHOLD)
+  const frequentSites = allHistory.filter(
+    item => (item.visitCount ?? DEFAULT_VISIT_COUNT) >= MIN_VISIT_THRESHOLD
+  )
   const filtered = frequentSites.length > 0 ? frequentSites : allHistory
   const safe = filtered
     .filter(item => typeof item?.url === 'string' && item.url.trim())

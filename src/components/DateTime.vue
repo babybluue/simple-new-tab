@@ -5,7 +5,7 @@
       <span class="text-app-tertiary mx-1 text-2xl font-medium tabular-nums md:text-xl">:</span>
       <span class="tabular-nums">{{ timeMinute }}</span>
       <span class="text-app-tertiary mx-1 text-2xl font-medium tabular-nums md:text-xl">:</span>
-      <span class="text-app-tertiary mt-1 text-2xl font-medium tabular-nums md:text-xl">{{ timeSeconds }}</span>
+      <span class="text-app-tertiary tabular-nums">{{ timeSeconds }}</span>
       <span v-if="timeSuffix" class="text-app-tertiary mt-1 text-lg font-medium md:text-base">{{ timeSuffix }}</span>
     </h1>
     <p class="text-app-tertiary text-lg font-normal tracking-wide md:text-[1.05rem]">
@@ -25,6 +25,15 @@ const timeSuffix = ref('')
 const date = ref('')
 let timer: ReturnType<typeof setInterval> | null = null
 
+const UPDATE_INTERVAL_MS = 1000
+
+/**
+ * 从日期格式化部分中获取指定类型的值
+ */
+const getDateTimePart = (parts: Intl.DateTimeFormatPart[], type: Intl.DateTimeFormatPartTypes): string => {
+  return parts.find(p => p.type === type)?.value || ''
+}
+
 const updateTime = () => {
   const now = new Date()
   const currentLocale = getLocale() === 'zh' ? 'zh-CN' : 'en-US'
@@ -35,15 +44,11 @@ const updateTime = () => {
     second: '2-digit',
   }).formatToParts(now)
 
-  const getPart = (type: Intl.DateTimeFormatPartTypes) => parts.find(p => p.type === type)?.value || ''
-  const hour = getPart('hour')
-  const minute = getPart('minute')
-  const second = getPart('second')
-  const dayPeriod = getPart('dayPeriod')
+  timeHour.value = getDateTimePart(parts, 'hour')
+  timeMinute.value = getDateTimePart(parts, 'minute')
+  timeSeconds.value = getDateTimePart(parts, 'second')
 
-  timeHour.value = hour
-  timeMinute.value = minute
-  timeSeconds.value = second
+  const dayPeriod = getDateTimePart(parts, 'dayPeriod')
   timeSuffix.value = dayPeriod ? ` ${dayPeriod}` : ''
 
   date.value = now.toLocaleDateString(currentLocale, {
@@ -56,7 +61,7 @@ const updateTime = () => {
 
 onMounted(async () => {
   updateTime()
-  timer = setInterval(updateTime, 1000)
+  timer = setInterval(updateTime, UPDATE_INTERVAL_MS)
 })
 
 onUnmounted(() => {
