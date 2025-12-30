@@ -1,5 +1,7 @@
 import { ref } from 'vue'
 
+import { getSettings, saveSettings } from '@/utils/storage'
+
 import en from './locales/en.json'
 import zh from './locales/zh.json'
 
@@ -42,11 +44,9 @@ export async function initLocale() {
 export async function setLocale(locale: SupportedLocale) {
   currentLocale.value = locale
   try {
-    const result = await chrome.storage.local.get('settings')
-    const settings = result.settings || {}
-    await chrome.storage.local.set({
-      settings: { ...settings, language: locale },
-    })
+    // 使用 getSettings() 获取完整的设置，避免只保存 language 导致其他字段丢失
+    const settings = await getSettings()
+    await saveSettings({ ...settings, language: locale })
   } catch {
     // 忽略错误
   }
