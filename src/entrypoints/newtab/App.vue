@@ -56,6 +56,7 @@ const displaySettings = computed(() => ({
 /**
  * 比较两个设置对象是否相同
  * 使用规范化后的值进行比较，处理 undefined/null 的情况
+ * 自动比较所有字段，无需在新增字段时手动更新此函数
  */
 const isSameSettings = (a: SettingsModel | null, b: SettingsModel | null): boolean => {
   if (!a || !b) return false
@@ -68,27 +69,44 @@ const isSameSettings = (a: SettingsModel | null, b: SettingsModel | null): boole
     language: (v: string | undefined) => v || '',
   }
 
-  return (
-    a.searchEngine === b.searchEngine &&
-    a.theme === b.theme &&
-    a.maxHistoryItems === b.maxHistoryItems &&
-    a.backgroundType === b.backgroundType &&
-    a.backgroundColor === b.backgroundColor &&
-    normalize.backgroundOpacity(a.backgroundOpacity) === normalize.backgroundOpacity(b.backgroundOpacity) &&
-    normalize.backgroundImageUrl(a.backgroundImageUrl) === normalize.backgroundImageUrl(b.backgroundImageUrl) &&
-    a.primaryColorType === b.primaryColorType &&
-    a.primaryColor === b.primaryColor &&
-    normalize.primaryOpacity(a.primaryOpacity) === normalize.primaryOpacity(b.primaryOpacity) &&
-    a.showDateTime === b.showDateTime &&
-    a.showQuickAccess === b.showQuickAccess &&
-    a.showHistory === b.showHistory &&
-    a.openLinksInNewTab === b.openLinksInNewTab &&
-    a.iconOnlyLinkCards === b.iconOnlyLinkCards &&
-    a.customCssEnabled === b.customCssEnabled &&
-    a.customCss === b.customCss &&
-    normalize.language(a.language) === normalize.language(b.language) &&
-    a.showLunarCalendar === b.showLunarCalendar
-  )
+  // 获取所有需要比较的字段（排除函数、方法等）
+  const getComparableFields = (settings: SettingsModel) => {
+    const fields: Record<string, unknown> = {}
+    for (const key in settings) {
+      if (Object.prototype.hasOwnProperty.call(settings, key)) {
+        const value = settings[key as keyof SettingsModel]
+        // 规范化可选字段
+        if (key === 'backgroundOpacity' || key === 'primaryOpacity') {
+          fields[key] = normalize[key](value as number | undefined)
+        } else if (key === 'backgroundImageUrl') {
+          fields[key] = normalize.backgroundImageUrl(value as string | undefined)
+        } else if (key === 'language') {
+          fields[key] = normalize.language(value as string | undefined)
+        } else {
+          fields[key] = value
+        }
+      }
+    }
+    return fields
+  }
+
+  const fieldsA = getComparableFields(a)
+  const fieldsB = getComparableFields(b)
+
+  // 比较所有字段
+  const keysA = Object.keys(fieldsA)
+  const keysB = Object.keys(fieldsB)
+
+  // 确保两个对象有相同的字段
+  if (keysA.length !== keysB.length) return false
+
+  // 比较每个字段的值
+  for (const key of keysA) {
+    if (!(key in fieldsB)) return false
+    if (fieldsA[key] !== fieldsB[key]) return false
+  }
+
+  return true
 }
 
 const handleSettingsUpdate = async (updatedSettings: SettingsModel) => {

@@ -128,8 +128,25 @@ export function parseAndSanitizeSettingsBackup(jsonText: string): ParseBackupRes
   next.customCssEnabled = asBoolean(s.customCssEnabled) ?? next.customCssEnabled
   next.customCss = asString(s.customCss, 100_000) ?? next.customCss
 
-  const lang = oneOf(s.language, ['zh', 'en'] as const)
-  next.language = lang
+  // 处理语言字段：支持所有支持的语言，并兼容旧版本的 'zh' 映射到 'zh_CN'
+  const langRaw = oneOf(s.language, [
+    'zh_CN',
+    'zh_TW',
+    'en',
+    'ja',
+    'ko',
+    'fr',
+    'de',
+    'es',
+    'ru',
+    'zh', // 兼容旧版本
+  ] as const)
+  if (langRaw) {
+    // 向后兼容：将旧的 'zh' 映射到 'zh_CN'
+    next.language = langRaw === 'zh' ? 'zh_CN' : langRaw
+  }
+
+  next.showLunarCalendar = asBoolean(s.showLunarCalendar) ?? next.showLunarCalendar
 
   // 字段联动/安全修正
   if (next.backgroundType === 'upload') {

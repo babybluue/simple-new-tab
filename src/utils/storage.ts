@@ -161,8 +161,69 @@ export async function getSettings(): Promise<Settings> {
     }
   }
 
-  // 合并存储的设置
-  const merged = { ...DEFAULT_SETTINGS, ...stored }
+  // 合并存储的设置，确保所有字段都有默认值
+  // 使用展开运算符合并，这样新增的字段会自动使用默认值
+  const merged: Settings = { ...DEFAULT_SETTINGS, ...stored }
+  
+  // 验证和修正关键字段的类型和值，确保数据安全
+  // 枚举类型字段：验证值是否在允许的范围内
+  if (!['google', 'bing', 'baidu', 'duckduckgo'].includes(merged.searchEngine)) {
+    merged.searchEngine = DEFAULT_SETTINGS.searchEngine
+  }
+  if (!['light', 'dark', 'auto'].includes(merged.theme)) {
+    merged.theme = DEFAULT_SETTINGS.theme
+  }
+  if (typeof merged.maxHistoryItems !== 'number' || merged.maxHistoryItems < 0 || merged.maxHistoryItems > 50) {
+    merged.maxHistoryItems = DEFAULT_SETTINGS.maxHistoryItems
+  }
+  if (!['preset', 'custom', 'bing', 'upload', 'url'].includes(merged.backgroundType)) {
+    merged.backgroundType = DEFAULT_SETTINGS.backgroundType
+  }
+  if (typeof merged.backgroundColor !== 'string') {
+    merged.backgroundColor = DEFAULT_SETTINGS.backgroundColor
+  }
+  if (typeof merged.backgroundOpacity !== 'number' || merged.backgroundOpacity < 0 || merged.backgroundOpacity > 1) {
+    merged.backgroundOpacity = DEFAULT_SETTINGS.backgroundOpacity
+  }
+  if (merged.backgroundImageUrl !== undefined && typeof merged.backgroundImageUrl !== 'string') {
+    merged.backgroundImageUrl = DEFAULT_SETTINGS.backgroundImageUrl
+  }
+  if (!['preset', 'custom'].includes(merged.primaryColorType)) {
+    merged.primaryColorType = DEFAULT_SETTINGS.primaryColorType
+  }
+  if (typeof merged.primaryColor !== 'string') {
+    merged.primaryColor = DEFAULT_SETTINGS.primaryColor
+  }
+  if (typeof merged.primaryOpacity !== 'number' || merged.primaryOpacity < 0 || merged.primaryOpacity > 1) {
+    merged.primaryOpacity = DEFAULT_SETTINGS.primaryOpacity
+  }
+  if (typeof merged.showDateTime !== 'boolean') {
+    merged.showDateTime = DEFAULT_SETTINGS.showDateTime
+  }
+  if (typeof merged.showQuickAccess !== 'boolean') {
+    merged.showQuickAccess = DEFAULT_SETTINGS.showQuickAccess
+  }
+  if (typeof merged.showHistory !== 'boolean') {
+    merged.showHistory = DEFAULT_SETTINGS.showHistory
+  }
+  if (typeof merged.openLinksInNewTab !== 'boolean') {
+    merged.openLinksInNewTab = DEFAULT_SETTINGS.openLinksInNewTab
+  }
+  if (typeof merged.iconOnlyLinkCards !== 'boolean') {
+    merged.iconOnlyLinkCards = DEFAULT_SETTINGS.iconOnlyLinkCards
+  }
+  if (typeof merged.customCssEnabled !== 'boolean') {
+    merged.customCssEnabled = DEFAULT_SETTINGS.customCssEnabled
+  }
+  if (typeof merged.customCss !== 'string') {
+    merged.customCss = DEFAULT_SETTINGS.customCss
+  }
+  if (merged.language !== undefined && !['zh_CN', 'zh_TW', 'en', 'ja', 'ko', 'fr', 'de', 'es', 'ru'].includes(merged.language)) {
+    merged.language = DEFAULT_SETTINGS.language
+  }
+  if (typeof merged.showLunarCalendar !== 'boolean') {
+    merged.showLunarCalendar = DEFAULT_SETTINGS.showLunarCalendar
+  }
   
   // 向后兼容：将旧的 'zh' 映射到 'zh_CN'
   if (merged.language === 'zh' as any) {
