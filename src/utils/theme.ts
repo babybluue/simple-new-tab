@@ -111,6 +111,82 @@ export const THEME_DARK_BG = '#000000'
 export const THEME_LIGHT_PRIMARY = '#ffffff'
 export const THEME_DARK_PRIMARY = '#343639'
 
+/**
+ * 预设背景色列表
+ * 前两个是主题默认背景色，后面是渐变色
+ */
+export const PRESET_BACKGROUNDS = [
+  THEME_LIGHT_BG,
+  THEME_DARK_BG,
+  'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+  'linear-gradient(135deg, #0ea5e9 0%, #2563eb 45%, #0f172a 100%)',
+  'linear-gradient(135deg, #34d399 0%, #10b981 45%, #047857 100%)',
+  'linear-gradient(135deg, #fbbf24 0%, #f97316 45%, #ef4444 100%)',
+  'linear-gradient(135deg, #06b6d4 0%, #22d3ee 45%, #0ea5e9 100%)',
+  'linear-gradient(135deg, #ef4444 0%, #dc2626 45%, #991b1b 100%)',
+  'linear-gradient(135deg, #f472b6 0%, #ec4899 45%, #be185d 100%)',
+  'linear-gradient(135deg, #9a3412 0%, #7c2d12 50%, #4a1d0f 100%)',
+  'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)',
+] as const
+
+/**
+ * 预设主色列表
+ * 前两个是主题默认主色，第三个是透明色，后面是彩色
+ */
+export const PRIMARY_PRESETS = [
+  THEME_LIGHT_PRIMARY,
+  THEME_DARK_PRIMARY,
+  'transparent',
+  '#6200ea', // Deep Purple 500
+  '#2962ff', // Blue A700
+  '#00c853', // Green A700
+  '#ff9800', // Orange 500
+  '#e91e63', // Pink 500
+  '#00bcd4', // Cyan 500
+  '#8bc34a', // Light Green 500
+  '#ffc107', // Amber 500
+] as const
+
+/**
+ * 判断当前系统是否偏好深色模式
+ * 兼容非 DOM 环境（如 Service Worker）
+ */
+export const getSystemPrefersDark = (): boolean => {
+  try {
+    const mm = (globalThis as unknown as { matchMedia?: (query: string) => MediaQueryList })?.matchMedia
+    return typeof mm === 'function' ? mm('(prefers-color-scheme: dark)').matches : false
+  } catch {
+    return false
+  }
+}
+
+/**
+ * 根据主题设置获取有效的主题模式（light 或 dark）
+ * @param theme 主题设置值
+ * @param systemPrefersDark 系统是否偏好深色（可选，默认自动检测）
+ */
+export const getEffectiveTheme = (theme: 'light' | 'dark' | 'auto', systemPrefersDark?: boolean): 'light' | 'dark' => {
+  if (theme === 'light' || theme === 'dark') return theme
+  const prefersDark = systemPrefersDark ?? getSystemPrefersDark()
+  return prefersDark ? 'dark' : 'light'
+}
+
+/**
+ * 根据主题获取默认的背景色和主色
+ * @param theme 主题设置值
+ * @param systemPrefersDark 系统是否偏好深色（可选，默认自动检测）
+ */
+export const getThemeDefaults = (
+  theme: 'light' | 'dark' | 'auto',
+  systemPrefersDark?: boolean
+): { backgroundColor: string; primaryColor: string } => {
+  const effective = getEffectiveTheme(theme, systemPrefersDark)
+  return {
+    backgroundColor: effective === 'dark' ? THEME_DARK_BG : THEME_LIGHT_BG,
+    primaryColor: effective === 'dark' ? THEME_DARK_PRIMARY : THEME_LIGHT_PRIMARY,
+  }
+}
+
 const clamp01 = (n: number): number => Math.min(1, Math.max(0, n))
 
 const toRgbaFromHex6 = (hex: string, alpha: number): string | null => {

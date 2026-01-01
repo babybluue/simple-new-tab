@@ -2,7 +2,14 @@
 import { getUnavatarFavicon, isAutoFavicon } from './favicon'
 import { tryGetLogoForUrl } from './logo'
 import { PRESET_QUICK_LINKS } from './presets'
-import { THEME_DARK_BG, THEME_DARK_PRIMARY, THEME_LIGHT_BG, THEME_LIGHT_PRIMARY } from './theme'
+import {
+  getSystemPrefersDark,
+  getThemeDefaults,
+  THEME_DARK_BG,
+  THEME_DARK_PRIMARY,
+  THEME_LIGHT_BG,
+  THEME_LIGHT_PRIMARY,
+} from './theme'
 import type { QuickLink } from './types'
 import { extractDomainFromUrl } from './url'
 
@@ -139,32 +146,23 @@ export async function getSettings(): Promise<Settings> {
   const result = await chrome.storage.local.get('settings')
   const stored = result.settings as Partial<Settings> | undefined
 
-  // 获取当前系统主题偏好
-  // 注意：MV3 background/service worker 环境没有 `window`，因此这里必须兼容非 DOM 环境。
-  const prefersDark = (() => {
-    try {
-      const mm = (globalThis as unknown as { matchMedia?: (query: string) => MediaQueryList })?.matchMedia
-      return typeof mm === 'function' ? mm('(prefers-color-scheme: dark)').matches : false
-    } catch {
-      return false
-    }
-  })()
-  const systemThemeBg = prefersDark ? THEME_DARK_BG : THEME_LIGHT_BG
-  const systemThemePrimary = prefersDark ? THEME_DARK_PRIMARY : THEME_LIGHT_PRIMARY
+  // 获取当前系统主题偏好和对应的默认颜色
+  const prefersDark = getSystemPrefersDark()
+  const systemDefaults = getThemeDefaults('auto', prefersDark)
 
   // 如果是首次加载（没有存储的设置），根据系统偏好设置默认背景和主色
   if (!stored) {
     return {
       ...DEFAULT_SETTINGS,
-      backgroundColor: systemThemeBg,
-      primaryColor: systemThemePrimary,
+      backgroundColor: systemDefaults.backgroundColor,
+      primaryColor: systemDefaults.primaryColor,
     }
   }
 
   // 合并存储的设置，确保所有字段都有默认值
   // 使用展开运算符合并，这样新增的字段会自动使用默认值
   const merged: Settings = { ...DEFAULT_SETTINGS, ...stored }
-  
+
   // 验证和修正关键字段的类型和值，确保数据安全
   // 枚举类型字段：验证值是否在允许的范围内
   if (!['google', 'bing', 'baidu', 'duckduckgo'].includes(merged.searchEngine)) {
@@ -218,57 +216,65 @@ export async function getSettings(): Promise<Settings> {
   if (typeof merged.customCss !== 'string') {
     merged.customCss = DEFAULT_SETTINGS.customCss
   }
-  if (merged.language !== undefined && !['zh_CN', 'zh_TW', 'en', 'ja', 'ko', 'fr', 'de', 'es', 'ru'].includes(merged.language)) {
+  if (
+    merged.language !== undefined &&
+    !['zh_CN', 'zh_TW', 'en', 'ja', 'ko', 'fr', 'de', 'es', 'ru'].includes(merged.language)
+  ) {
     merged.language = DEFAULT_SETTINGS.language
   }
   if (typeof merged.showLunarCalendar !== 'boolean') {
     merged.showLunarCalendar = DEFAULT_SETTINGS.showLunarCalendar
   }
-  
+
   // 向后兼容：将旧的 'zh' 映射到 'zh_CN'
-  if (merged.language === 'zh' as any) {
+  if (merged.language === ('zh' as any)) {
     merged.language = 'zh_CN'
   }
 
-  // 旧版本数据迁移：如果背景色/主色还是旧的默认值（渐变），
-  // 则根据当前系统偏好更新它们
-  const oldDefaultBg = 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)'
-  const oldDefaultPrimary = '#667eea'
+  // 旧版本数据迁移
+  migrateOldSettings(merged, systemDefaults)
+
+  return merged
+}
+
+/**
+ * 旧版本数据迁移逻辑
+ * 将旧的默认值更新为新的系统主题对应的颜色
+ */
+function migrateOldSettings(
+  settings: Settings,
+  systemDefaults: { backgroundColor: string; primaryColor: string }
+): void {
+  const OLD_DEFAULT_BG = 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)'
+  const OLD_DEFAULT_PRIMARY = '#667eea'
 
   // 如果背景色是旧的默认渐变值，更新为系统主题对应的背景色
-  if (merged.backgroundColor === oldDefaultBg) {
-    merged.backgroundColor = systemThemeBg
-    merged.backgroundType = 'preset'
+  if (settings.backgroundColor === OLD_DEFAULT_BG) {
+    settings.backgroundColor = systemDefaults.backgroundColor
+    settings.backgroundType = 'preset'
   }
 
   // 如果主色是旧的默认值，更新为系统主题对应的主色
-  if (merged.primaryColor === oldDefaultPrimary) {
-    merged.primaryColor = systemThemePrimary
-    merged.primaryColorType = 'preset'
+  if (settings.primaryColor === OLD_DEFAULT_PRIMARY) {
+    settings.primaryColor = systemDefaults.primaryColor
+    settings.primaryColorType = 'preset'
   }
 
-  // 迁移：历史版本把“主色 preset”错误地设成了主题背景色（THEME_LIGHT_BG/THEME_DARK_BG），
+  // 迁移：历史版本把"主色 preset"错误地设成了主题背景色（THEME_LIGHT_BG/THEME_DARK_BG），
   // 导致深色模式下部分 logo/边框对比度不足。
-  // 这里仅在“主色=背景且主色属于主题背景常量”时自动纠正为主题主色常量，避免误伤用户自定义配色。
-  const themePrimaryForCurrentSetting =
-    merged.theme === 'light'
-      ? THEME_LIGHT_PRIMARY
-      : merged.theme === 'dark'
-        ? THEME_DARK_PRIMARY
-        : systemThemePrimary
-
+  // 这里仅在"主色=背景且主色属于主题背景常量"时自动纠正为主题主色常量
+  const themePrimaryForSetting = getThemeDefaults(settings.theme).primaryColor
   const isThemeBgConstant = (v: string) => v === THEME_LIGHT_BG || v === THEME_DARK_BG
-  if (
-    merged.primaryColorType === 'preset' &&
-    merged.primaryColor &&
-    merged.backgroundColor &&
-    merged.primaryColor === merged.backgroundColor &&
-    isThemeBgConstant(merged.primaryColor)
-  ) {
-    merged.primaryColor = themePrimaryForCurrentSetting
-  }
 
-  return merged
+  if (
+    settings.primaryColorType === 'preset' &&
+    settings.primaryColor &&
+    settings.backgroundColor &&
+    settings.primaryColor === settings.backgroundColor &&
+    isThemeBgConstant(settings.primaryColor)
+  ) {
+    settings.primaryColor = themePrimaryForSetting
+  }
 }
 
 // 保存设置

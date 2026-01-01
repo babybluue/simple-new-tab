@@ -714,10 +714,9 @@ import {
   applyTheme,
   clearBingImageCache,
   fetchBingImageUrl,
-  THEME_DARK_BG,
-  THEME_DARK_PRIMARY,
-  THEME_LIGHT_BG,
-  THEME_LIGHT_PRIMARY,
+  getThemeDefaults,
+  PRESET_BACKGROUNDS,
+  PRIMARY_PRESETS,
 } from '@/utils/theme'
 
 const { t: tFn } = useI18n()
@@ -735,35 +734,14 @@ const emit = defineEmits<{
   'settings-updated': [settings: Settings]
 }>()
 
-// 使用从 theme.ts 导入的常量
-
-const PRESET_BACKGROUNDS = [
-  THEME_LIGHT_BG,
-  THEME_DARK_BG,
-  'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-  'linear-gradient(135deg, #0ea5e9 0%, #2563eb 45%, #0f172a 100%)',
-  'linear-gradient(135deg, #34d399 0%, #10b981 45%, #047857 100%)',
-  'linear-gradient(135deg, #fbbf24 0%, #f97316 45%, #ef4444 100%)',
-  'linear-gradient(135deg, #06b6d4 0%, #22d3ee 45%, #0ea5e9 100%)',
-  'linear-gradient(135deg, #ef4444 0%, #dc2626 45%, #991b1b 100%)',
-  'linear-gradient(135deg, #f472b6 0%, #ec4899 45%, #be185d 100%)',
-  'linear-gradient(135deg, #9a3412 0%, #7c2d12 50%, #4a1d0f 100%)',
-  'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)',
-]
-
+// 辅助函数
 const isHexColor6 = (value: string) => /^#[0-9a-fA-F]{6}$/.test(value)
 
-// <input type="color"> 只接受 "#rrggbb"；gradient/transparent 之类会触发控制台警告
-const getEffectiveTheme = (theme: Settings['theme']): 'light' | 'dark' => {
-  if (theme === 'light' || theme === 'dark') return theme
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
+// 获取主题对应的默认背景色（用于颜色选择器的 fallback）
+const getDefaultBgHex = (theme: Settings['theme']) => getThemeDefaults(theme).backgroundColor
 
-const getDefaultBgHex = (theme: Settings['theme']) =>
-  getEffectiveTheme(theme) === 'dark' ? THEME_DARK_BG : THEME_LIGHT_BG
-
-const getDefaultPrimaryHex = (theme: Settings['theme']) =>
-  getEffectiveTheme(theme) === 'dark' ? THEME_DARK_PRIMARY : THEME_LIGHT_PRIMARY
+// 获取主题对应的默认主色（用于颜色选择器的 fallback）
+const getDefaultPrimaryHex = (theme: Settings['theme']) => getThemeDefaults(theme).primaryColor
 
 const normalizeColorInput = (value: string | undefined, fallback: string) => {
   if (!value) return fallback
@@ -808,20 +786,6 @@ const backupFileInput = ref<HTMLInputElement | null>(null)
 const backupBusy = ref(false)
 const backupMessage = ref('')
 const backupError = ref(false)
-
-const PRIMARY_PRESETS = [
-  THEME_LIGHT_PRIMARY,
-  THEME_DARK_PRIMARY,
-  'transparent',
-  '#6200ea', // Deep Purple 500
-  '#2962ff', // Blue A700
-  '#00c853', // Green A700
-  '#ff9800', // Orange 500
-  '#e91e63', // Pink 500
-  '#00bcd4', // Cyan 500
-  '#8bc34a', // Light Green 500
-  '#ffc107', // Amber 500
-]
 
 const getPrimaryPresetStyle = (color: string) => {
   // 透明色需要可视化：用棋盘格提示“透明”
@@ -1245,7 +1209,13 @@ const useOnlineImageUrl = async () => {
 }
 
 const toggleVisibility = async (
-  key: 'showDateTime' | 'showQuickAccess' | 'showHistory' | 'openLinksInNewTab' | 'iconOnlyLinkCards' | 'showLunarCalendar'
+  key:
+    | 'showDateTime'
+    | 'showQuickAccess'
+    | 'showHistory'
+    | 'openLinksInNewTab'
+    | 'iconOnlyLinkCards'
+    | 'showLunarCalendar'
 ) => {
   await persistAndApply({ [key]: !settings.value[key] })
 }
@@ -1280,32 +1250,16 @@ const getSwitchTrackStyle = (on: boolean) => {
 }
 
 const useTheme = async (theme: Settings['theme']) => {
-  // 根据新主题自动切换到对应的背景色和主色
-  const newBg =
-    theme === 'light'
-      ? THEME_LIGHT_BG
-      : theme === 'dark'
-        ? THEME_DARK_BG
-        : window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? THEME_DARK_BG
-          : THEME_LIGHT_BG
-
-  const newPrimary =
-    theme === 'light'
-      ? THEME_LIGHT_PRIMARY
-      : theme === 'dark'
-        ? THEME_DARK_PRIMARY
-        : window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? THEME_DARK_PRIMARY
-          : THEME_LIGHT_PRIMARY
+  // 根据新主题获取对应的默认背景色和主色
+  const { backgroundColor, primaryColor } = getThemeDefaults(theme)
 
   // 更新主题、背景和主色，确保类型都是 preset
   await persistAndApply({
     theme,
     backgroundType: 'preset',
-    backgroundColor: newBg,
+    backgroundColor,
     primaryColorType: 'preset',
-    primaryColor: newPrimary,
+    primaryColor,
   })
 }
 
