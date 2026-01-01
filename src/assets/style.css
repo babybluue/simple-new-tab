@@ -53,6 +53,9 @@ body {
   --primary-color: #343639;
   --primary-surface: #343639;
 
+  /* 输入相关：轻量 focus 提示（caret + placeholder） */
+  --app-caret-color: color-mix(in srgb, var(--primary-color) 15%, #3b82f6);
+
   /* 背景和边框颜色变量 */
   /* 让 overlay 表面轻微跟随主色（不直接变成纯主色，避免可读性问题） */
   --app-bg-overlay: color-mix(in srgb, var(--primary-color) 50%, #1f2937);
@@ -78,6 +81,9 @@ body {
 
   --primary-color: #ffffff;
   --primary-surface: #ffffff;
+
+  /* 修复浅色主题下 focus ring 变成“白色光晕”，导致看起来像额外 padding */
+  --app-focus-ring: rgba(59, 130, 246, 0.35);
 
   --app-bg-overlay: color-mix(in srgb, var(--primary-color) 10%, rgba(255, 255, 255, 0.85));
   --app-bg-overlay-hover: color-mix(in srgb, var(--primary-color) 14%, rgba(255, 255, 255, 0.95));
@@ -133,6 +139,19 @@ body {
   color: var(--app-text-muted);
 }
 
+/* 输入框：轻量 focus 提示（不改变外层容器外观） */
+.caret-app {
+  caret-color: var(--app-caret-color);
+}
+
+.input-focus-subtle::placeholder {
+  transition: color 160ms ease;
+}
+
+.input-focus-subtle:focus::placeholder {
+  color: color-mix(in srgb, var(--app-text-color-tertiary) 35%, transparent);
+}
+
 /* 工具类：使用 CSS 变量的背景和边框 */
 .bg-app-overlay {
   background-color: var(--app-bg-overlay);
@@ -157,6 +176,12 @@ body {
   color: var(--app-text-color);
 }
 
+/* 不透明菜单背景：用于避免 overlay/blur 导致的层叠“透出”问题 */
+.menu-app-opaque {
+  background-color: var(--primary-surface);
+  backdrop-filter: none;
+}
+
 .menu-item-app {
   color: var(--app-text-color);
 }
@@ -167,6 +192,12 @@ body {
 
 .menu-item-app-active {
   background-color: var(--app-bg-overlay-hover);
+}
+
+/* 浅色主题下：搜索建议条目 hover/active 背景更明显（仅作用于建议列表） */
+.light [data-suggestions-menu] .menu-item-app:hover,
+.light [data-suggestions-menu] .menu-item-app-active {
+  background-color: rgba(33, 53, 71, 0.10);
 }
 
 /* 主要操作 badge：保证在任意主色/主题下都具备可读性 */

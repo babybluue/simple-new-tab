@@ -11,6 +11,9 @@
     <p class="text-app-tertiary text-lg font-normal tracking-wide md:text-[1.05rem]">
       {{ date }}
     </p>
+    <p v-if="showLunar && lunarDate" class="text-app-tertiary mt-1 text-sm font-normal tracking-wide">
+      {{ lunarDate }}
+    </p>
   </div>
 </template>
 <script lang="ts" setup>
@@ -18,12 +21,16 @@ import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 import type { SupportedLocale } from '@/i18n'
 import { getLocaleRef } from '@/i18n'
+import { formatLunarDate, solarToLunar } from '@/utils/lunar'
+import { getSettings } from '@/utils/storage'
 
 const timeHour = ref('')
 const timeMinute = ref('')
 const timeSeconds = ref('')
 const timeSuffix = ref('')
 const date = ref('')
+const lunarDate = ref('')
+const showLunar = ref(false)
 let timer: ReturnType<typeof setInterval> | null = null
 
 const UPDATE_INTERVAL_MS = 1000
@@ -71,12 +78,39 @@ const updateTime = () => {
   const dayPeriod = getDateTimePart(parts, 'dayPeriod')
   timeSuffix.value = dayPeriod ? ` ${dayPeriod}` : ''
 
-  date.value = now.toLocaleDateString(browserLocale, {
+  // 使用 formatToParts 手动组合日期，确保格式一致
+  const dateParts = new Intl.DateTimeFormat(browserLocale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     weekday: 'long',
-  })
+  }).formatToParts(now)
+
+  const year = getDateTimePart(dateParts, 'year')
+  const month = getDateTimePart(dateParts, 'month')
+  const day = getDateTimePart(dateParts, 'day')
+  const weekday = getDateTimePart(dateParts, 'weekday')
+
+  // 对于中文（简体或繁体），统一格式为：yyyy 年 M 月 d 日 EEEE（日期和星期之间有空格）
+  // 对于其他语言，使用浏览器默认格式
+  if (currentLocale === 'zh_CN' || currentLocale === 'zh_TW') {
+    date.value = `${year}年${month}月${day}日 ${weekday}`
+  } else {
+    date.value = now.toLocaleDateString(browserLocale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+    })
+  }
+
+  // 更新农历日期
+  if (showLunar.value && (currentLocale === 'zh_CN' || currentLocale === 'zh_TW')) {
+    const lunar = solarToLunar(now.getFullYear(), now.getMonth() + 1, now.getDate())
+    lunarDate.value = formatLunarDate(lunar, currentLocale)
+  } else {
+    lunarDate.value = ''
+  }
 }
 
 // 监听语言变化，立即更新时间
@@ -84,12 +118,38 @@ watch(getLocaleRef(), () => {
   updateTime()
 })
 
+// 监听设置变化，更新农历显示状态
+const updateLunarSettings = async () => {
+  try {
+    const settings = await getSettings()
+    const currentLocale = getLocaleRef().value
+    showLunar.value = settings.showLunarCalendar && (currentLocale === 'zh_CN' || currentLocale === 'zh_TW')
+    updateTime()
+  } catch {
+    showLunar.value = false
+  }
+}
+
+// 监听存储变化
+const onStorageChanged = (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => {
+  if (areaName !== 'local') return
+  const change = changes.settings
+  if (!change?.newValue) return
+  const settings = change.newValue as { showLunarCalendar?: boolean }
+  const currentLocale = getLocaleRef().value
+  showLunar.value = (settings.showLunarCalendar ?? false) && (currentLocale === 'zh_CN' || currentLocale === 'zh_TW')
+  updateTime()
+}
+
 onMounted(async () => {
+  await updateLunarSettings()
   updateTime()
   timer = setInterval(updateTime, UPDATE_INTERVAL_MS)
+  chrome.storage.onChanged.addListener(onStorageChanged)
 })
 
 onUnmounted(() => {
   if (timer) clearInterval(timer)
+  chrome.storage.onChanged.removeListener(onStorageChanged)
 })
 </script>

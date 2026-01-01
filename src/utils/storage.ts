@@ -43,6 +43,8 @@ export interface Settings {
   /** 用户自定义 CSS 文本 */
   customCss: string
   language?: 'zh_CN' | 'zh_TW' | 'en' | 'ja' | 'ko' | 'fr' | 'de' | 'es' | 'ru'
+  /** 是否显示农历日期（仅在简中或繁中时可用） */
+  showLunarCalendar: boolean
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -65,6 +67,7 @@ export const DEFAULT_SETTINGS: Settings = {
   customCssEnabled: false,
   customCss: '',
   language: undefined, // 默认根据浏览器语言自动选择
+  showLunarCalendar: false,
 }
 
 // 常量

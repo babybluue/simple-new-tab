@@ -6,7 +6,7 @@
     :aria-label="t('search.siteSearch')"
   >
     <form
-      class="border-app bg-app-overlay relative flex items-center rounded-3xl border px-4 py-3 shadow-(--app-shadow-md) ring-2 ring-transparent backdrop-blur-xl transition-all duration-300 focus-within:border-(--app-border-color-hover) focus-within:shadow-(--app-shadow-lg) focus-within:ring-(--app-focus-ring) sm:px-5 sm:py-4"
+      class="border-app bg-app-overlay relative flex items-center rounded-3xl border px-4 py-3 shadow-(--app-shadow-md) backdrop-blur-xl transition-all duration-300 sm:px-5 sm:py-4"
       role="search"
       @submit.prevent="handleSubmit"
     >
@@ -51,7 +51,7 @@
         <div
           v-if="isEngineMenuOpen"
           data-engine-menu
-          class="border-app menu-app absolute top-8 left-0 z-500 min-w-[180px] rounded-lg border shadow-(--app-shadow-md) backdrop-blur-xl"
+          class="border-app menu-app absolute top-8 left-0 z-500 min-w-[180px] overflow-hidden rounded-lg border shadow-(--app-shadow-md) backdrop-blur-xl"
           role="listbox"
           :aria-label="t('search.selectEngine')"
         >
@@ -73,7 +73,7 @@
           ref="searchInput"
           v-model="query"
           type="text"
-          class="text-app placeholder:text-app-tertiary w-full border-none bg-transparent text-base font-normal outline-none md:text-lg"
+          class="text-app placeholder:text-app-tertiary caret-app input-focus-subtle w-full border-none bg-transparent text-base font-normal outline-none md:text-lg"
           :placeholder="t('search.placeholder')"
           autocomplete="off"
           :aria-label="t('search.searchBox')"
@@ -88,7 +88,7 @@
           v-if="isSuggestionListVisible && suggestions.length > 0"
           id="search-suggestions"
           data-suggestions-menu
-          class="border-app menu-app absolute top-full left-0 z-10000 mt-2 w-full rounded-lg border shadow-(--app-shadow-md) backdrop-blur-xl"
+          class="border-app menu-app menu-app-opaque absolute top-full left-0 z-10000 mt-2 w-full overflow-hidden rounded-lg border shadow-(--app-shadow-md)"
           role="listbox"
         >
           <ul>
@@ -258,6 +258,9 @@ const handleBlur = () => {
   // 延迟关闭，以便点击建议项
   setTimeout(() => {
     isSuggestionListVisible.value = false
+    // blur 后彻底清空建议，避免保留旧列表导致后续闪烁/误显示
+    suggestions.value = []
+    selectedSuggestionIndex.value = -1
   }, SUGGESTION_DELAY_MS)
 }
 

@@ -86,7 +86,8 @@ const isSameSettings = (a: SettingsModel | null, b: SettingsModel | null): boole
     a.iconOnlyLinkCards === b.iconOnlyLinkCards &&
     a.customCssEnabled === b.customCssEnabled &&
     a.customCss === b.customCss &&
-    normalize.language(a.language) === normalize.language(b.language)
+    normalize.language(a.language) === normalize.language(b.language) &&
+    a.showLunarCalendar === b.showLunarCalendar
   )
 }
 
