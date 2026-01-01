@@ -2,26 +2,35 @@
   <section class="mx-auto mt-12 w-full max-w-7xl" :aria-label="t('history.title')">
     <header class="mb-6 flex items-center justify-between md:mb-5">
       <h2 class="text-app text-left text-xl font-semibold tracking-tight md:text-lg">{{ t('history.title') }}</h2>
-      <button
-        v-if="history.length > 0"
-        class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
-        type="button"
-        :aria-expanded="!isCollapsed"
-        :aria-controls="'history-list'"
-        @click="toggleCollapse"
-      >
-        <span>{{ isCollapsed ? t('common.expand') : t('common.collapse') }}</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          class="h-4 w-4 transition"
-          :class="{ 'rotate-180': !isCollapsed }"
+      <div v-if="history.length > 0" class="flex items-center gap-2">
+        <button
+          class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex min-w-[80px] cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
+          type="button"
+          :aria-expanded="!isCollapsed"
+          :aria-controls="'history-list'"
+          @click="toggleCollapse"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+          <span>{{ isCollapsed ? t('common.expand') : t('common.collapse') }}</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            class="h-4 w-4 transition"
+            :class="{ 'rotate-180': !isCollapsed }"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <button
+          class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex min-w-[80px] cursor-pointer items-center justify-center rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
+          type="button"
+          @click="handleClear"
+        >
+          <span>{{ t('common.clear') }}</span>
+        </button>
+      </div>
     </header>
     <ul
       v-if="!isCollapsed && history.length > 0"
@@ -101,6 +110,7 @@ import { performSearch } from '@/utils/search'
 import { resolveSiteIcon } from '@/utils/siteIcon'
 import {
   addQuickLink,
+  clearHistory,
   getHistory,
   getSettings,
   type HistoryItem,
@@ -122,7 +132,6 @@ const faviconFallbackTried = ref<Record<string, boolean>>({})
 // 常量
 const MIN_VISIT_THRESHOLD = 2
 const DEFAULT_VISIT_COUNT = 1
-
 
 const getSiteIconProps = (item: HistoryItem): { logo?: string; favicon?: string } => {
   return resolveSiteIcon({ url: item.url, domain: item.domain, favicon: item.favicon })
@@ -173,9 +182,7 @@ const deduplicateByDomain = (items: HistoryItem[]): HistoryItem[] => {
 
 const loadHistory = async () => {
   const allHistory = await getHistory()
-  const frequentSites = allHistory.filter(
-    item => (item.visitCount ?? DEFAULT_VISIT_COUNT) >= MIN_VISIT_THRESHOLD
-  )
+  const frequentSites = allHistory.filter(item => (item.visitCount ?? DEFAULT_VISIT_COUNT) >= MIN_VISIT_THRESHOLD)
   const filtered = frequentSites.length > 0 ? frequentSites : allHistory
   const safe = filtered
     .filter(item => typeof item?.url === 'string' && item.url.trim())
@@ -217,5 +224,10 @@ const handleFaviconErrorWrapper = (item: HistoryItem, e: Event) => {
 
 const toggleCollapse = () => {
   isCollapsed.value = !isCollapsed.value
+}
+
+const handleClear = async () => {
+  await clearHistory()
+  await loadHistory()
 }
 </script>

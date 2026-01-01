@@ -7,7 +7,7 @@
           <button
             ref="presetToggleRef"
             data-quick-access-toggle
-            class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
+            class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex min-w-[80px] cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
             type="button"
             :aria-expanded="isPresetMenuOpen"
             @click.stop="togglePresetMenu"
@@ -15,7 +15,8 @@
             <span>{{ t('quickAccess.addPreset') }}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
+              class="h-4 w-4 transition"
+              :class="{ 'rotate-180': isPresetMenuOpen }"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -31,7 +32,7 @@
           />
         </div>
         <button
-          class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
+          class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex min-w-[80px] cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
           type="button"
           :aria-expanded="isFormVisible"
           @click="handleToggleForm"
