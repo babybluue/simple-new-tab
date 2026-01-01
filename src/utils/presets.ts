@@ -125,10 +125,10 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'El País', url: 'https://elpais.com', category: '资讯' },
   { title: 'El Mundo', url: 'https://www.elmundo.es', category: '资讯' },
   // 俄罗斯主流站点
-  { title: 'Yandex', url: 'https://yandex.ru', category: '资讯', default: true },
-  { title: 'VK', url: 'https://vk.com', category: '社交', default: true },
+  { title: 'Yandex', url: 'https://yandex.ru', category: '资讯' },
+  { title: 'VK', url: 'https://vk.com', category: '社交' },
   { title: 'Odnoklassniki', url: 'https://ok.ru', category: '社交' },
-  { title: 'Wildberries', url: 'https://www.wildberries.ru', category: '购物', default: true },
+  { title: 'Wildberries', url: 'https://www.wildberries.ru', category: '购物' },
   { title: 'Ozon', url: 'https://www.ozon.ru', category: '购物' },
   { title: 'Rutube', url: 'https://rutube.ru', category: '视频' },
   { title: 'Yandex Music', url: 'https://music.yandex.ru', category: '音乐' },
