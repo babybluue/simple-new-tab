@@ -1300,6 +1300,10 @@ const useLanguage = async (lang: SupportedLocale) => {
 </script>
 
 <style scoped>
+#settings-panel {
+  scrollbar-gutter: stable;
+}
+
 .settings-anchor {
   top: max(1rem, env(safe-area-inset-top));
   right: max(1rem, env(safe-area-inset-right));
