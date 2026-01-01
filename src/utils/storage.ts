@@ -230,42 +230,21 @@ export async function getSettings(): Promise<Settings> {
     merged.language = 'zh_CN'
   }
 
-  // 如果主题是 'auto'，且背景色/主色还是旧的默认值（渐变），
-  // 则根据当前系统偏好更新它们，确保与主题模式一致
-  if (merged.theme === 'auto') {
-    const oldDefaultBg = 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)'
-    const oldDefaultPrimary = '#667eea'
+  // 旧版本数据迁移：如果背景色/主色还是旧的默认值（渐变），
+  // 则根据当前系统偏好更新它们
+  const oldDefaultBg = 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)'
+  const oldDefaultPrimary = '#667eea'
 
-    // 如果背景色是旧的默认渐变值，更新为系统主题对应的背景色
-    if (merged.backgroundColor === oldDefaultBg) {
-      merged.backgroundColor = systemThemeBg
-      merged.backgroundType = 'preset'
-    }
+  // 如果背景色是旧的默认渐变值，更新为系统主题对应的背景色
+  if (merged.backgroundColor === oldDefaultBg) {
+    merged.backgroundColor = systemThemeBg
+    merged.backgroundType = 'preset'
+  }
 
-    // 如果主色是旧的默认值，更新为系统主题对应的主色
-    if (merged.primaryColor === oldDefaultPrimary) {
-      merged.primaryColor = systemThemePrimary
-      merged.primaryColorType = 'preset'
-    }
-
-    // 新默认：如果用户没有显式设置颜色（仍为主题预设），则始终跟随系统深浅色
-    if (
-      merged.backgroundType === 'preset' &&
-      (!merged.backgroundColor || merged.backgroundColor === THEME_LIGHT_BG || merged.backgroundColor === THEME_DARK_BG)
-    ) {
-      merged.backgroundColor = systemThemeBg
-    }
-
-    if (
-      merged.primaryColorType === 'preset' &&
-      (!merged.primaryColor ||
-        merged.primaryColor === THEME_LIGHT_PRIMARY ||
-        merged.primaryColor === THEME_DARK_PRIMARY ||
-        merged.primaryColor === THEME_LIGHT_BG ||
-        merged.primaryColor === THEME_DARK_BG)
-    ) {
-      merged.primaryColor = systemThemePrimary
-    }
+  // 如果主色是旧的默认值，更新为系统主题对应的主色
+  if (merged.primaryColor === oldDefaultPrimary) {
+    merged.primaryColor = systemThemePrimary
+    merged.primaryColorType = 'preset'
   }
 
   // 迁移：历史版本把“主色 preset”错误地设成了主题背景色（THEME_LIGHT_BG/THEME_DARK_BG），
