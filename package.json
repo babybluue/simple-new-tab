@@ -2,7 +2,7 @@
   "name": "Tablite",
   "description": "A clean, customizable new tab extension.",
   "private": true,
-  "version": "1.0.9",
+  "version": "1.0.10",
   "type": "module",
   "scripts": {
     "dev": "wxt",
