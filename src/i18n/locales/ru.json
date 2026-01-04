@@ -38,6 +38,8 @@
     "recentVisits": "Недавние посещения",
     "openLinksInNewTab": "Открывать ссылки в новой вкладке",
     "iconOnlyLinkCards": "Только иконки",
+    "useLocalFavicon": "Локальный фавикон",
+    "useLocalFaviconTip": "Использовать кэшированные иконки сайтов браузера вместо онлайн-сервисов",
     "customCss": "Пользовательский CSS",
     "customCssEnable": "Включить пользовательский CSS",
     "customCssPlaceholder": "/* Вставьте ваш CSS здесь */",
@@ -80,7 +82,9 @@
     "websiteName": "Название веб-сайта (необязательно)",
     "websiteUrl": "URL веб-сайта, например https://example.com",
     "customIconUrl": "URL пользовательской иконки (необязательно)",
-    "dragToReorder": "Перетащите для изменения порядка"
+    "dragToReorder": "Перетащите для изменения порядка",
+    "useLocalFavicon": "Локальная иконка",
+    "useLocalFaviconTip": "Использовать кэшированную иконку браузера вместо онлайн-сервисов"
   },
   "presetMenu": {
     "selectCommonSites": "Выбрать популярные сайты",

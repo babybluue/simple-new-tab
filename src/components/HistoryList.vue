@@ -134,7 +134,7 @@ const MIN_VISIT_THRESHOLD = 2
 const DEFAULT_VISIT_COUNT = 1
 
 const getSiteIconProps = (item: HistoryItem): { logo?: string; favicon?: string } => {
-  return resolveSiteIcon({ url: item.url, domain: item.domain, favicon: item.favicon })
+  return resolveSiteIcon({ url: item.url, domain: item.domain, favicon: item.favicon }, settings.value?.useLocalFavicon ?? false)
 }
 
 onMounted(async () => {

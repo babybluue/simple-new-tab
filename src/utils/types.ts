@@ -7,4 +7,6 @@ export interface QuickLink {
   domain?: string
   category?: string
   default?: boolean
+  /** 是否使用本地缓存的 favicon（而非在线服务） */
+  useLocalFavicon?: boolean
 }

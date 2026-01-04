@@ -1,4 +1,4 @@
-import { getSiteFavicon, getUnavatarFavicon } from './favicon'
+import { getFaviconWithSettings } from './favicon'
 import { tryGetLogoForUrl } from './logo'
 import type { QuickLink } from './types'
 import { extractDomainFromUrl } from './url'
@@ -9,8 +9,10 @@ export interface BookmarkItem extends QuickLink {
 
 /**
  * Recursively flatten bookmark tree nodes into a list of bookmark items.
+ * @param nodes 书签树节点
+ * @param useLocalFavicon 是否使用本地缓存的 favicon
  */
-function flattenBookmarks(nodes: chrome.bookmarks.BookmarkTreeNode[]): BookmarkItem[] {
+function flattenBookmarks(nodes: chrome.bookmarks.BookmarkTreeNode[], useLocalFavicon: boolean): BookmarkItem[] {
   const result: BookmarkItem[] = []
 
   for (const node of nodes) {
@@ -18,9 +20,7 @@ function flattenBookmarks(nodes: chrome.bookmarks.BookmarkTreeNode[]): BookmarkI
     if (node.url) {
       const domain = extractDomainFromUrl(node.url)
       const logo = tryGetLogoForUrl(node.url)
-      const favicon = logo
-        ? undefined
-        : getUnavatarFavicon({ domain, url: node.url }) || getSiteFavicon({ domain, url: node.url })
+      const favicon = logo ? undefined : getFaviconWithSettings({ domain, url: node.url }, useLocalFavicon)
 
       result.push({
         title: node.title || domain || node.url,
@@ -33,7 +33,7 @@ function flattenBookmarks(nodes: chrome.bookmarks.BookmarkTreeNode[]): BookmarkI
 
     // Recursively process children (folders)
     if (node.children) {
-      result.push(...flattenBookmarks(node.children))
+      result.push(...flattenBookmarks(node.children, useLocalFavicon))
     }
   }
 
@@ -43,8 +43,9 @@ function flattenBookmarks(nodes: chrome.bookmarks.BookmarkTreeNode[]): BookmarkI
 /**
  * Get all bookmarks from the user's bookmark bar and other bookmarks.
  * Filters out invalid URLs and duplicates.
+ * @param useLocalFavicon 是否使用本地缓存的 favicon
  */
-export async function getAllBookmarks(): Promise<BookmarkItem[]> {
+export async function getAllBookmarks(useLocalFavicon: boolean = false): Promise<BookmarkItem[]> {
   if (!chrome.bookmarks) {
     console.warn('Bookmarks API not available')
     return []
@@ -52,7 +53,7 @@ export async function getAllBookmarks(): Promise<BookmarkItem[]> {
 
   try {
     const tree = await chrome.bookmarks.getTree()
-    const allBookmarks = flattenBookmarks(tree)
+    const allBookmarks = flattenBookmarks(tree, useLocalFavicon)
 
     // Filter out invalid URLs and deduplicate by URL
     const seen = new Set<string>()
@@ -68,4 +69,3 @@ export async function getAllBookmarks(): Promise<BookmarkItem[]> {
     return []
   }
 }
-

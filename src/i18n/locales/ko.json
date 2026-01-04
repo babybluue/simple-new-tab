@@ -38,6 +38,8 @@
     "recentVisits": "최근 방문",
     "openLinksInNewTab": "새 탭에서 링크 열기",
     "iconOnlyLinkCards": "아이콘만",
+    "useLocalFavicon": "로컬 파비콘",
+    "useLocalFaviconTip": "온라인 서비스 대신 브라우저 캐시 사이트 아이콘 사용",
     "customCss": "사용자 지정 CSS",
     "customCssEnable": "사용자 지정 CSS 사용",
     "customCssPlaceholder": "/* 여기에 CSS를 붙여넣으세요 */",
@@ -80,7 +82,9 @@
     "websiteName": "웹사이트 이름 (선택 사항)",
     "websiteUrl": "웹사이트 URL, 예: https://example.com",
     "customIconUrl": "사용자 지정 아이콘 URL (선택 사항)",
-    "dragToReorder": "드래그하여 재정렬"
+    "dragToReorder": "드래그하여 재정렬",
+    "useLocalFavicon": "로컬 아이콘",
+    "useLocalFaviconTip": "온라인 서비스 대신 브라우저 캐시 아이콘 사용"
   },
   "presetMenu": {
     "selectCommonSites": "일반 사이트 선택",

@@ -1,7 +1,7 @@
 <template>
   <form
     v-if="visible"
-    class="border-app bg-app-overlay mb-4 grid grid-cols-1 gap-3 rounded-2xl border p-4 shadow-(--app-shadow-sm) backdrop-blur-xl md:grid-cols-[1.1fr_1.5fr_1.2fr_auto] md:items-center md:gap-3 md:p-3"
+    class="border-app bg-app-overlay mb-4 grid grid-cols-1 gap-3 rounded-2xl border p-4 shadow-(--app-shadow-sm) backdrop-blur-xl md:grid-cols-[1.1fr_1.5fr_1fr_auto_auto] md:items-center md:gap-3 md:p-3"
     :aria-label="t('quickAccess.addCustom')"
     @submit.prevent="handleSubmit"
   >
@@ -25,8 +25,20 @@
       type="text"
       class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none"
       :placeholder="t('quickAccess.customIconUrl')"
+      :disabled="formData.useLocalFavicon"
       name="icon"
     />
+    <label
+      class="text-app-secondary flex cursor-pointer items-center gap-2 whitespace-nowrap text-sm"
+      :title="t('quickAccess.useLocalFaviconTip')"
+    >
+      <input
+        v-model="formData.useLocalFavicon"
+        type="checkbox"
+        class="border-app bg-app-overlay h-4 w-4 cursor-pointer rounded border accent-current"
+      />
+      <span>{{ t('quickAccess.useLocalFavicon') }}</span>
+    </label>
     <div class="flex items-center gap-2">
       <button
         type="submit"
@@ -65,11 +77,11 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  submit: [data: { title: string; url: string; favicon?: string }]
+  submit: [data: { title: string; url: string; favicon?: string; useLocalFavicon?: boolean }]
   cancel: []
 }>()
 
-const formData = ref({ title: '', url: '', icon: '' })
+const formData = ref({ title: '', url: '', icon: '', useLocalFavicon: false })
 const isEditing = ref(false)
 
 const getPrimaryActionStyle = () => {
@@ -83,7 +95,7 @@ const getPrimaryActionStyle = () => {
 }
 
 const resetForm = () => {
-  formData.value = { title: '', url: '', icon: '' }
+  formData.value = { title: '', url: '', icon: '', useLocalFavicon: false }
   isEditing.value = false
 }
 
@@ -92,9 +104,11 @@ const handleSubmit = () => {
 
   const normalizedUrl = normalizeURL(formData.value.url.trim())
   const title = formData.value.title.trim() || getTitleFromUrl(normalizedUrl)
-  const favicon = formData.value.icon.trim() || undefined
+  // 如果使用本地 favicon，清除自定义图标 URL
+  const favicon = formData.value.useLocalFavicon ? undefined : (formData.value.icon.trim() || undefined)
+  const useLocalFavicon = formData.value.useLocalFavicon || undefined
 
-  emit('submit', { title, url: normalizedUrl, favicon })
+  emit('submit', { title, url: normalizedUrl, favicon, useLocalFavicon })
 }
 
 watch(
@@ -103,13 +117,20 @@ watch(
     if (link) {
       const item = { domain: link.domain, url: link.url }
       const shouldShowCustomIcon = !!(link.favicon && !isAutoFavicon(item, link.favicon))
-      const iconValue = link.logo ? (shouldShowCustomIcon ? link.favicon || '' : '') : link.favicon || getFavicon(item)
+      const useLocalFavicon = link.useLocalFavicon || false
+      // 如果使用本地 favicon，图标 URL 为空
+      const iconValue = useLocalFavicon
+        ? ''
+        : link.logo
+          ? (shouldShowCustomIcon ? link.favicon || '' : '')
+          : link.favicon || getFavicon(item)
       formData.value = {
         title: link.title,
         url: link.url,
-        // 有本地 logo：仅回填“用户显式填写”的自定义图标 URL（不回填自动在线 favicon）
-        // 无本地 logo：回填在线 favicon URL（符合“在线获取”的初衷，也方便用户改成自定义 URL）
+        // 有本地 logo：仅回填"用户显式填写"的自定义图标 URL（不回填自动在线 favicon）
+        // 无本地 logo：回填在线 favicon URL（符合"在线获取"的初衷，也方便用户改成自定义 URL）
         icon: iconValue,
+        useLocalFavicon,
       }
       isEditing.value = true
     } else if (props.editingLink === null) {

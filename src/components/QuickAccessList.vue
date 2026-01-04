@@ -56,6 +56,7 @@
             :open="isBookmarkMenuOpen"
             :existing-urls="existingQuickLinkUrls"
             :position="bookmarkMenuPosition"
+            :use-local-favicon="settings?.useLocalFavicon"
             @select="handleAddBookmark"
           />
         </div>
@@ -247,7 +248,10 @@ const hasDraggedOrderChange = ref(false)
 const isPersistingOrder = ref(false)
 
 const getSiteIconProps = (link: QuickLink): { logo?: string; favicon?: string } => {
-  return resolveSiteIcon({ url: link.url, domain: link.domain, logo: link.logo, favicon: link.favicon })
+  return resolveSiteIcon(
+    { url: link.url, domain: link.domain, logo: link.logo, favicon: link.favicon, useLocalFavicon: link.useLocalFavicon },
+    settings.value?.useLocalFavicon ?? false
+  )
 }
 
 const buildPresetWithMeta = (preset: QuickLink): QuickLink => {
@@ -373,7 +377,7 @@ const startEdit = (link: QuickLink) => {
   isFormVisible.value = true
 }
 
-const handleFormSubmit = async (data: { title: string; url: string; favicon?: string }) => {
+const handleFormSubmit = async (data: { title: string; url: string; favicon?: string; useLocalFavicon?: boolean }) => {
   const originalKey = editingLink.value?.url
   const originalDomain = originalKey ? extractDomainFromUrl(originalKey) : null
   const nextDomain = extractDomainFromUrl(data.url)

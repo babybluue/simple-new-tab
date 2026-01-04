@@ -45,6 +45,8 @@ export interface Settings {
   openLinksInNewTab: boolean
   /** LinkCard 仅显示图标（隐藏标题/副标题） */
   iconOnlyLinkCards: boolean
+  /** 使用浏览器缓存的本地 favicon（而非在线服务） */
+  useLocalFavicon: boolean
   /** 是否启用用户自定义 CSS */
   customCssEnabled: boolean
   /** 用户自定义 CSS 文本 */
@@ -71,6 +73,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showHistory: true,
   openLinksInNewTab: false,
   iconOnlyLinkCards: false,
+  useLocalFavicon: false,
   customCssEnabled: false,
   customCss: '',
   language: undefined, // 默认根据浏览器语言自动选择
@@ -111,17 +114,22 @@ const normalizeHistoryItem = (item: HistoryItem): HistoryItem => {
 const normalizeQuickLink = (link: QuickLink): QuickLink => {
   const domain = link.domain || extractDomainFromUrl(link.url)
 
-  // 给“用户自定义链接”补齐可用的内置 logo（仅在确实存在对应 svg 时才写入；不回退 generic）。
+  // 给"用户自定义链接"补齐可用的内置 logo（仅在确实存在对应 svg 时才写入；不回退 generic）。
   const logo = link.logo || tryGetLogoForUrl(link.url)
 
   let favicon = link.favicon
-  if (logo) {
-    // 有本地 logo：不持久化“自动生成的在线 favicon”（避免编辑回显一堆链接）。
+  // 如果使用本地 favicon，清除自动生成的 favicon URL
+  if (link.useLocalFavicon) {
+    if (favicon && isAutoFavicon({ domain, url: link.url }, favicon)) {
+      favicon = undefined
+    }
+  } else if (logo) {
+    // 有本地 logo：不持久化"自动生成的在线 favicon"（避免编辑回显一堆链接）。
     if (favicon && isAutoFavicon({ domain, url: link.url }, favicon)) {
       favicon = undefined
     }
   } else {
-    // 没有本地 logo：保持“在线获取”的初衷 —— 默认补齐 unavatar，且允许它继续持久化，
+    // 没有本地 logo：保持"在线获取"的初衷 —— 默认补齐 unavatar，且允许它继续持久化，
     // 这样编辑时也能看到/修改这个 URL。
     favicon = favicon || getUnavatarFavicon({ domain, url: link.url })
   }
@@ -130,6 +138,9 @@ const normalizeQuickLink = (link: QuickLink): QuickLink => {
   if (logo) next.logo = logo
   if (favicon) next.favicon = favicon
   else delete (next as Partial<QuickLink>).favicon
+  // 保留 useLocalFavicon 设置
+  if (link.useLocalFavicon) next.useLocalFavicon = true
+  else delete (next as Partial<QuickLink>).useLocalFavicon
   return next
 }
 
@@ -209,6 +220,9 @@ export async function getSettings(): Promise<Settings> {
   }
   if (typeof merged.iconOnlyLinkCards !== 'boolean') {
     merged.iconOnlyLinkCards = DEFAULT_SETTINGS.iconOnlyLinkCards
+  }
+  if (typeof merged.useLocalFavicon !== 'boolean') {
+    merged.useLocalFavicon = DEFAULT_SETTINGS.useLocalFavicon
   }
   if (typeof merged.customCssEnabled !== 'boolean') {
     merged.customCssEnabled = DEFAULT_SETTINGS.customCssEnabled

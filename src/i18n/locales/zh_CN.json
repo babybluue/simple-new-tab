@@ -39,6 +39,8 @@
     "recentVisits": "最近访问",
     "openLinksInNewTab": "在新标签页打开",
     "iconOnlyLinkCards": "仅显示图标",
+    "useLocalFavicon": "本地加载图标",
+    "useLocalFaviconTip": "使用浏览器缓存的网站图标，而不是从在线服务获取",
     "customCss": "自定义 CSS",
     "customCssEnable": "启用自定义 CSS",
     "customCssPlaceholder": "/* 在这里粘贴你的 CSS */",
@@ -81,7 +83,9 @@
     "websiteName": "网站名称（可选）",
     "websiteUrl": "网站链接，例如 https://example.com",
     "customIconUrl": "自定义图标 URL（可选）",
-    "dragToReorder": "拖动排序"
+    "dragToReorder": "拖动排序",
+    "useLocalFavicon": "本地图标",
+    "useLocalFaviconTip": "使用浏览器缓存的图标，而不是在线获取"
   },
   "presetMenu": {
     "selectCommonSites": "选择常用网站",

@@ -39,6 +39,8 @@
     "recentVisits": "最近造訪",
     "openLinksInNewTab": "在新分頁開啟",
     "iconOnlyLinkCards": "僅顯示圖示",
+    "useLocalFavicon": "本機載入圖示",
+    "useLocalFaviconTip": "使用瀏覽器快取的網站圖示，而非從線上服務取得",
     "customCss": "自訂 CSS",
     "customCssEnable": "啟用自訂 CSS",
     "customCssPlaceholder": "/* 在這裡貼上你的 CSS */",
@@ -81,7 +83,9 @@
     "websiteName": "網站名稱（選用）",
     "websiteUrl": "網站連結，例如 https://example.com",
     "customIconUrl": "自訂圖示 URL（選用）",
-    "dragToReorder": "拖曳排序"
+    "dragToReorder": "拖曳排序",
+    "useLocalFavicon": "本機圖示",
+    "useLocalFaviconTip": "使用瀏覽器快取的圖示，而非線上取得"
   },
   "presetMenu": {
     "selectCommonSites": "選擇常用網站",

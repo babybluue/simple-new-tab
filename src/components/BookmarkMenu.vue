@@ -97,6 +97,8 @@ const props = defineProps<{
   open: boolean
   existingUrls: string[]
   position: { top: number; left: number; maxHeight: number }
+  /** 是否使用本地缓存的 favicon */
+  useLocalFavicon?: boolean
 }>()
 
 defineEmits<{
@@ -132,7 +134,7 @@ const filteredBookmarks = computed(() => {
 const loadBookmarks = async () => {
   loading.value = true
   try {
-    bookmarks.value = await getAllBookmarks()
+    bookmarks.value = await getAllBookmarks(props.useLocalFavicon ?? false)
   } finally {
     loading.value = false
   }

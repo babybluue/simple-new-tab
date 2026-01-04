@@ -38,6 +38,8 @@
     "recentVisits": "Recent Visits",
     "openLinksInNewTab": "Open links in new tab",
     "iconOnlyLinkCards": "Icons Only",
+    "useLocalFavicon": "Local Favicon",
+    "useLocalFaviconTip": "Use browser cached site icons instead of fetching from online services",
     "customCss": "Custom CSS",
     "customCssEnable": "Enable custom CSS",
     "customCssPlaceholder": "/* Paste your CSS here */",
@@ -80,7 +82,9 @@
     "websiteName": "Website Name (Optional)",
     "websiteUrl": "Website URL, e.g. https://example.com",
     "customIconUrl": "Custom Icon URL (Optional)",
-    "dragToReorder": "Drag to reorder"
+    "dragToReorder": "Drag to reorder",
+    "useLocalFavicon": "Local Icon",
+    "useLocalFaviconTip": "Use browser cached icon instead of fetching from online services"
   },
   "presetMenu": {
     "selectCommonSites": "Select Common Sites",

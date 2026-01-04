@@ -38,6 +38,8 @@
     "recentVisits": "Visites récentes",
     "openLinksInNewTab": "Ouvrir les liens dans un nouvel onglet",
     "iconOnlyLinkCards": "Icônes uniquement",
+    "useLocalFavicon": "Favicon local",
+    "useLocalFaviconTip": "Utiliser les icônes de site en cache du navigateur au lieu des services en ligne",
     "customCss": "CSS personnalisé",
     "customCssEnable": "Activer le CSS personnalisé",
     "customCssPlaceholder": "/* Collez votre CSS ici */",
@@ -80,7 +82,9 @@
     "websiteName": "Nom du site web (optionnel)",
     "websiteUrl": "URL du site web, ex. https://example.com",
     "customIconUrl": "URL d'icône personnalisée (optionnel)",
-    "dragToReorder": "Glisser pour réorganiser"
+    "dragToReorder": "Glisser pour réorganiser",
+    "useLocalFavicon": "Icône locale",
+    "useLocalFaviconTip": "Utiliser l'icône en cache du navigateur au lieu des services en ligne"
   },
   "presetMenu": {
     "selectCommonSites": "Sélectionner des sites courants",
