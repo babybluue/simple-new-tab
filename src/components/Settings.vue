@@ -532,27 +532,6 @@
                   />
                 </button>
               </label>
-              <label
-                class="border-app bg-app-overlay text-app-secondary bg-app-overlay-hover flex cursor-pointer items-center justify-between rounded-xl border p-3 text-sm shadow-(--app-shadow-xs) backdrop-blur-sm transition"
-                :title="tFn('settings.useLocalFaviconTip')"
-              >
-                <span>{{ tFn('settings.useLocalFavicon') }}</span>
-                <button
-                  type="button"
-                  role="switch"
-                  :aria-checked="settings.useLocalFavicon"
-                  class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
-                  :style="getSwitchTrackStyle(settings.useLocalFavicon)"
-                  :disabled="applying"
-                  @click="toggleVisibility('useLocalFavicon')"
-                >
-                  <span
-                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
-                    style="background-color: var(--app-text-color)"
-                    :class="settings.useLocalFavicon ? 'translate-x-5' : 'translate-x-0'"
-                  />
-                </button>
-              </label>
             </div>
           </Transition>
         </div>
@@ -1236,7 +1215,6 @@ const toggleVisibility = async (
     | 'showHistory'
     | 'openLinksInNewTab'
     | 'iconOnlyLinkCards'
-    | 'useLocalFavicon'
     | 'showLunarCalendar'
 ) => {
   await persistAndApply({ [key]: !settings.value[key] })

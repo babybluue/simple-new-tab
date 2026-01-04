@@ -4,7 +4,7 @@ export interface FaviconItem {
   domain?: string
   url: string
   favicon?: string
-  /** 是否使用本地缓存的 favicon（优先于全局设置） */
+  /** 是否使用本地缓存的 favicon（单个链接设置） */
   useLocalFavicon?: boolean
 }
 
@@ -116,7 +116,7 @@ export function getFavicon(item: FaviconItem): string {
 /**
  * 根据设置获取 favicon URL
  * @param item Favicon 项
- * @param globalUseLocalFavicon 全局设置是否使用本地 favicon
+ * @param globalUseLocalFavicon 是否使用本地 favicon（已废弃，保留用于向后兼容）
  * @returns favicon URL
  */
 export function getFaviconWithSettings(item: FaviconItem, globalUseLocalFavicon: boolean = false): string | undefined {
@@ -125,7 +125,7 @@ export function getFaviconWithSettings(item: FaviconItem, globalUseLocalFavicon:
     return item.favicon
   }
 
-  // 检查是否应该使用本地 favicon（单个链接设置优先于全局设置）
+  // 检查是否应该使用本地 favicon（优先使用单个链接的设置）
   const shouldUseLocal = item.useLocalFavicon ?? globalUseLocalFavicon
 
   if (shouldUseLocal || isLocalAddress(item)) {

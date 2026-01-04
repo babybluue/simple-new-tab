@@ -56,7 +56,6 @@
             :open="isBookmarkMenuOpen"
             :existing-urls="existingQuickLinkUrls"
             :position="bookmarkMenuPosition"
-            :use-local-favicon="settings?.useLocalFavicon"
             @select="handleAddBookmark"
           />
         </div>
@@ -250,7 +249,7 @@ const isPersistingOrder = ref(false)
 const getSiteIconProps = (link: QuickLink): { logo?: string; favicon?: string } => {
   return resolveSiteIcon(
     { url: link.url, domain: link.domain, logo: link.logo, favicon: link.favicon, useLocalFavicon: link.useLocalFavicon },
-    settings.value?.useLocalFavicon ?? false
+    false
   )
 }
 

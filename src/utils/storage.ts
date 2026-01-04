@@ -45,8 +45,6 @@ export interface Settings {
   openLinksInNewTab: boolean
   /** LinkCard 仅显示图标（隐藏标题/副标题） */
   iconOnlyLinkCards: boolean
-  /** 使用浏览器缓存的本地 favicon（而非在线服务） */
-  useLocalFavicon: boolean
   /** 是否启用用户自定义 CSS */
   customCssEnabled: boolean
   /** 用户自定义 CSS 文本 */
@@ -73,7 +71,6 @@ export const DEFAULT_SETTINGS: Settings = {
   showHistory: true,
   openLinksInNewTab: false,
   iconOnlyLinkCards: false,
-  useLocalFavicon: false,
   customCssEnabled: false,
   customCss: '',
   language: undefined, // 默认根据浏览器语言自动选择
@@ -220,9 +217,6 @@ export async function getSettings(): Promise<Settings> {
   }
   if (typeof merged.iconOnlyLinkCards !== 'boolean') {
     merged.iconOnlyLinkCards = DEFAULT_SETTINGS.iconOnlyLinkCards
-  }
-  if (typeof merged.useLocalFavicon !== 'boolean') {
-    merged.useLocalFavicon = DEFAULT_SETTINGS.useLocalFavicon
   }
   if (typeof merged.customCssEnabled !== 'boolean') {
     merged.customCssEnabled = DEFAULT_SETTINGS.customCssEnabled

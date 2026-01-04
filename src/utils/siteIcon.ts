@@ -21,7 +21,7 @@ export interface SiteIconInput {
  * - 即使返回了 favicon，只要 logo 存在，`LinkCard` 初始也会先渲染 logo，不会触发 favicon 网络请求；
  *   只有当 logo 加载失败时，`LinkCard` 才会回退到 favicon。
  * @param input 站点图标输入
- * @param globalUseLocalFavicon 全局设置是否使用本地 favicon
+ * @param globalUseLocalFavicon 是否使用本地 favicon（已废弃，保留用于向后兼容）
  */
 export function resolveSiteIcon(
   input: SiteIconInput,
