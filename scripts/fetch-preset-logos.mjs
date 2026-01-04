@@ -69,19 +69,36 @@ async function main() {
 
   const presetsText = await fs.readFile(PRESETS_FILE, 'utf8')
   const urls = Array.from(presetsText.matchAll(/url:\s*'([^']+)'/g)).map(m => m[1])
-  // 额外包含搜索引擎域名，确保它们也有本地化 logo
-  const extraUrls = [
-    'https://www.google.com',
-    'https://www.bing.com',
-    'https://www.baidu.com',
-    'https://duckduckgo.com',
-  ]
-  const hosts = Array.from(new Set([...urls, ...extraUrls].map(hostFromUrl).filter(Boolean)))
+  const hosts = Array.from(new Set(urls.map(hostFromUrl).filter(Boolean)))
+
+  // 检查本地已有的文件
+  const existingFiles = await fs.readdir(OUT_DIR)
+  const existingKeys = new Set(existingFiles.filter(f => f.endsWith('.svg')).map(f => f.replace('.svg', '')))
+
+  // 过滤出缺失的 hosts
+  const missingHosts = hosts.filter(host => {
+    const key = hostKey(host)
+    return !existingKeys.has(key)
+  })
+
+  if (missingHosts.length === 0) {
+    // eslint-disable-next-line no-console
+    console.log('所有预设站点的 logo 都已存在，无需生成。')
+    return
+  }
+
+  // eslint-disable-next-line no-console
+  console.log(`发现 ${missingHosts.length} 个缺失的 logo，开始生成...\n`)
 
   // 读取 Simple Icons 数据（slug -> hex/title）
-  const simpleIcons = await fetchJson(SIMPLE_ICONS_DATA)
+  const simpleIconsData = await fetchJson(SIMPLE_ICONS_DATA)
+  // 处理 Simple Icons 数据格式：可能是数组或 { icons: [...] }
+  const iconsArray = Array.isArray(simpleIconsData) 
+    ? simpleIconsData 
+    : (simpleIconsData?.icons || [])
+  
   const simpleBySlug = new Map()
-  for (const item of Array.isArray(simpleIcons) ? simpleIcons : []) {
+  for (const item of iconsArray) {
     if (item?.slug) simpleBySlug.set(item.slug, item)
   }
 
@@ -99,9 +116,53 @@ async function main() {
     'www.csdn.net': 'csdn',
     'www.v2ex.com': 'v2ex',
     'www.oschina.net': 'opensourceinitiative',
+    // 日本站点
+    'www.rakuten.co.jp': 'rakuten',
+    'www.mercari.com': 'mercari',
+    'www.yahoo.co.jp': 'yahoo',
+    'line.me': 'line',
+    'www.nicovideo.jp': 'niconico',
+    'abema.tv': 'abema',
+    'www.nhk.or.jp': 'nhk',
+    'qiita.com': 'qiita',
+    'zenn.dev': 'zenn',
+    // 韩国站点
+    'www.naver.com': 'naver',
+    'www.daum.net': 'daum',
+    'www.coupang.com': 'coupang',
+    'www.gmarket.co.kr': 'gmarket',
+    'www.kakaocorp.com': 'kakao',
+    'www.melon.com': 'melon',
+    'www.genie.co.kr': 'genie',
+    'velog.io': 'velog',
+    // 法国站点
+    'www.amazon.fr': 'amazon',
+    'www.cdiscount.com': 'cdiscount',
+    'www.fnac.com': 'fnac',
+    'www.lemonde.fr': 'lemonde',
+    'www.lefigaro.fr': 'lefigaro',
+    'www.deezer.com': 'deezer',
+    // 德国站点
+    'www.amazon.de': 'amazon',
+    'www.otto.de': 'otto',
+    'www.spiegel.de': 'spiegel',
+    'www.bild.de': 'bild',
+    // 西班牙站点
+    'www.amazon.es': 'amazon',
+    'www.elcorteingles.es': 'elcorteingles',
+    'elpais.com': 'elpais',
+    'www.elmundo.es': 'elmundo',
+    // 俄罗斯站点
+    'yandex.ru': 'yandex',
+    'vk.com': 'vk',
+    'ok.ru': 'odnoklassniki',
+    'www.wildberries.ru': 'wildberries',
+    'www.ozon.ru': 'ozon',
+    'rutube.ru': 'rutube',
+    'music.yandex.ru': 'yandex',
   }
 
-  for (const host of hosts) {
+  for (const host of missingHosts) {
     const key = hostKey(host)
     const outFile = path.join(OUT_DIR, `${key}.svg`)
 
