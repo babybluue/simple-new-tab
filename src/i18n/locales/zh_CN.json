@@ -74,6 +74,7 @@
   "quickAccess": {
     "title": "快速访问",
     "addPreset": "添加预设",
+    "addFromBookmark": "从书签添加",
     "addCustom": "添加表单",
     "collapseForm": "收起表单",
     "emptyMessage": "暂无快速访问站点，点击上方按钮添加一个吧～",
@@ -91,6 +92,17 @@
     "add": "添加",
     "noMatches": "未找到匹配的站点",
     "allSitesAdded": "常用网站已全部添加"
+  },
+  "bookmarkMenu": {
+    "selectFromBookmarks": "从书签中选择",
+    "clickToAdd": "点击即可添加",
+    "allAdded": "已全部添加",
+    "searchOrFilter": "搜索或输入关键词筛选",
+    "added": "已添加",
+    "add": "添加",
+    "noMatches": "未找到匹配的书签",
+    "noBookmarks": "暂无书签",
+    "allBookmarksAdded": "所有书签已全部添加"
   },
   "history": {
     "title": "最近访问",

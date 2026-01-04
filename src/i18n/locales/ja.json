@@ -73,6 +73,7 @@
   "quickAccess": {
     "title": "クイックアクセス",
     "addPreset": "プリセットを追加",
+    "addFromBookmark": "ブックマークから追加",
     "addCustom": "カスタムを追加",
     "collapseForm": "フォームを折りたたむ",
     "emptyMessage": "クイックアクセスサイトがまだありません。上のボタンをクリックして追加してください！",
@@ -90,6 +91,17 @@
     "add": "追加",
     "noMatches": "一致するサイトが見つかりません",
     "allSitesAdded": "一般的なサイトがすべて追加されました"
+  },
+  "bookmarkMenu": {
+    "selectFromBookmarks": "ブックマークから選択",
+    "clickToAdd": "クリックして追加",
+    "allAdded": "すべて追加済み",
+    "searchOrFilter": "検索またはキーワードでフィルタ",
+    "added": "追加済み",
+    "add": "追加",
+    "noMatches": "一致するブックマークが見つかりません",
+    "noBookmarks": "ブックマークがありません",
+    "allBookmarksAdded": "すべてのブックマークが追加されました"
   },
   "history": {
     "title": "最近の訪問",

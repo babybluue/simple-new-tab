@@ -74,6 +74,7 @@
   "quickAccess": {
     "title": "快速存取",
     "addPreset": "新增預設",
+    "addFromBookmark": "從書籤新增",
     "addCustom": "新增表單",
     "collapseForm": "收合表單",
     "emptyMessage": "尚無快速存取網站，點選上方按鈕新增一個吧～",
@@ -91,6 +92,17 @@
     "add": "新增",
     "noMatches": "找不到符合的網站",
     "allSitesAdded": "常用網站已全部新增"
+  },
+  "bookmarkMenu": {
+    "selectFromBookmarks": "從書籤中選擇",
+    "clickToAdd": "點選即可新增",
+    "allAdded": "已全部新增",
+    "searchOrFilter": "搜尋或輸入關鍵字篩選",
+    "added": "已新增",
+    "add": "新增",
+    "noMatches": "找不到符合的書籤",
+    "noBookmarks": "尚無書籤",
+    "allBookmarksAdded": "所有書籤已全部新增"
   },
   "history": {
     "title": "最近造訪",

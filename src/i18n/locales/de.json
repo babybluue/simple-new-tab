@@ -73,6 +73,7 @@
   "quickAccess": {
     "title": "Schnellzugriff",
     "addPreset": "Voreinstellung hinzufügen",
+    "addFromBookmark": "Aus Lesezeichen hinzufügen",
     "addCustom": "Benutzerdefiniert hinzufügen",
     "collapseForm": "Formular einklappen",
     "emptyMessage": "Noch keine Schnellzugriffs-Websites. Klicken Sie auf die Schaltfläche oben, um eine hinzuzufügen!",
@@ -90,6 +91,17 @@
     "add": "Hinzufügen",
     "noMatches": "Keine passenden Websites gefunden",
     "allSitesAdded": "Alle häufigen Websites wurden hinzugefügt"
+  },
+  "bookmarkMenu": {
+    "selectFromBookmarks": "Aus Lesezeichen auswählen",
+    "clickToAdd": "Zum Hinzufügen klicken",
+    "allAdded": "Alle hinzugefügt",
+    "searchOrFilter": "Suchen oder nach Stichwort filtern",
+    "added": "Hinzugefügt",
+    "add": "Hinzufügen",
+    "noMatches": "Keine passenden Lesezeichen gefunden",
+    "noBookmarks": "Keine Lesezeichen gefunden",
+    "allBookmarksAdded": "Alle Lesezeichen wurden hinzugefügt"
   },
   "history": {
     "title": "Letzte Besuche",

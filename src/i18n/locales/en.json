@@ -73,6 +73,7 @@
   "quickAccess": {
     "title": "Quick Access",
     "addPreset": "Add Preset",
+    "addFromBookmark": "Add from Bookmarks",
     "addCustom": "Add Custom",
     "collapseForm": "Collapse Form",
     "emptyMessage": "No quick access sites yet. Click the button above to add one!",
@@ -90,6 +91,17 @@
     "add": "Add",
     "noMatches": "No matching sites found",
     "allSitesAdded": "All common sites have been added"
+  },
+  "bookmarkMenu": {
+    "selectFromBookmarks": "Select from Bookmarks",
+    "clickToAdd": "Click to Add",
+    "allAdded": "All Added",
+    "searchOrFilter": "Search or filter by keyword",
+    "added": "Added",
+    "add": "Add",
+    "noMatches": "No matching bookmarks found",
+    "noBookmarks": "No bookmarks found",
+    "allBookmarksAdded": "All bookmarks have been added"
   },
   "history": {
     "title": "Recent Visits",

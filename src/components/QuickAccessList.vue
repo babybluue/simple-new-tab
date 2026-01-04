@@ -31,6 +31,34 @@
             @select="handleAddPreset"
           />
         </div>
+        <div class="relative">
+          <button
+            ref="bookmarkToggleRef"
+            data-quick-access-bookmark-toggle
+            class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex min-w-[80px] cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
+            type="button"
+            :aria-expanded="isBookmarkMenuOpen"
+            @click.stop="toggleBookmarkMenu"
+          >
+            <span>{{ t('quickAccess.addFromBookmark') }}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 transition"
+              :class="{ 'rotate-180': isBookmarkMenuOpen }"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <BookmarkMenu
+            :open="isBookmarkMenuOpen"
+            :existing-urls="existingQuickLinkUrls"
+            :position="bookmarkMenuPosition"
+            @select="handleAddBookmark"
+          />
+        </div>
         <button
           class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex min-w-[80px] cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-1.5 text-sm transition md:text-xs"
           type="button"
@@ -192,9 +220,12 @@ import { getCardStyle } from '@/utils/theme'
 import type { QuickLink } from '@/utils/types'
 import { extractDomainFromUrl } from '@/utils/url'
 
+import BookmarkMenu from './BookmarkMenu.vue'
 import LinkCard from './LinkCard.vue'
 import PresetMenu, { type PresetOption } from './PresetMenu.vue'
 import QuickLinkForm from './QuickLinkForm.vue'
+
+import type { BookmarkItem } from '@/utils/bookmarks'
 
 const { t } = useI18n()
 
@@ -202,10 +233,13 @@ const quickLinks = ref<QuickLink[]>([])
 const settings = ref<Settings | null>(null)
 const isFormVisible = ref(false)
 const isPresetMenuOpen = ref(false)
+const isBookmarkMenuOpen = ref(false)
 const editingLink = ref<QuickLink | null>(null)
 const faviconFallbackTried = ref<Record<string, boolean>>({})
 const presetToggleRef = ref<HTMLElement | null>(null)
+const bookmarkToggleRef = ref<HTMLElement | null>(null)
 const menuPosition = ref<{ top: number; left: number; maxHeight: number }>({ top: 0, left: 0, maxHeight: 420 })
+const bookmarkMenuPosition = ref<{ top: number; left: number; maxHeight: number }>({ top: 0, left: 0, maxHeight: 420 })
 
 const draggingKey = ref<string | null>(null)
 const dragOverKey = ref<string | null>(null)
@@ -237,9 +271,10 @@ const presetOptions = computed<PresetOption[]>(() => {
 
 const cardStyle = computed(() => getCardStyle())
 
-const updateMenuPosition = () => {
-  const el = presetToggleRef.value
-  if (!el) return
+const existingQuickLinkUrls = computed(() => quickLinks.value.map(link => link.url))
+
+const calculateMenuPosition = (el: HTMLElement | null) => {
+  if (!el) return { top: 0, left: 0, maxHeight: 420 }
   const rect = el.getBoundingClientRect()
   const menuWidth = 288 // w-72
   const margin = 12
@@ -249,7 +284,15 @@ const updateMenuPosition = () => {
   const top = Math.min(rect.bottom + gap, window.innerHeight - margin)
   const available = Math.max(window.innerHeight - top - margin, 200)
   const maxHeight = Math.min(window.innerHeight * 0.7, available)
-  menuPosition.value = { top, left, maxHeight }
+  return { top, left, maxHeight }
+}
+
+const updateMenuPosition = () => {
+  menuPosition.value = calculateMenuPosition(presetToggleRef.value)
+}
+
+const updateBookmarkMenuPosition = () => {
+  bookmarkMenuPosition.value = calculateMenuPosition(bookmarkToggleRef.value)
 }
 
 onMounted(async () => {
@@ -258,14 +301,19 @@ onMounted(async () => {
 
   chrome.storage.onChanged.addListener(handleStorageChange)
   document.addEventListener('click', handleOutsideClick)
-  window.addEventListener('resize', updateMenuPosition)
+  window.addEventListener('resize', handleResize)
 })
 
 onUnmounted(() => {
   chrome.storage.onChanged.removeListener(handleStorageChange)
   document.removeEventListener('click', handleOutsideClick)
-  window.removeEventListener('resize', updateMenuPosition)
+  window.removeEventListener('resize', handleResize)
 })
+
+const handleResize = () => {
+  updateMenuPosition()
+  updateBookmarkMenuPosition()
+}
 
 const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
   if (changes.quickLinks) {
@@ -280,10 +328,19 @@ const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageCha
 
 const handleOutsideClick = (e: MouseEvent) => {
   const target = e.target as HTMLElement
-  const menu = target.closest('[data-quick-access-preset]')
-  const toggle = target.closest('[data-quick-access-toggle]')
-  if (!menu && !toggle && isPresetMenuOpen.value) {
+
+  // Handle preset menu
+  const presetMenu = target.closest('[data-quick-access-preset]')
+  const presetToggle = target.closest('[data-quick-access-toggle]')
+  if (!presetMenu && !presetToggle && isPresetMenuOpen.value) {
     isPresetMenuOpen.value = false
+  }
+
+  // Handle bookmark menu
+  const bookmarkMenu = target.closest('[data-quick-access-bookmark]')
+  const bookmarkToggle = target.closest('[data-quick-access-bookmark-toggle]')
+  if (!bookmarkMenu && !bookmarkToggle && isBookmarkMenuOpen.value) {
+    isBookmarkMenuOpen.value = false
   }
 }
 
@@ -332,9 +389,27 @@ const handleFormSubmit = async (data: { title: string; url: string; favicon?: st
 const togglePresetMenu = async () => {
   isPresetMenuOpen.value = !isPresetMenuOpen.value
   if (isPresetMenuOpen.value) {
+    isBookmarkMenuOpen.value = false // Close bookmark menu when opening preset menu
     await nextTick()
     updateMenuPosition()
   }
+}
+
+const toggleBookmarkMenu = async () => {
+  isBookmarkMenuOpen.value = !isBookmarkMenuOpen.value
+  if (isBookmarkMenuOpen.value) {
+    isPresetMenuOpen.value = false // Close preset menu when opening bookmark menu
+    await nextTick()
+    updateBookmarkMenuPosition()
+  }
+}
+
+const handleAddBookmark = async (bookmark: BookmarkItem) => {
+  if (bookmark.added) {
+    isBookmarkMenuOpen.value = false
+    return
+  }
+  quickLinks.value = await addQuickLink(bookmark)
 }
 
 const handleToggleForm = () => {

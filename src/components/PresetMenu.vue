@@ -40,8 +40,8 @@
           />
           <div class="min-w-0 flex-1 text-left">
             <div class="flex items-center gap-2">
-              <span class="truncate">{{ getLocalizedSiteTitle(preset.url, getLocale(), preset.title) }}</span>
-              <span v-if="preset.added" class="text-app-tertiary text-[11px]">{{ t('presetMenu.added') }}</span>
+              <span class="min-w-0 truncate">{{ getLocalizedSiteTitle(preset.url, getLocale(), preset.title) }}</span>
+              <span v-if="preset.added" class="text-app-tertiary shrink-0 whitespace-nowrap text-[11px]">{{ t('presetMenu.added') }}</span>
             </div>
             <p class="text-app-tertiary truncate text-[11px]">{{ preset.domain }}</p>
           </div>

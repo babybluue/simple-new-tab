@@ -73,6 +73,7 @@
   "quickAccess": {
     "title": "Acceso rápido",
     "addPreset": "Añadir preestablecido",
+    "addFromBookmark": "Añadir desde marcadores",
     "addCustom": "Añadir personalizado",
     "collapseForm": "Contraer formulario",
     "emptyMessage": "Aún no hay sitios de acceso rápido. ¡Haga clic en el botón de arriba para añadir uno!",
@@ -90,6 +91,17 @@
     "add": "Añadir",
     "noMatches": "No se encontraron sitios coincidentes",
     "allSitesAdded": "Todos los sitios comunes han sido añadidos"
+  },
+  "bookmarkMenu": {
+    "selectFromBookmarks": "Seleccionar desde marcadores",
+    "clickToAdd": "Clic para añadir",
+    "allAdded": "Todos añadidos",
+    "searchOrFilter": "Buscar o filtrar por palabra clave",
+    "added": "Añadido",
+    "add": "Añadir",
+    "noMatches": "No se encontraron marcadores coincidentes",
+    "noBookmarks": "No se encontraron marcadores",
+    "allBookmarksAdded": "Todos los marcadores han sido añadidos"
   },
   "history": {
     "title": "Visitas recientes",
