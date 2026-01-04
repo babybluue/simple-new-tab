@@ -29,7 +29,7 @@
       name="icon"
     />
     <label
-      class="text-app-secondary flex cursor-pointer items-center gap-2 whitespace-nowrap text-sm"
+      class="text-app-secondary flex cursor-pointer items-center gap-2 text-sm whitespace-nowrap"
       :title="t('quickAccess.useLocalFaviconTip')"
     >
       <input
@@ -105,7 +105,7 @@ const handleSubmit = () => {
   const normalizedUrl = normalizeURL(formData.value.url.trim())
   const title = formData.value.title.trim() || getTitleFromUrl(normalizedUrl)
   // 如果使用本地 favicon，清除自定义图标 URL
-  const favicon = formData.value.useLocalFavicon ? undefined : (formData.value.icon.trim() || undefined)
+  const favicon = formData.value.useLocalFavicon ? undefined : formData.value.icon.trim() || undefined
   const useLocalFavicon = formData.value.useLocalFavicon || undefined
 
   emit('submit', { title, url: normalizedUrl, favicon, useLocalFavicon })
@@ -117,13 +117,14 @@ watch(
     if (link) {
       const item = { domain: link.domain, url: link.url }
       const shouldShowCustomIcon = !!(link.favicon && !isAutoFavicon(item, link.favicon))
-      const useLocalFavicon = link.useLocalFavicon || false
-      // 如果使用本地 favicon，图标 URL 为空
+      // 如果有本地 logo 或者明确设置了 useLocalFavicon，都视为使用本地图标
+      const useLocalFavicon = link.useLocalFavicon || !!link.logo
+      // 如果使用本地图标，图标 URL 为空（除非用户有自定义图标）
       const iconValue = useLocalFavicon
-        ? ''
-        : link.logo
-          ? (shouldShowCustomIcon ? link.favicon || '' : '')
-          : link.favicon || getFavicon(item)
+        ? shouldShowCustomIcon
+          ? link.favicon || ''
+          : ''
+        : link.favicon || getFavicon(item)
       formData.value = {
         title: link.title,
         url: link.url,
