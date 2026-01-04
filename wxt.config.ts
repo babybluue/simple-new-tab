@@ -46,7 +46,7 @@ export default defineConfig({
     chrome_url_overrides: {
       newtab: 'newtab.html',
     },
-    permissions: ['storage', 'tabs', 'bookmarks'],
+    permissions: ['storage', 'tabs', 'bookmarks', 'favicon'],
     host_permissions: [
       'https://www.google.com/*',
       'https://api.bing.com/*',
