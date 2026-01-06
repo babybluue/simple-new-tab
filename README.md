@@ -1,10 +1,14 @@
-# Simple New Tab / 简洁新标签页
+# Tablite - 新标签页
 
 一个简洁美观、可自定义的新标签页浏览器插件（WXT + Vue 3）。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub Issues](https://img.shields.io/github/issues/babybluue/simple-new-tab)](https://github.com/babybluue/simple-new-tab/issues)
 [![GitHub Stars](https://img.shields.io/github/stars/babybluue/simple-new-tab)](https://github.com/babybluue/simple-new-tab/stargazers)
+
+## Chrome 应用商店
+
+[Tablite 新标签页 - Chrome 应用商店](https://chromewebstore.google.com/detail/tablite/kfknfnjmiikidgkcjeabhkmmecijehhe)
 
 ## 开发
 
