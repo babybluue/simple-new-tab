@@ -1,8 +1,24 @@
 {
   "name": "Tablite",
   "description": "A clean, customizable new tab extension.",
-  "private": true,
   "version": "1.0.10",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/babybluue/simple-new-tab.git"
+  },
+  "homepage": "https://github.com/babybluue/simple-new-tab#readme",
+  "bugs": {
+    "url": "https://github.com/babybluue/simple-new-tab/issues"
+  },
+  "keywords": [
+    "chrome-extension",
+    "firefox-addon",
+    "new-tab",
+    "browser-extension",
+    "vue",
+    "wxt"
+  ],
   "type": "module",
   "scripts": {
     "dev": "wxt",

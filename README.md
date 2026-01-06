@@ -2,11 +2,42 @@
 
 一个简洁美观、可自定义的新标签页浏览器插件（WXT + Vue 3）。
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Issues](https://img.shields.io/github/issues/babybluue/simple-new-tab)](https://github.com/babybluue/simple-new-tab/issues)
+[![GitHub Stars](https://img.shields.io/github/stars/babybluue/simple-new-tab)](https://github.com/babybluue/simple-new-tab/stargazers)
+
 ## 开发
 
 ```bash
 pnpm install
 pnpm dev
+```
+
+## 代码规范 / Code Style
+
+- 使用 ESLint 和 Prettier 保持代码风格一致
+  Use ESLint and Prettier to maintain consistent code style
+- 遵循 Vue 3 Composition API 最佳实践
+  Follow Vue 3 Composition API best practices
+- 使用 TypeScript 类型注解
+  Use TypeScript type annotations
+- 保持代码简洁、可读
+  Keep code simple and readable
+
+## 项目结构 / Project Structure
+
+```
+simple-new-tab/
+├── src/                    # 源代码
+│   ├── components/         # Vue 组件
+│   ├── entrypoints/        # 扩展入口点
+│   ├── i18n/              # 国际化
+│   └── utils/             # 工具函数
+├── public/                # 静态资源
+│   ├── _locales/          # 本地化文件
+│   └── icon/              # 图标
+├── scripts/               # 构建脚本
+└── docs/                  # 文档
 ```
 
 ## 构建与打包
@@ -52,3 +83,14 @@ git push origin main --tags
 
 > 说明：浏览器扩展的 `manifest.version` 必须是纯数字点分段（不允许 `-beta`）。  
 > 本项目会把 `1.2.3-beta.1` 自动转换为 `1.2.3` 写入 `version`，同时把完整 semver 写入 `version_name`。
+
+## 贡献
+
+欢迎贡献代码、报告问题或提出建议！
+
+- 🐛 [提交 Issue](https://github.com/babybluue/simple-new-tab/issues) - 报告 bug 或提出功能建议
+- 💡 [提交 Pull Request](https://github.com/babybluue/simple-new-tab/pulls) - 贡献代码改进
+
+## 许可证
+
+本项目采用 [MIT 许可证](LICENSE) 开源。
