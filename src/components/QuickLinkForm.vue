@@ -42,8 +42,7 @@
     <div class="flex items-center gap-2">
       <button
         type="submit"
-        class="border-app h-10 cursor-pointer rounded-xl border px-4 text-sm font-semibold shadow-(--app-shadow-xs) transition hover:opacity-90 focus:ring-(--app-focus-ring) focus:outline-none active:opacity-85 disabled:cursor-not-allowed disabled:opacity-60 md:h-9"
-        :style="getPrimaryActionStyle()"
+        class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
         :disabled="!formData.url.trim()"
       >
         {{ isEditing ? t('common.save') : t('common.add') }}
@@ -51,7 +50,7 @@
       <button
         v-if="isEditing"
         type="button"
-        class="border-app text-app-secondary hover:text-app bg-app-overlay-hover h-10 cursor-pointer rounded-xl border bg-transparent px-4 text-sm font-medium transition md:h-9"
+        class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
         @click="$emit('cancel')"
       >
         {{ t('common.cancel') }}
@@ -83,16 +82,6 @@ const emit = defineEmits<{
 
 const formData = ref({ title: '', url: '', icon: '', useLocalFavicon: false })
 const isEditing = ref(false)
-
-const getPrimaryActionStyle = () => {
-  // 与 Settings.vue 的 switch 的“开关强调点”(thumb) 一致：使用 --app-text-color
-  // 文字用 --app-bg-overlay 做反色，保证 dark/light 都清晰可读
-  return {
-    backgroundColor: 'var(--app-text-color)',
-    color: 'var(--app-bg-overlay)',
-    borderColor: 'color-mix(in srgb, var(--app-text-color) 55%, var(--app-border-color-hover))',
-  } as const
-}
 
 const resetForm = () => {
   formData.value = { title: '', url: '', icon: '', useLocalFavicon: false }

@@ -204,6 +204,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 
 import { getLocale } from '@/i18n'
 import { useI18n } from '@/i18n/composable'
+import type { BookmarkItem } from '@/utils/bookmarks'
 import { type FaviconItem, getSiteFavicon, getUnavatarFavicon, handleFaviconError } from '@/utils/favicon'
 import { getLocalizedSiteTitle, PRESET_QUICK_LINKS } from '@/utils/presets'
 import { performSearch } from '@/utils/search'
@@ -224,8 +225,6 @@ import BookmarkMenu from './BookmarkMenu.vue'
 import LinkCard from './LinkCard.vue'
 import PresetMenu, { type PresetOption } from './PresetMenu.vue'
 import QuickLinkForm from './QuickLinkForm.vue'
-
-import type { BookmarkItem } from '@/utils/bookmarks'
 
 const { t } = useI18n()
 
@@ -248,7 +247,13 @@ const isPersistingOrder = ref(false)
 
 const getSiteIconProps = (link: QuickLink): { logo?: string; favicon?: string } => {
   return resolveSiteIcon(
-    { url: link.url, domain: link.domain, logo: link.logo, favicon: link.favicon, useLocalFavicon: link.useLocalFavicon },
+    {
+      url: link.url,
+      domain: link.domain,
+      logo: link.logo,
+      favicon: link.favicon,
+      useLocalFavicon: link.useLocalFavicon,
+    },
     false
   )
 }
