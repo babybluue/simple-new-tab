@@ -189,7 +189,7 @@
               </div>
 
               <div
-                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between gap-3 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between gap-3 rounded-xl border px-3 py-4 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
               >
                 <span>{{ tFn('settings.backgroundOpacity') }}</span>
                 <div class="flex items-center gap-2">
@@ -209,11 +209,11 @@
               </div>
 
               <div
-                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border px-3 py-2 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
               >
                 <span>{{ tFn('settings.refreshBingWallpaper') }}</span>
                 <button
-                  class="border-app text-app bg-app-overlay bg-app-overlay-hover flex min-w-18 cursor-pointer items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+                  class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
                   type="button"
                   :disabled="bingLoading || applying"
                   @click="refreshBing"
@@ -223,11 +223,11 @@
               </div>
 
               <div
-                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border px-3 py-2 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
               >
                 <span>{{ tFn('settings.uploadImage') }}</span>
                 <button
-                  class="border-app text-app bg-app-overlay bg-app-overlay-hover relative flex min-w-18 cursor-pointer items-center justify-center gap-1 overflow-hidden rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+                  class="border-app text-app bg-app-overlay bg-app-overlay-hover relative flex cursor-pointer items-center justify-center gap-1 overflow-hidden rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
                   type="button"
                   :disabled="applying"
                   :title="tFn('settings.uploadImage')"
@@ -264,7 +264,7 @@
                     @keydown.enter.prevent="useOnlineImageUrl"
                   />
                   <button
-                    class="border-app text-app bg-app-overlay bg-app-overlay-hover flex min-w-18 cursor-pointer items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60"
+                    class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
                     type="button"
                     :disabled="applying"
                     @click="useOnlineImageUrl"

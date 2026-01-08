@@ -3,7 +3,7 @@
   <div v-if="iconOnly" class="group inline-flex w-[96px] flex-col items-center md:w-[88px]">
     <button
       type="button"
-      class="relative inline-flex h-[96px] w-[96px] cursor-pointer items-center justify-center rounded-[28px] border-0 p-0 transition-transform duration-200 outline-none hover:scale-[1.04] focus-visible:ring-(--app-focus-ring) md:h-[88px] md:w-[88px]"
+      class="relative inline-flex h-[96px] w-[96px] cursor-pointer items-center justify-center rounded-[28px] border-0 p-0 transition-transform outline-none hover:scale-[1.04] focus-visible:ring-(--app-focus-ring) md:h-[88px] md:w-[88px]"
       :style="iconOnlyButtonStyle"
       :aria-label="title"
       @click="$emit('select')"
@@ -16,12 +16,12 @@
       <!-- border layer: keep border fully visible (don't apply opacity) -->
       <span
         aria-hidden="true"
-        class="absolute inset-0 rounded-[28px] border transition-all duration-200 group-hover:shadow-(--app-shadow-xs) group-hover:ring-2"
+        class="absolute inset-0 rounded-[28px] border transition-all group-hover:shadow-(--app-shadow-xs) group-hover:ring-2"
         :style="iconOnlyBorderStyle"
       />
       <!-- hover/focus tooltip -->
       <div
-        class="pointer-events-none absolute -top-2 left-1/2 z-10 w-max max-w-[180px] -translate-x-1/2 -translate-y-2 opacity-0 transition-all duration-150 group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100"
+        class="pointer-events-none absolute -top-2 left-1/2 z-10 w-max max-w-[180px] -translate-x-1/2 -translate-y-2 opacity-0 transition-all group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100"
       >
         <div
           class="bg-app-overlay border-app text-app truncate rounded-lg border px-2 py-1 text-[11px] font-medium shadow-(--app-shadow-md) backdrop-blur-xl"
@@ -59,7 +59,7 @@
   <!-- default card -->
   <article
     v-else
-    class="group relative flex cursor-pointer items-center gap-4 rounded-2xl border p-4 shadow-(--app-shadow-xs) backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-(--app-shadow-md) md:gap-3 md:p-3.5"
+    class="group relative flex cursor-pointer items-center gap-4 rounded-2xl border p-4 shadow-(--app-shadow-xs) backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:shadow-(--app-shadow-md) md:gap-3 md:p-3.5"
     :style="resolvedStyle"
     @click="$emit('select')"
   >
@@ -95,7 +95,7 @@
     </div>
     <div
       v-if="$slots.actions"
-      class="absolute top-3 right-3 flex gap-2 opacity-0 transition-all duration-200 group-hover:opacity-100 md:top-2.5 md:right-2.5"
+      class="absolute top-3 right-3 flex gap-2 opacity-0 transition-all group-hover:opacity-100 md:top-2.5 md:right-2.5"
     >
       <slot name="actions" />
     </div>

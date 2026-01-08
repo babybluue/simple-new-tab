@@ -116,16 +116,10 @@ export const THEME_DARK_PRIMARY = '#343639'
  * 前两个是主题默认背景色，后面是渐变色
  */
 export const PRESET_BACKGROUNDS = [
-  THEME_LIGHT_BG,
-  THEME_DARK_BG,
   'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-  'linear-gradient(135deg, #0ea5e9 0%, #2563eb 45%, #0f172a 100%)',
   'linear-gradient(135deg, #34d399 0%, #10b981 45%, #047857 100%)',
-  'linear-gradient(135deg, #fbbf24 0%, #f97316 45%, #ef4444 100%)',
   'linear-gradient(135deg, #06b6d4 0%, #22d3ee 45%, #0ea5e9 100%)',
-  'linear-gradient(135deg, #ef4444 0%, #dc2626 45%, #991b1b 100%)',
   'linear-gradient(135deg, #f472b6 0%, #ec4899 45%, #be185d 100%)',
-  'linear-gradient(135deg, #9a3412 0%, #7c2d12 50%, #4a1d0f 100%)',
   'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)',
 ] as const
 
@@ -134,17 +128,11 @@ export const PRESET_BACKGROUNDS = [
  * 前两个是主题默认主色，第三个是透明色，后面是彩色
  */
 export const PRIMARY_PRESETS = [
-  THEME_LIGHT_PRIMARY,
-  THEME_DARK_PRIMARY,
-  'transparent',
-  '#6200ea', // Deep Purple 500
-  '#2962ff', // Blue A700
   '#00c853', // Green A700
   '#ff9800', // Orange 500
   '#e91e63', // Pink 500
   '#00bcd4', // Cyan 500
   '#8bc34a', // Light Green 500
-  '#ffc107', // Amber 500
 ] as const
 
 /**
