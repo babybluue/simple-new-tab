@@ -364,7 +364,7 @@
               </div>
 
               <div
-                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between gap-3 rounded-xl border p-3 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between gap-3 rounded-xl border px-3 py-4 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
               >
                 <span>{{ tFn('settings.primaryOpacity') }}</span>
                 <div class="flex items-center gap-2">
