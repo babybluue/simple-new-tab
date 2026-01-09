@@ -445,6 +445,10 @@ export const applyPrimaryColor = (color?: string, opacity = 1) => {
   const isLight = root.classList.contains('light')
   root.style.setProperty('--primary-color', base)
   root.style.setProperty('--primary-surface', base)
+  // 设置不透明的主色变量（用于 suggestion 列表等需要强制不透明的场景）
+  // 使用原始颜色，强制不透明度为 1
+  const baseOpaque = applyOpacityToCssColor(baseRaw, 1)
+  root.style.setProperty('--primary-surface-opaque', baseOpaque)
   // 边框颜色：复用 buildPrimarySurfaceStyle 的判定逻辑（用 CSS 变量驱动 LinkCard）
   let borderColor: string
   if (baseRaw) {
