@@ -26,6 +26,7 @@ body {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  font-family: 'Noto Sans', 'Noto Sans SC', Consolas, PingFang SC, Helvetica Neue, Microsoft YaHei, sans-serif !important;
   /* 彻底禁用系统滚动条，由 App.vue 容器处理 */
   /* 背景色由 HTML 内联脚本和内联样式控制，避免闪烁 */
 }

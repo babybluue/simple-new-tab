@@ -152,7 +152,7 @@ const sortHistory = (items: HistoryItem[]): HistoryItem[] => {
 // 获取设置
 export async function getSettings(): Promise<Settings> {
   const result = await chrome.storage.local.get('settings')
-  const stored = result.settings as Partial<Settings> | undefined
+  const stored = result?.settings as Partial<Settings> | undefined
 
   // 获取当前系统主题偏好和对应的默认颜色
   const prefersDark = getSystemPrefersDark()
@@ -293,7 +293,7 @@ export async function saveSettings(settings: Settings): Promise<void> {
 // 获取访问历史
 export async function getHistory(): Promise<HistoryItem[]> {
   const result = await chrome.storage.local.get('history')
-  const rawHistory = (result.history || []) as HistoryItem[]
+  const rawHistory = (result?.history || []) as HistoryItem[]
   return sortHistory(rawHistory.map(normalizeHistoryItem))
 }
 
@@ -347,7 +347,7 @@ export async function removeHistoryItem(url: string): Promise<void> {
 // 获取快速访问列表
 export async function getQuickLinks(): Promise<QuickLink[]> {
   const result = await chrome.storage.local.get('quickLinks')
-  const stored = (result.quickLinks || []) as QuickLink[]
+  const stored = (result?.quickLinks || []) as QuickLink[]
   const normalized = (stored.length > 0 ? stored : DEFAULT_QUICK_LINKS).map(normalizeQuickLink)
 
   // 如果之前没有存储，初始化存储默认列表，方便后续同步
