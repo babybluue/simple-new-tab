@@ -713,6 +713,7 @@ import {
   applyPrimaryColor,
   applyTheme,
   clearBingImageCache,
+  ensureBingImageCached,
   fetchBingImageUrl,
   getThemeDefaults,
   PRESET_BACKGROUNDS,
@@ -1041,6 +1042,12 @@ const persistAndApply = async (next: Partial<Settings>, forceRefreshBing = false
         if (url) {
           merged.backgroundImageUrl = url
         }
+      }
+      if (
+        merged.backgroundImageUrl &&
+        (forceRefreshBing || merged.backgroundImageUrl !== settings.value.backgroundImageUrl)
+      ) {
+        await ensureBingImageCached(merged.backgroundImageUrl)
       }
     } else {
       // 离开 Bing 背景时，清除缓存（不影响 upload/url）

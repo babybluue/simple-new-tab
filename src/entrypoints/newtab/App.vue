@@ -38,7 +38,7 @@ import SearchBox from '@/components/SearchBox.vue'
 import Settings from '@/components/Settings.vue'
 import { useI18n } from '@/i18n/composable'
 import { applyCustomCss } from '@/utils/customCss'
-import { getSettings, type Settings as SettingsModel } from '@/utils/storage'
+import { getSettings, saveSettings, type Settings as SettingsModel } from '@/utils/storage'
 import { applyBackground, applyPrimaryColor, applyTheme } from '@/utils/theme'
 
 const { t } = useI18n()
@@ -131,9 +131,14 @@ onMounted(async () => {
     const loadedSettings = await getSettings()
     settings.value = loadedSettings
     applyTheme(loadedSettings.theme)
-    await applyBackground(loadedSettings)
+    const fetched = await applyBackground(loadedSettings)
     applyPrimaryColor(loadedSettings.primaryColor, loadedSettings.primaryOpacity)
     applyCustomCss(loadedSettings)
+    if (loadedSettings.backgroundType === 'bing' && fetched && !loadedSettings.backgroundImageUrl) {
+      const next = { ...loadedSettings, backgroundImageUrl: fetched }
+      settings.value = next
+      await saveSettings(next)
+    }
   }
   chrome.storage.onChanged.addListener(onStorageChanged)
 })

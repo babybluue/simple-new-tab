@@ -85,6 +85,22 @@ async function cacheBingImage(imageUrl: string): Promise<void> {
 }
 
 /**
+ * 确保 Bing 图片已被缓存（避免重复请求）
+ */
+export async function ensureBingImageCached(imageUrl: string): Promise<void> {
+  try {
+    const cache = await caches.open(CACHE_NAME)
+    const cached = await cache.match(imageUrl)
+    if (!cached) {
+      await cache.add(imageUrl)
+    }
+    await chrome.storage.local.set({ [CACHE_KEY]: imageUrl })
+  } catch {
+    // 静默失败
+  }
+}
+
+/**
  * 清除 Bing 图片缓存
  */
 export async function clearBingImageCache(): Promise<void> {
@@ -380,6 +396,8 @@ export const applyBackground = async (
             const blob = await cached.blob()
             currentBlobUrl = URL.createObjectURL(blob)
             imageUrl = currentBlobUrl
+          } else {
+            void ensureBingImageCached(imageUrl)
           }
         }
       } catch {
