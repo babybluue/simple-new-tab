@@ -319,6 +319,8 @@ const handleSubmit = () => {
     selectSuggestion(suggestions.value[selectedSuggestionIndex.value])
     return
   }
+  isSuggestionListVisible.value = false
+  selectedSuggestionIndex.value = -1
   handleSearch()
 }
 </script>
