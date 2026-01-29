@@ -174,10 +174,12 @@ onMounted(async () => {
 
   // 点击外部关闭菜单
   document.addEventListener('click', handleClickOutside)
+  document.addEventListener('keydown', handleGlobalKeydown)
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('keydown', handleGlobalKeydown)
   if (suggestionTimer) {
     clearTimeout(suggestionTimer)
   }
@@ -207,6 +209,23 @@ const handleClickOutside = (e: MouseEvent) => {
     isEngineMenuOpen.value = false
     isSuggestionListVisible.value = false
   }
+}
+
+const handleGlobalKeydown = (e: KeyboardEvent) => {
+  if (e.key !== '/' || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+    return
+  }
+
+  const target = e.target as HTMLElement | null
+  const isEditableTarget =
+    !!target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+  if (isEditableTarget) {
+    return
+  }
+
+  e.preventDefault()
+  searchInput.value?.focus()
+  searchInput.value?.select()
 }
 
 const selectEngine = async (engineKey: string) => {

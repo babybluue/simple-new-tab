@@ -645,7 +645,7 @@
         </div>
 
         <div class="mt-4">
-          <div class="mb-4 flex items-center justify-between">
+          <div class="flex items-center justify-between">
             <div class="text-base font-semibold">{{ tFn('settings.backup') }}</div>
             <button
               class="border-app bg-app-overlay bg-app-overlay-hover text-app-secondary hover:text-app flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border transition focus:outline-none"
