@@ -38,6 +38,7 @@ import SearchBox from '@/components/SearchBox.vue'
 import Settings from '@/components/Settings.vue'
 import { useI18n } from '@/i18n/composable'
 import { applyCustomCss } from '@/utils/customCss'
+import { getTodayKey } from '@/utils/date'
 import { getSettings, saveSettings, type Settings as SettingsModel } from '@/utils/storage'
 import {
   applyBackground,
@@ -58,12 +59,6 @@ const displaySettings = computed(() => ({
   showQuickAccess: settings.value?.showQuickAccess ?? true,
   showHistory: settings.value?.showHistory ?? true,
 }))
-
-const getTodayKey = () => {
-  const d = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-}
 
 const applyDailyBingIfNeeded = async (current: SettingsModel): Promise<SettingsModel> => {
   if (!current.dailyBingEnabled) return current

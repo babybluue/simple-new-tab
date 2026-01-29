@@ -726,6 +726,7 @@ import type { SupportedLocale } from '@/i18n'
 import { getLocale, setLocale, t } from '@/i18n'
 import { useI18n } from '@/i18n/composable'
 import { applyCustomCss } from '@/utils/customCss'
+import { getTodayKey } from '@/utils/date'
 import { buildSettingsBackup, parseAndSanitizeSettingsBackup } from '@/utils/settingsTransfer'
 import type { Settings } from '@/utils/storage'
 import { DEFAULT_SETTINGS, getQuickLinks, getSettings, saveQuickLinks, saveSettings } from '@/utils/storage'
@@ -958,12 +959,6 @@ const toggle = () => {
 const formatDateForFileName = (d: Date) => {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
-}
-
-const getTodayKey = () => {
-  const d = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
 const exportBackup = async () => {
