@@ -82,8 +82,8 @@
       class="grid"
       :class="
         settings?.iconOnlyLinkCards
-          ? 'grid-cols-[repeat(auto-fill,minmax(96px,1fr))] justify-items-center gap-x-4 gap-y-0 md:grid-cols-[repeat(auto-fill,minmax(88px,1fr))] md:gap-x-3 md:gap-y-0'
-          : 'grid-cols-[repeat(auto-fit,minmax(min(240px,100%),1fr))] gap-3 md:grid-cols-[repeat(auto-fit,minmax(min(220px,100%),1fr))]'
+          ? 'grid-cols-3 justify-items-center gap-x-2 gap-y-0 sm:grid-cols-5 md:grid-cols-7 md:gap-x-1.5 md:gap-y-0 lg:grid-cols-8 xl:grid-cols-11'
+          : 'grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'
       "
       role="list"
     >

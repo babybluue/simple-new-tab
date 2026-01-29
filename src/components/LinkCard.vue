@@ -34,12 +34,12 @@
         v-if="iconSrc"
         :src="iconSrc"
         :alt="`${title} ${t('common.icon')}`"
-        class="bg-app-overlay relative h-[64px] w-[64px] rounded-2xl object-contain p-1.5 transition-transform duration-200 group-hover:scale-[1.02] md:h-[56px] md:w-[56px]"
+        class="bg-app-overlay relative h-[72px] w-[72px] rounded-2xl object-contain p-1.5 transition-transform duration-200 group-hover:scale-[1.02] md:h-[64px] md:w-[64px]"
         @error="handleIconError"
       />
       <div
         v-else
-        class="bg-app-overlay text-app-secondary relative flex h-[64px] w-[64px] items-center justify-center rounded-2xl text-2xl font-bold shadow-(--app-shadow-xs) md:h-[56px] md:w-[56px]"
+        class="bg-app-overlay text-app-secondary relative flex h-[72px] w-[72px] items-center justify-center rounded-2xl text-2xl font-bold shadow-(--app-shadow-xs) md:h-[64px] md:w-[64px]"
       >
         {{ fallbackChar }}
       </div>
