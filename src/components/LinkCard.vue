@@ -34,7 +34,7 @@
         v-if="iconSrc"
         :src="iconSrc"
         :alt="`${title} ${t('common.icon')}`"
-        class="bg-app-overlay relative h-[72px] w-[72px] rounded-2xl object-contain p-1.5 transition-transform duration-200 group-hover:scale-[1.02] md:h-[64px] md:w-[64px]"
+        class="relative h-[72px] w-[72px] rounded-2xl object-contain p-1.5 transition-transform duration-200 group-hover:scale-[1.02] md:h-[64px] md:w-[64px]"
         @error="handleIconError"
       />
       <div

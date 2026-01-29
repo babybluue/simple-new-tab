@@ -720,7 +720,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
 import type { SupportedLocale } from '@/i18n'
 import { getLocale, setLocale, t } from '@/i18n'
@@ -1198,8 +1198,14 @@ const refreshBing = async () => {
   await persistAndApply({ backgroundType: 'bing', backgroundImageUrl: '' }, true)
 }
 
+const flushSwitchUpdate = async (next: Partial<Settings>) => {
+  settings.value = { ...settings.value, ...next }
+  await nextTick()
+}
+
 const toggleDailyBing = async () => {
   const nextEnabled = !settings.value.dailyBingEnabled
+  await flushSwitchUpdate({ dailyBingEnabled: nextEnabled })
   if (!nextEnabled) {
     await persistAndApply({ dailyBingEnabled: false })
     return
@@ -1263,7 +1269,9 @@ const toggleVisibility = async (
     | 'iconOnlyLinkCards'
     | 'showLunarCalendar'
 ) => {
-  await persistAndApply({ [key]: !settings.value[key] })
+  const nextValue = !settings.value[key]
+  await flushSwitchUpdate({ [key]: nextValue })
+  await persistAndApply({ [key]: nextValue })
 }
 
 const customCssChanged = computed(() => (customCssDraft.value || '') !== (settings.value.customCss || ''))
@@ -1280,6 +1288,7 @@ const clearCustomCss = async () => {
 const toggleCustomCssEnabled = async () => {
   const nextEnabled = !settings.value.customCssEnabled
   // 启用/禁用时也把当前草稿写入，避免“开关开了但还是旧 CSS”
+  await flushSwitchUpdate({ customCssEnabled: nextEnabled })
   await persistAndApply({ customCssEnabled: nextEnabled, customCss: customCssDraft.value })
 }
 
