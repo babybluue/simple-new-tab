@@ -29,6 +29,7 @@
     "onlineImageInvalid": "請輸入有效的 http(s) 圖片連結。",
     "uploadImage": "上傳圖片",
     "refreshBingWallpaper": "重新整理 Bing 桌布",
+    "dailyBingWallpaper": "每日一圖",
     "primaryColor": "主色",
     "primaryColorCustom": "主色自訂",
     "primaryOpacity": "不透明度",
@@ -119,4 +120,3 @@
     }
   }
 }
-

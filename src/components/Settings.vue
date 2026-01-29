@@ -211,6 +211,27 @@
               <div
                 class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border px-3 py-2 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
               >
+                <span>{{ tFn('settings.dailyBingWallpaper') }}</span>
+                <button
+                  type="button"
+                  role="switch"
+                  :aria-checked="settings.dailyBingEnabled"
+                  class="border-app relative h-6 w-11 cursor-pointer rounded-full border shadow-(--app-shadow-xs) ring-2 ring-transparent transition-colors focus:ring-(--app-focus-ring) focus:outline-none disabled:opacity-60"
+                  :style="getSwitchTrackStyle(settings.dailyBingEnabled)"
+                  :disabled="applying"
+                  @click="toggleDailyBing"
+                >
+                  <span
+                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    style="background-color: var(--app-text-color)"
+                    :class="settings.dailyBingEnabled ? 'translate-x-5' : 'translate-x-0'"
+                  />
+                </button>
+              </div>
+
+              <div
+                class="border-app bg-app-overlay text-app-secondary mt-3 flex items-center justify-between rounded-xl border px-3 py-2 text-xs shadow-(--app-shadow-xs) backdrop-blur-sm"
+              >
                 <span>{{ tFn('settings.refreshBingWallpaper') }}</span>
                 <button
                   class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
@@ -715,6 +736,7 @@ import {
   clearBingImageCache,
   ensureBingImageCached,
   fetchBingImageUrl,
+  getDailyBingImageUrl,
   getThemeDefaults,
   PRESET_BACKGROUNDS,
   PRIMARY_PRESETS,
@@ -936,6 +958,12 @@ const toggle = () => {
 const formatDateForFileName = (d: Date) => {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
+}
+
+const getTodayKey = () => {
+  const d = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
 const exportBackup = async () => {
@@ -1173,6 +1201,22 @@ const handlePrimaryOpacityChange = async (event: Event) => {
 const refreshBing = async () => {
   bingLoading.value = true
   await persistAndApply({ backgroundType: 'bing', backgroundImageUrl: '' }, true)
+}
+
+const toggleDailyBing = async () => {
+  const nextEnabled = !settings.value.dailyBingEnabled
+  if (!nextEnabled) {
+    await persistAndApply({ dailyBingEnabled: false })
+    return
+  }
+  const dailyUrl = getDailyBingImageUrl()
+  await ensureBingImageCached(dailyUrl)
+  await persistAndApply({
+    dailyBingEnabled: true,
+    dailyBingDate: getTodayKey(),
+    backgroundType: 'bing',
+    backgroundImageUrl: dailyUrl,
+  })
 }
 
 const isPresetActive = (value: string) =>

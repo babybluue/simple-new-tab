@@ -116,6 +116,9 @@ export function parseAndSanitizeSettingsBackup(jsonText: string): ParseBackupRes
   const rawBgUrl = asString(s.backgroundImageUrl, 5_000_000)
   next.backgroundImageUrl = rawBgUrl ?? ''
 
+  next.dailyBingEnabled = asBoolean(s.dailyBingEnabled) ?? next.dailyBingEnabled
+  next.dailyBingDate = asString(s.dailyBingDate, 32) ?? next.dailyBingDate
+
   next.primaryColorType = oneOf(s.primaryColorType, ['preset', 'custom'] as const) ?? next.primaryColorType
   next.primaryColor = asString(s.primaryColor, 2000) ?? next.primaryColor
   next.primaryOpacity = asOpacity01(s.primaryOpacity) ?? next.primaryOpacity

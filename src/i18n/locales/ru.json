@@ -29,6 +29,7 @@
     "onlineImageInvalid": "Пожалуйста, введите действительный URL изображения http(s).",
     "uploadImage": "Загрузить изображение",
     "refreshBingWallpaper": "Обновить обои Bing",
+    "dailyBingWallpaper": "Ежедневное изображение Bing",
     "primaryColor": "Основной цвет",
     "primaryColorCustom": "Пользовательский основной цвет",
     "primaryOpacity": "Непрозрачность",
@@ -118,4 +119,3 @@
     }
   }
 }
-

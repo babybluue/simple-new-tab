@@ -8,6 +8,8 @@ const RECENT_INDICES_KEY = 'bingRecentIndices'
 const buildDirectBingImage = (idx: number, mkt = 'zh-CN') =>
   `https://bing.biturl.top/?resolution=1920&format=image&index=${idx}&mkt=${mkt}`
 
+export const getDailyBingImageUrl = (mkt = 'zh-CN') => buildDirectBingImage(0, mkt)
+
 const shuffleIndices = (max = BING_POOL_SIZE) =>
   Array.from({ length: max }, (_, i) => i).sort(() => Math.random() - 0.5)
 

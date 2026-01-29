@@ -39,7 +39,13 @@ import Settings from '@/components/Settings.vue'
 import { useI18n } from '@/i18n/composable'
 import { applyCustomCss } from '@/utils/customCss'
 import { getSettings, saveSettings, type Settings as SettingsModel } from '@/utils/storage'
-import { applyBackground, applyPrimaryColor, applyTheme } from '@/utils/theme'
+import {
+  applyBackground,
+  applyPrimaryColor,
+  applyTheme,
+  ensureBingImageCached,
+  getDailyBingImageUrl,
+} from '@/utils/theme'
 
 const { t } = useI18n()
 
@@ -52,6 +58,31 @@ const displaySettings = computed(() => ({
   showQuickAccess: settings.value?.showQuickAccess ?? true,
   showHistory: settings.value?.showHistory ?? true,
 }))
+
+const getTodayKey = () => {
+  const d = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
+const applyDailyBingIfNeeded = async (current: SettingsModel): Promise<SettingsModel> => {
+  if (!current.dailyBingEnabled) return current
+  const today = getTodayKey()
+  const dailyUrl = getDailyBingImageUrl()
+  const shouldApply =
+    current.backgroundType !== 'bing' || current.dailyBingDate !== today || current.backgroundImageUrl !== dailyUrl
+  if (!shouldApply) return current
+  const next: SettingsModel = {
+    ...current,
+    dailyBingEnabled: true,
+    dailyBingDate: today,
+    backgroundType: 'bing',
+    backgroundImageUrl: dailyUrl,
+  }
+  await ensureBingImageCached(dailyUrl)
+  await saveSettings(next)
+  return next
+}
 
 /**
  * 比较两个设置对象是否相同
@@ -128,7 +159,8 @@ const onStorageChanged = (changes: Record<string, chrome.storage.StorageChange>,
 
 onMounted(async () => {
   if (!props.initialSettings) {
-    const loadedSettings = await getSettings()
+    let loadedSettings = await getSettings()
+    loadedSettings = await applyDailyBingIfNeeded(loadedSettings)
     settings.value = loadedSettings
     applyTheme(loadedSettings.theme)
     const fetched = await applyBackground(loadedSettings)

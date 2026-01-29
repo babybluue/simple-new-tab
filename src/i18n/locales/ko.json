@@ -29,6 +29,7 @@
     "onlineImageInvalid": "유효한 http(s) 이미지 URL을 입력하세요.",
     "uploadImage": "이미지 업로드",
     "refreshBingWallpaper": "Bing 배경화면 새로고침",
+    "dailyBingWallpaper": "Bing 오늘의 이미지",
     "primaryColor": "주요 색상",
     "primaryColorCustom": "사용자 지정 주요 색상",
     "primaryOpacity": "불투명도",
@@ -118,4 +119,3 @@
     }
   }
 }
-

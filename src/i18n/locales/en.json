@@ -29,6 +29,7 @@
     "onlineImageInvalid": "Please enter a valid http(s) image URL.",
     "uploadImage": "Upload Image",
     "refreshBingWallpaper": "Refresh Bing Wallpaper",
+    "dailyBingWallpaper": "Daily Bing Image",
     "primaryColor": "Primary Color",
     "primaryColorCustom": "Custom Primary Color",
     "primaryOpacity": "Opacity",

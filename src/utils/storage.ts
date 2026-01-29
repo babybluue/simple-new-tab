@@ -34,6 +34,10 @@ export interface Settings {
   /** 背景色透明度（0~1）；仅对纯色背景生效（gradient 背景不做解析） */
   backgroundOpacity: number
   backgroundImageUrl?: string
+  /** 是否启用 Bing 每日一图 */
+  dailyBingEnabled: boolean
+  /** 每日一图最近应用日期（YYYY-MM-DD） */
+  dailyBingDate: string
   primaryColorType: PrimaryColorType
   primaryColor: string
   /** 主色透明度（0~1） */
@@ -63,6 +67,8 @@ export const DEFAULT_SETTINGS: Settings = {
   backgroundColor: THEME_LIGHT_BG,
   backgroundOpacity: 1,
   backgroundImageUrl: '',
+  dailyBingEnabled: false,
+  dailyBingDate: '',
   primaryColorType: 'preset',
   primaryColor: THEME_LIGHT_PRIMARY,
   primaryOpacity: 1,
@@ -193,6 +199,12 @@ export async function getSettings(): Promise<Settings> {
   }
   if (merged.backgroundImageUrl !== undefined && typeof merged.backgroundImageUrl !== 'string') {
     merged.backgroundImageUrl = DEFAULT_SETTINGS.backgroundImageUrl
+  }
+  if (typeof merged.dailyBingEnabled !== 'boolean') {
+    merged.dailyBingEnabled = DEFAULT_SETTINGS.dailyBingEnabled
+  }
+  if (typeof merged.dailyBingDate !== 'string') {
+    merged.dailyBingDate = DEFAULT_SETTINGS.dailyBingDate
   }
   if (!['preset', 'custom'].includes(merged.primaryColorType)) {
     merged.primaryColorType = DEFAULT_SETTINGS.primaryColorType

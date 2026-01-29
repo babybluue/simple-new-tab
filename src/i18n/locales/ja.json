@@ -29,6 +29,7 @@
     "onlineImageInvalid": "有効な http(s) 画像 URL を入力してください。",
     "uploadImage": "画像をアップロード",
     "refreshBingWallpaper": "Bing 壁紙を更新",
+    "dailyBingWallpaper": "毎日の Bing 画像",
     "primaryColor": "プライマリカラー",
     "primaryColorCustom": "カスタムプライマリカラー",
     "primaryOpacity": "不透明度",
@@ -118,4 +119,3 @@
     }
   }
 }
-

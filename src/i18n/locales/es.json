@@ -29,6 +29,7 @@
     "onlineImageInvalid": "Por favor, ingrese una URL de imagen http(s) válida.",
     "uploadImage": "Subir imagen",
     "refreshBingWallpaper": "Actualizar fondo de pantalla de Bing",
+    "dailyBingWallpaper": "Imagen diaria de Bing",
     "primaryColor": "Color principal",
     "primaryColorCustom": "Color principal personalizado",
     "primaryOpacity": "Opacidad",
@@ -118,4 +119,3 @@
     }
   }
 }
-

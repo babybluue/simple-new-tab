@@ -29,6 +29,7 @@
     "onlineImageInvalid": "Bitte geben Sie eine gültige http(s)-Bild-URL ein.",
     "uploadImage": "Bild hochladen",
     "refreshBingWallpaper": "Bing-Hintergrundbild aktualisieren",
+    "dailyBingWallpaper": "Bing-Bild des Tages",
     "primaryColor": "Primärfarbe",
     "primaryColorCustom": "Benutzerdefinierte Primärfarbe",
     "primaryOpacity": "Deckkraft",
@@ -118,4 +119,3 @@
     }
   }
 }
-

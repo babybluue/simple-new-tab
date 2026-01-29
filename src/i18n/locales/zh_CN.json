@@ -29,6 +29,7 @@
     "onlineImageInvalid": "请输入有效的 http(s) 图片链接。",
     "uploadImage": "上传图片",
     "refreshBingWallpaper": "刷新 Bing 壁纸",
+    "dailyBingWallpaper": "每日一图",
     "primaryColor": "主色",
     "primaryColorCustom": "主色自定义",
     "primaryOpacity": "不透明度",
@@ -119,4 +120,3 @@
     }
   }
 }
-
