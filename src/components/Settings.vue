@@ -222,7 +222,7 @@
                   @click="toggleDailyBing"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    class="absolute top-0.25 left-0.25 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
                     style="background-color: var(--app-text-color)"
                     :class="settings.dailyBingEnabled ? 'translate-x-5' : 'translate-x-0'"
                   />
@@ -446,7 +446,7 @@
                   @click="toggleVisibility('showDateTime')"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    class="absolute top-0.25 left-0.25 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
                     style="background-color: var(--app-text-color)"
                     :class="settings.showDateTime ? 'translate-x-5' : 'translate-x-0'"
                   />
@@ -467,7 +467,7 @@
                   @click="toggleVisibility('showLunarCalendar')"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    class="absolute top-0.25 left-0.25 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
                     style="background-color: var(--app-text-color)"
                     :class="settings.showLunarCalendar ? 'translate-x-5' : 'translate-x-0'"
                   />
@@ -487,7 +487,7 @@
                   @click="toggleVisibility('showQuickAccess')"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    class="absolute top-0.25 left-0.25 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
                     style="background-color: var(--app-text-color)"
                     :class="settings.showQuickAccess ? 'translate-x-5' : 'translate-x-0'"
                   />
@@ -507,7 +507,7 @@
                   @click="toggleVisibility('showHistory')"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    class="absolute top-0.25 left-0.25 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
                     style="background-color: var(--app-text-color)"
                     :class="settings.showHistory ? 'translate-x-5' : 'translate-x-0'"
                   />
@@ -527,7 +527,7 @@
                   @click="toggleVisibility('openLinksInNewTab')"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    class="absolute top-0.25 left-0.25 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
                     style="background-color: var(--app-text-color)"
                     :class="settings.openLinksInNewTab ? 'translate-x-5' : 'translate-x-0'"
                   />
@@ -547,7 +547,7 @@
                   @click="toggleVisibility('iconOnlyLinkCards')"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    class="absolute top-0.25 left-0.25 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
                     style="background-color: var(--app-text-color)"
                     :class="settings.iconOnlyLinkCards ? 'translate-x-5' : 'translate-x-0'"
                   />
@@ -596,7 +596,7 @@
                   @click="toggleCustomCssEnabled"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
+                    class="absolute top-0.25 left-0.25 h-5 w-5 rounded-full shadow-(--app-shadow-xs) transition-transform"
                     style="background-color: var(--app-text-color)"
                     :class="settings.customCssEnabled ? 'translate-x-5' : 'translate-x-0'"
                   />
