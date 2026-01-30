@@ -8,7 +8,53 @@ const RECENT_INDICES_KEY = 'bingRecentIndices'
 const buildDirectBingImage = (idx: number, mkt = 'zh-CN') =>
   `https://bing.biturl.top/?resolution=1920&format=image&index=${idx}&mkt=${mkt}`
 
-export const getDailyBingImageUrl = (mkt = 'zh-CN') => buildDirectBingImage(0, mkt)
+const normalizeDateKey = (key: string): string | null => {
+  const normalized = key.replace(/-/g, '')
+  return /^\d{8}$/.test(normalized) ? normalized : null
+}
+
+const toUtcDate = (key: string): number | null => {
+  const normalized = normalizeDateKey(key)
+  if (!normalized) return null
+  const year = Number.parseInt(normalized.slice(0, 4), 10)
+  const month = Number.parseInt(normalized.slice(4, 6), 10)
+  const day = Number.parseInt(normalized.slice(6, 8), 10)
+  if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) return null
+  return Date.UTC(year, month - 1, day)
+}
+
+const fetchBingImageMeta = async (idx: number, mkt: string): Promise<{ url: string; startDate: string } | null> => {
+  try {
+    const endpoint = `https://bing.biturl.top/?index=${idx}&mkt=${mkt}`
+    const res = await fetch(endpoint)
+    if (!res.ok) return null
+    const data = (await res.json()) as { url?: unknown; start_date?: unknown }
+    if (typeof data?.url !== 'string' || typeof data?.start_date !== 'string') return null
+    return { url: data.url, startDate: data.start_date }
+  } catch {
+    return null
+  }
+}
+
+export const getDailyBingImageUrl = async (dateKey: string, mkt = 'zh-CN'): Promise<string> => {
+  const serverMeta = await fetchBingImageMeta(0, mkt)
+  const serverUtc = serverMeta ? toUtcDate(serverMeta.startDate) : null
+  const localUtc = toUtcDate(dateKey)
+
+  if (!serverUtc || !localUtc) {
+    return serverMeta?.url ?? buildDirectBingImage(0, mkt)
+  }
+
+  const diffDays = Math.floor((serverUtc - localUtc) / 86_400_000)
+  const index = Math.min(Math.max(diffDays, 0), BING_POOL_SIZE - 1)
+
+  if (index === 0) {
+    return serverMeta?.url ?? buildDirectBingImage(0, mkt)
+  }
+
+  const targetMeta = await fetchBingImageMeta(index, mkt)
+  return targetMeta?.url ?? buildDirectBingImage(index, mkt)
+}
 
 const shuffleIndices = (max = BING_POOL_SIZE) =>
   Array.from({ length: max }, (_, i) => i).sort(() => Math.random() - 0.5)

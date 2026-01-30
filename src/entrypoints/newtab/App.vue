@@ -63,7 +63,7 @@ const displaySettings = computed(() => ({
 const applyDailyBingIfNeeded = async (current: SettingsModel): Promise<SettingsModel> => {
   if (!current.dailyBingEnabled) return current
   const today = getTodayKey()
-  const dailyUrl = getDailyBingImageUrl()
+  const dailyUrl = await getDailyBingImageUrl(today)
   const shouldApply =
     current.backgroundType !== 'bing' || current.dailyBingDate !== today || current.backgroundImageUrl !== dailyUrl
   if (!shouldApply) return current
@@ -143,6 +143,20 @@ const handleSettingsUpdate = async (updatedSettings: SettingsModel) => {
   applyCustomCss(updatedSettings)
 }
 
+const handleDailyBingOnFocus = async () => {
+  const stored = await getSettings()
+  if (!stored.dailyBingEnabled) return
+  const today = getTodayKey()
+  if (stored.dailyBingDate === today) return
+  const next = await applyDailyBingIfNeeded(stored)
+  await handleSettingsUpdate(next)
+}
+
+const handleFocusOrVisibility = () => {
+  if (document.visibilityState === 'hidden') return
+  void handleDailyBingOnFocus()
+}
+
 const onStorageChanged = (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => {
   if (areaName !== 'local') return
   const change = changes.settings
@@ -168,10 +182,14 @@ onMounted(async () => {
     }
   }
   chrome.storage.onChanged.addListener(onStorageChanged)
+  window.addEventListener('focus', handleFocusOrVisibility)
+  document.addEventListener('visibilitychange', handleFocusOrVisibility)
 })
 
 onUnmounted(() => {
   chrome.storage.onChanged.removeListener(onStorageChanged)
+  window.removeEventListener('focus', handleFocusOrVisibility)
+  document.removeEventListener('visibilitychange', handleFocusOrVisibility)
 })
 </script>
 <style scoped>

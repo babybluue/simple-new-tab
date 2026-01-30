@@ -1210,7 +1210,7 @@ const toggleDailyBing = async () => {
     await persistAndApply({ dailyBingEnabled: false })
     return
   }
-  const dailyUrl = getDailyBingImageUrl()
+  const dailyUrl = await getDailyBingImageUrl(getTodayKey())
   await ensureBingImageCached(dailyUrl)
   await persistAndApply({
     dailyBingEnabled: true,
