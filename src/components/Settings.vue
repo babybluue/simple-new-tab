@@ -200,7 +200,7 @@
                     max="100"
                     step="1"
                     :value="backgroundOpacityDraft"
-                    :disabled="applying || settings.backgroundColor.includes('gradient')"
+                    :disabled="applying"
                     @input="handleBackgroundOpacityInput"
                     @change="handleBackgroundOpacityChange"
                   />
@@ -738,6 +738,7 @@ import {
   ensureBingImageCached,
   fetchBingImageUrl,
   getDailyBingImageUrl,
+  getEffectiveTheme,
   getThemeDefaults,
   PRESET_BACKGROUNDS,
   PRIMARY_PRESETS,
@@ -1307,15 +1308,19 @@ const getSwitchTrackStyle = (on: boolean) => {
 const useTheme = async (theme: Settings['theme']) => {
   // 根据新主题获取对应的默认背景色和主色
   const { backgroundColor, primaryColor } = getThemeDefaults(theme)
+  // 深色主题默认不透明度 50%，浅色主题 100%
+  const effective = getEffectiveTheme(theme)
+  const backgroundOpacity = effective === 'dark' ? 0.5 : 1
 
-  // 更新主题、背景和主色，确保类型都是 preset
   await persistAndApply({
     theme,
     backgroundType: 'preset',
     backgroundColor,
     primaryColorType: 'preset',
     primaryColor,
+    backgroundOpacity,
   })
+  backgroundOpacityDraft.value = Math.round(backgroundOpacity * 100)
 }
 
 const currentLanguage = computed<SupportedLocale>(() => {

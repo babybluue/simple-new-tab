@@ -3,6 +3,7 @@ import { getUnavatarFavicon, isAutoFavicon } from './favicon'
 import { tryGetLogoForUrl } from './logo'
 import { PRESET_QUICK_LINKS } from './presets'
 import {
+  getEffectiveTheme,
   getSystemPrefersDark,
   getThemeDefaults,
   THEME_DARK_BG,
@@ -31,7 +32,7 @@ export interface Settings {
   maxHistoryItems: number
   backgroundType: BackgroundType
   backgroundColor: string
-  /** 背景色透明度（0~1）；仅对纯色背景生效（gradient 背景不做解析） */
+  /** 背景色透明度（0~1）；仅对纯色背景生效 */
   backgroundOpacity: number
   backgroundImageUrl?: string
   /** 是否启用 Bing 每日一图 */
@@ -170,6 +171,7 @@ export async function getSettings(): Promise<Settings> {
       ...DEFAULT_SETTINGS,
       backgroundColor: systemDefaults.backgroundColor,
       primaryColor: systemDefaults.primaryColor,
+      backgroundOpacity: prefersDark ? 0.5 : 1,
     }
   }
 
@@ -195,7 +197,7 @@ export async function getSettings(): Promise<Settings> {
     merged.backgroundColor = DEFAULT_SETTINGS.backgroundColor
   }
   if (typeof merged.backgroundOpacity !== 'number' || merged.backgroundOpacity < 0 || merged.backgroundOpacity > 1) {
-    merged.backgroundOpacity = DEFAULT_SETTINGS.backgroundOpacity
+    merged.backgroundOpacity = getEffectiveTheme(merged.theme) === 'dark' ? 0.5 : 1
   }
   if (merged.backgroundImageUrl !== undefined && typeof merged.backgroundImageUrl !== 'string') {
     merged.backgroundImageUrl = DEFAULT_SETTINGS.backgroundImageUrl
@@ -265,11 +267,10 @@ function migrateOldSettings(
   settings: Settings,
   systemDefaults: { backgroundColor: string; primaryColor: string }
 ): void {
-  const OLD_DEFAULT_BG = 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)'
   const OLD_DEFAULT_PRIMARY = '#667eea'
 
-  // 如果背景色是旧的默认渐变值，更新为系统主题对应的背景色
-  if (settings.backgroundColor === OLD_DEFAULT_BG) {
+  // 旧版曾使用渐变色作为背景；若当前存的是渐变字符串，迁移为系统主题背景色
+  if (typeof settings.backgroundColor === 'string' && settings.backgroundColor.includes('gradient')) {
     settings.backgroundColor = systemDefaults.backgroundColor
     settings.backgroundType = 'preset'
   }

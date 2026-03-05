@@ -176,15 +176,14 @@ export const THEME_LIGHT_PRIMARY = '#ffffff'
 export const THEME_DARK_PRIMARY = '#343639'
 
 /**
- * 预设背景色列表
- * 前两个是主题默认背景色，后面是渐变色
+ * 预设背景色列表（Material 配色：色相与深浅区分明显，便于区分选择）
  */
 export const PRESET_BACKGROUNDS = [
-  'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-  'linear-gradient(135deg, #34d399 0%, #10b981 45%, #047857 100%)',
-  'linear-gradient(135deg, #06b6d4 0%, #22d3ee 45%, #0ea5e9 100%)',
-  'linear-gradient(135deg, #f472b6 0%, #ec4899 45%, #be185d 100%)',
-  'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)',
+  '#90CAF9', // Light Blue 200 - 亮蓝
+  '#A5D6A7', // Green 200 - 绿
+  '#FFCC80', // Amber 200 - 暖橙黄
+  '#B39DDB', // Deep Purple 200 - 紫
+  '#80CBC4', // Teal 200 - 青绿
 ] as const
 
 /**
@@ -464,7 +463,6 @@ export const applyBackground = async (
     return undefined
   }
 
-  // 判断是否是渐变背景（linear-gradient 或 radial-gradient）
   const defaultBg = root.classList.contains('light')
     ? THEME_LIGHT_BG
     : root.classList.contains('dark')
@@ -474,19 +472,10 @@ export const applyBackground = async (
         : THEME_LIGHT_BG
 
   const bgColor = settings.backgroundColor || defaultBg
-  const isGradient = bgColor.includes('gradient')
   const bgOpacity = clamp01(settings.backgroundOpacity ?? 1)
-
-  if (isGradient) {
-    // 渐变背景需要设置为 background-image
-    root.style.setProperty('background-image', bgColor, 'important')
-    root.style.setProperty('background-color', 'transparent', 'important')
-  } else {
-    // 纯色背景设置为 background-color
-    const color = applyOpacityToCssColor(bgColor, bgOpacity)
-    root.style.setProperty('background-color', color, 'important')
-    root.style.setProperty('background-image', 'none', 'important')
-  }
+  const color = applyOpacityToCssColor(bgColor, bgOpacity)
+  root.style.setProperty('background-color', color, 'important')
+  root.style.setProperty('background-image', 'none', 'important')
 
   // 设置其他背景属性
   root.style.setProperty('background-attachment', 'fixed', 'important')
