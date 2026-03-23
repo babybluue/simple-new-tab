@@ -105,9 +105,8 @@
 import { computed, onMounted, ref } from 'vue'
 
 import { useI18n } from '@/i18n/composable'
-import { type FaviconItem, handleFaviconError } from '@/utils/favicon'
 import { performSearch } from '@/utils/search'
-import { resolveSiteIcon } from '@/utils/siteIcon'
+import { handleLinkIconError, resolveHistoryIcon } from '@/utils/siteIcon'
 import {
   addQuickLink,
   clearHistory,
@@ -133,8 +132,8 @@ const faviconFallbackTried = ref<Record<string, boolean>>({})
 const MIN_VISIT_THRESHOLD = 2
 const DEFAULT_VISIT_COUNT = 1
 
-const getSiteIconProps = (item: HistoryItem): { logo?: string; favicon?: string } => {
-  return resolveSiteIcon({ url: item.url, domain: item.domain, favicon: item.favicon }, false)
+const getSiteIconProps = (item: HistoryItem): { icon?: string; iconFallback?: string } => {
+  return resolveHistoryIcon({ url: item.url })
 }
 
 onMounted(async () => {
@@ -219,7 +218,7 @@ const handlePin = async (item: HistoryItem) => {
 const cardStyle = computed(() => getCardStyle())
 
 const handleFaviconErrorWrapper = (item: HistoryItem, e: Event) => {
-  handleFaviconError(item as FaviconItem, e, faviconFallbackTried.value)
+  handleLinkIconError(item.url, e, faviconFallbackTried.value)
 }
 
 const toggleCollapse = () => {

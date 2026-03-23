@@ -1,70 +1,98 @@
 <template>
   <form
     v-if="visible"
-    class="border-app bg-app-overlay mb-4 grid grid-cols-1 gap-3 rounded-2xl border p-4 shadow-(--app-shadow-sm) backdrop-blur-xl md:grid-cols-[1.1fr_1.5fr_1fr_auto_auto] md:items-center md:gap-3 md:p-3"
+    class="border-app bg-app-overlay mb-4 grid grid-cols-1 gap-3 rounded-2xl border p-4 shadow-(--app-shadow-sm) backdrop-blur-xl md:gap-3 md:p-3"
     :aria-label="t('quickAccess.addCustom')"
     @submit.prevent="handleSubmit"
   >
-    <input
-      v-model="formData.title"
-      type="text"
-      class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none"
-      :placeholder="t('quickAccess.websiteName')"
-      name="title"
-    />
-    <input
-      v-model="formData.url"
-      type="text"
-      class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none"
-      :placeholder="t('quickAccess.websiteUrl')"
-      required
-      name="url"
-    />
-    <input
-      v-model="formData.icon"
-      type="text"
-      class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none"
-      :placeholder="t('quickAccess.customIconUrl')"
-      :disabled="formData.useLocalFavicon"
-      name="icon"
-    />
-    <label
-      class="text-app-secondary flex cursor-pointer items-center gap-2 text-sm whitespace-nowrap"
-      :title="t('quickAccess.useLocalFaviconTip')"
-    >
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-12 md:items-end">
       <input
-        v-model="formData.useLocalFavicon"
-        type="checkbox"
-        class="border-app bg-app-overlay h-4 w-4 cursor-pointer rounded border accent-current"
+        v-model="formData.title"
+        type="text"
+        class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none md:col-span-3"
+        :placeholder="t('quickAccess.websiteName')"
+        name="title"
       />
-      <span>{{ t('quickAccess.useLocalFavicon') }}</span>
-    </label>
-    <div class="flex items-center gap-2">
-      <button
-        type="submit"
-        class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
-        :disabled="!formData.url.trim()"
+      <input
+        v-model="formData.url"
+        type="text"
+        class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none md:col-span-4"
+        :placeholder="t('quickAccess.websiteUrl')"
+        required
+        name="url"
+      />
+      <div class="flex min-w-0 flex-col gap-2 md:col-span-3">
+        <input
+          v-model="formData.icon"
+          type="text"
+          class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none"
+          :placeholder="t('quickAccess.customIconUrl')"
+          name="icon"
+          @input="iconSource = 'custom'"
+        />
+        <div class="text-app-secondary flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+          <label class="flex cursor-pointer items-center gap-1.5">
+            <input
+              v-model="iconSource"
+              type="radio"
+              name="quick-link-icon-source"
+              value="google"
+              class="border-app bg-app-overlay h-3.5 w-3.5 cursor-pointer accent-current"
+            />
+            <span>{{ t('quickAccess.iconFromGoogle') }}</span>
+          </label>
+          <label class="flex cursor-pointer items-center gap-1.5">
+            <input
+              v-model="iconSource"
+              type="radio"
+              name="quick-link-icon-source"
+              value="unavatar"
+              class="border-app bg-app-overlay h-3.5 w-3.5 cursor-pointer accent-current"
+            />
+            <span>{{ t('quickAccess.iconFromUnavatar') }}</span>
+          </label>
+        </div>
+      </div>
+      <div
+        class="border-app bg-app-overlay text-app-secondary flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border text-xs font-medium md:col-span-1"
       >
-        {{ isEditing ? t('common.save') : t('common.add') }}
-      </button>
-      <button
-        v-if="isEditing"
-        type="button"
-        class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
-        @click="$emit('cancel')"
-      >
-        {{ t('common.cancel') }}
-      </button>
+        <img
+          v-if="previewSrc"
+          :src="previewSrc"
+          alt=""
+          class="h-full w-full object-contain p-1"
+          @error="previewBroken = true"
+          @load="previewBroken = false"
+        />
+        <span v-else class="px-0.5 text-center leading-none">—</span>
+      </div>
+      <div class="flex flex-wrap items-center justify-end gap-2 md:col-span-1">
+        <button
+          type="submit"
+          class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
+          :disabled="!formData.url.trim()"
+        >
+          {{ isEditing ? t('common.save') : t('common.add') }}
+        </button>
+        <button
+          v-if="isEditing"
+          type="button"
+          class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
+          @click="$emit('cancel')"
+        >
+          {{ t('common.cancel') }}
+        </button>
+      </div>
     </div>
   </form>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { useI18n } from '@/i18n/composable'
-import { getFavicon, isAutoFavicon } from '@/utils/favicon'
 import { normalizeURL } from '@/utils/search'
+import { getGoogleFaviconUrl, getUnavatarFaviconUrl } from '@/utils/siteIcon'
 import type { QuickLink } from '@/utils/types'
 import { getTitleFromUrl } from '@/utils/url'
 
@@ -76,16 +104,51 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  submit: [data: { title: string; url: string; favicon?: string; useLocalFavicon?: boolean }]
+  submit: [data: { title: string; url: string; customFavicon?: string }]
   cancel: []
 }>()
 
-const formData = ref({ title: '', url: '', icon: '', useLocalFavicon: false })
+const formData = ref({ title: '', url: '', icon: '' })
+const iconSource = ref<'google' | 'unavatar' | 'custom'>('custom')
 const isEditing = ref(false)
+const previewBroken = ref(false)
+
+const previewSrc = computed(() => {
+  if (previewBroken.value) return ''
+  const s = formData.value.icon.trim()
+  if (!s) return ''
+  if (/^https?:\/\//i.test(s) || s.startsWith('chrome-extension:') || s.startsWith('data:')) return s
+  return ''
+})
 
 const resetForm = () => {
-  formData.value = { title: '', url: '', icon: '', useLocalFavicon: false }
+  formData.value = { title: '', url: '', icon: '' }
+  iconSource.value = 'custom'
   isEditing.value = false
+  previewBroken.value = false
+}
+
+function detectIconSource(pageUrl: string, iconUrl: string): 'google' | 'unavatar' | 'custom' {
+  const ctx = { url: pageUrl }
+  const g = getGoogleFaviconUrl(ctx)
+  const u = getUnavatarFaviconUrl(ctx)
+  if (g && iconUrl === g) return 'google'
+  if (u && iconUrl === u) return 'unavatar'
+  return 'custom'
+}
+
+function applyIconFromSource() {
+  if (iconSource.value === 'custom') return
+  const raw = formData.value.url.trim()
+  if (!raw) return
+  try {
+    const u = normalizeURL(raw)
+    const ctx = { url: u }
+    const next = iconSource.value === 'google' ? getGoogleFaviconUrl(ctx) : getUnavatarFaviconUrl(ctx)
+    if (next) formData.value.icon = next
+  } catch {
+    /* ignore */
+  }
 }
 
 const handleSubmit = () => {
@@ -93,38 +156,24 @@ const handleSubmit = () => {
 
   const normalizedUrl = normalizeURL(formData.value.url.trim())
   const title = formData.value.title.trim() || getTitleFromUrl(normalizedUrl)
-  // 如果使用本地 favicon，清除自定义图标 URL
-  const favicon = formData.value.useLocalFavicon ? undefined : formData.value.icon.trim() || undefined
-  const useLocalFavicon = formData.value.useLocalFavicon || undefined
+  const customFavicon = formData.value.icon.trim() || undefined
 
-  emit('submit', { title, url: normalizedUrl, favicon, useLocalFavicon })
+  emit('submit', { title, url: normalizedUrl, customFavicon })
 }
 
 watch(
   () => props.editingLink,
   link => {
     if (link) {
-      const item = { domain: link.domain, url: link.url }
-      const shouldShowCustomIcon = !!(link.favicon && !isAutoFavicon(item, link.favicon))
-      // 如果有本地 logo 或者明确设置了 useLocalFavicon，都视为使用本地图标
-      const useLocalFavicon = link.useLocalFavicon || !!link.logo
-      // 如果使用本地图标，图标 URL 为空（除非用户有自定义图标）
-      const iconValue = useLocalFavicon
-        ? shouldShowCustomIcon
-          ? link.favicon || ''
-          : ''
-        : link.favicon || getFavicon(item)
+      const custom = link.customFavicon?.trim() || ''
+      iconSource.value = custom ? detectIconSource(link.url, custom) : 'custom'
       formData.value = {
         title: link.title,
         url: link.url,
-        // 有本地 logo：仅回填"用户显式填写"的自定义图标 URL（不回填自动在线 favicon）
-        // 无本地 logo：回填在线 favicon URL（符合"在线获取"的初衷，也方便用户改成自定义 URL）
-        icon: iconValue,
-        useLocalFavicon,
+        icon: custom,
       }
       isEditing.value = true
     } else if (props.editingLink === null) {
-      // 只有在明确设置为 null 时才重置（避免初始化时的误触发）
       resetForm()
     }
   }
@@ -138,4 +187,15 @@ watch(
     }
   }
 )
+
+watch(
+  () => formData.value.icon,
+  () => {
+    previewBroken.value = false
+  }
+)
+
+watch([() => formData.value.url, iconSource], () => {
+  applyIconFromSource()
+})
 </script>

@@ -1,9 +1,25 @@
-import { getSiteFavicon, getUnavatarFavicon } from './favicon'
-import { tryGetLogoForUrl } from './logo'
+import { getPresetIconUrl } from './siteIcon'
 import type { QuickLink } from './types'
 import { extractDomainFromUrl } from './url'
 
-const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
+/** 仅用于预设表源数据；`default` 仅表示是否进入「首次安装默认快速访问」列表，不写入存储 */
+export type PresetSiteRow = {
+  title: string
+  url: string
+  category: string
+  default?: boolean
+}
+
+function presetRowToQuickLink(row: PresetSiteRow): QuickLink {
+  const favicon = getPresetIconUrl(row.url)
+  return {
+    title: row.title,
+    url: row.url,
+    ...(favicon ? { favicon } : {}),
+  }
+}
+
+const PRESET_QUICK_LINKS_RAW: PresetSiteRow[] = [
   // 按字母顺序排列
   { title: 'AbemaTV', url: 'https://abema.tv', category: '视频' },
   { title: 'Amazon', url: 'https://www.amazon.com', category: '购物', default: true },
@@ -125,27 +141,14 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
 ]
 
 /**
- * 预设站点：补齐本地 logo 或在线 favicon。
- * - 优先使用本地 logo（如果存在对应域名 svg）
- * - 如果没有本地 logo，则使用在线 favicon（unavatar 或站点 favicon.ico）
- * 说明：这不会在构建时引入网络请求；在线 favicon 会在运行时按需加载。
+ * 预设站点：为每个站点写入 assets/logo 下的图标路径到 favicon（若存在）。
  */
-export const PRESET_QUICK_LINKS: QuickLink[] = PRESET_QUICK_LINKS_RAW.map(link => {
-  const domain = link.domain || extractDomainFromUrl(link.url)
-  const logo = link.logo || tryGetLogoForUrl(link.url)
+export const PRESET_QUICK_LINKS: QuickLink[] = PRESET_QUICK_LINKS_RAW.map(presetRowToQuickLink)
 
-  // 如果没有本地 logo，使用在线 favicon
-  const favicon = logo
-    ? link.favicon // 如果有本地 logo，保留已有的 favicon（如果有）
-    : link.favicon || getUnavatarFavicon({ domain, url: link.url }) || getSiteFavicon({ domain, url: link.url })
-
-  return {
-    ...link,
-    domain,
-    ...(logo ? { logo } : {}),
-    ...(favicon ? { favicon } : {}),
-  }
-})
+/** 首次安装/无存储时的默认快速访问（由预设表中 `default: true` 的行生成） */
+export function getDefaultStarterQuickLinks(): QuickLink[] {
+  return PRESET_QUICK_LINKS_RAW.filter(row => row.default).map(presetRowToQuickLink)
+}
 
 // 网站标题的 i18n 映射（基于 URL）
 // 如果网站标题在多种语言下相同，则不需要添加

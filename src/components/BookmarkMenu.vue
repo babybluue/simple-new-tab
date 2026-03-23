@@ -48,8 +48,8 @@
           @click.stop="$emit('select', bookmark)"
         >
           <img
-            v-if="bookmark.logo || bookmark.favicon"
-            :src="bookmark.logo || bookmark.favicon"
+            v-if="bookmark.iconUrl"
+            :src="bookmark.iconUrl"
             :alt="bookmark.title"
             class="h-5 w-5 rounded transition group-hover:scale-105"
           />
@@ -57,14 +57,14 @@
             v-else
             class="bg-app-overlay text-app-secondary flex h-5 w-5 items-center justify-center rounded text-xs font-medium"
           >
-            {{ (bookmark.title || bookmark.domain || bookmark.url).charAt(0).toUpperCase() }}
+            {{ (bookmark.title || extractDomainFromUrl(bookmark.url) || bookmark.url).charAt(0).toUpperCase() }}
           </div>
           <div class="min-w-0 flex-1 text-left">
             <div class="flex items-center gap-2">
               <span class="min-w-0 truncate">{{ bookmark.title }}</span>
               <span v-if="bookmark.added" class="text-app-tertiary shrink-0 whitespace-nowrap text-[11px]">{{ t('bookmarkMenu.added') }}</span>
             </div>
-            <p class="text-app-tertiary truncate text-[11px]">{{ bookmark.domain }}</p>
+            <p class="text-app-tertiary truncate text-[11px]">{{ extractDomainFromUrl(bookmark.url) }}</p>
           </div>
           <span
             v-if="!bookmark.added"
@@ -89,6 +89,7 @@ import { computed, ref, watch } from 'vue'
 
 import { useI18n } from '@/i18n/composable'
 import { type BookmarkItem, getAllBookmarks } from '@/utils/bookmarks'
+import { resolveLinkIcon } from '@/utils/siteIcon'
 import { extractDomainFromUrl } from '@/utils/url'
 
 const { t } = useI18n()
@@ -110,9 +111,10 @@ const loading = ref(false)
 const bookmarksWithAddedState = computed(() => {
   const existingDomains = props.existingUrls.map(url => extractDomainFromUrl(url))
   return bookmarks.value.map(bookmark => {
-    const domain = bookmark.domain || extractDomainFromUrl(bookmark.url)
-    const added = props.existingUrls.includes(bookmark.url) || existingDomains.includes(domain)
-    return { ...bookmark, added }
+    const host = extractDomainFromUrl(bookmark.url)
+    const added = props.existingUrls.includes(bookmark.url) || existingDomains.includes(host)
+    const iconUrl = resolveLinkIcon(bookmark).icon
+    return { ...bookmark, added, iconUrl }
   })
 })
 
@@ -124,15 +126,15 @@ const filteredBookmarks = computed(() => {
   if (!keyword) return list
   return list.filter(bookmark => {
     const title = (bookmark.title || '').toLowerCase()
-    const domain = (bookmark.domain || '').toLowerCase()
-    return title.includes(keyword) || domain.includes(keyword)
+    const host = extractDomainFromUrl(bookmark.url).toLowerCase()
+    return title.includes(keyword) || host.includes(keyword)
   })
 })
 
 const loadBookmarks = async () => {
   loading.value = true
   try {
-    bookmarks.value = await getAllBookmarks(false)
+    bookmarks.value = await getAllBookmarks()
   } finally {
     loading.value = false
   }

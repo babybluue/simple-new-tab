@@ -39,8 +39,6 @@
     "recentVisits": "最近の訪問",
     "openLinksInNewTab": "リンクを新しいタブで開く",
     "iconOnlyLinkCards": "アイコンのみ",
-    "useLocalFavicon": "ローカルファビコン",
-    "useLocalFaviconTip": "オンラインサービスではなく、ブラウザキャッシュのサイトアイコンを使用",
     "customCss": "カスタム CSS",
     "customCssEnable": "カスタム CSS を有効にする",
     "customCssPlaceholder": "/* ここに CSS を貼り付けてください */",
@@ -84,8 +82,8 @@
     "websiteUrl": "ウェブサイト URL、例：https://example.com",
     "customIconUrl": "カスタムアイコン URL（オプション）",
     "dragToReorder": "ドラッグして並べ替え",
-    "useLocalFavicon": "ローカルアイコン",
-    "useLocalFaviconTip": "オンラインサービスではなく、ブラウザキャッシュのアイコンを使用"
+    "iconFromGoogle": "Google ファビコン",
+    "iconFromUnavatar": "Unavatar"
   },
   "presetMenu": {
     "selectCommonSites": "一般的なサイトを選択",
