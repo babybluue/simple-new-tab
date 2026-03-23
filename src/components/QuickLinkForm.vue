@@ -5,23 +5,39 @@
     :aria-label="t('quickAccess.addCustom')"
     @submit.prevent="handleSubmit"
   >
-    <div class="grid grid-cols-1 gap-3 md:grid-cols-12 md:items-end">
-      <input
-        v-model="formData.title"
-        type="text"
-        class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none md:col-span-3"
-        :placeholder="t('quickAccess.websiteName')"
-        name="title"
-      />
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex w-full flex-1 items-center gap-2">
+        <div
+          class="border-app bg-app-overlay text-app-secondary flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border text-xs font-medium"
+        >
+          <img
+            v-if="previewSrc"
+            :src="previewSrc"
+            alt=""
+            class="h-full w-full object-contain p-1"
+            @error="previewBroken = true"
+            @load="previewBroken = false"
+          />
+          <span v-else class="px-0.5 text-center leading-none">—</span>
+        </div>
+        <input
+          v-model="formData.title"
+          type="text"
+          class="border-app bg-app-overlay text-app placeholder:text-app-tertiary rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none"
+          :placeholder="t('quickAccess.websiteName')"
+          name="title"
+        />
+      </div>
+
       <input
         v-model="formData.url"
         type="text"
-        class="border-app bg-app-overlay text-app placeholder:text-app-tertiary w-full rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none md:col-span-4"
+        class="border-app bg-app-overlay text-app placeholder:text-app-tertiary flex-1 rounded-xl border px-3 py-2 text-sm ring-2 ring-transparent focus:border-(--app-border-color-hover) focus:ring-(--app-focus-ring) focus:outline-none"
         :placeholder="t('quickAccess.websiteUrl')"
         required
         name="url"
       />
-      <div class="flex min-w-0 flex-col gap-2 md:col-span-3">
+      <div class="flex flex-1 gap-2">
         <input
           v-model="formData.icon"
           type="text"
@@ -30,7 +46,7 @@
           name="icon"
           @input="iconSource = 'custom'"
         />
-        <div class="text-app-secondary flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+        <div class="text-app-secondary flex items-center gap-x-4 text-xs">
           <label class="flex cursor-pointer items-center gap-1.5">
             <input
               v-model="iconSource"
@@ -39,7 +55,7 @@
               value="google"
               class="border-app bg-app-overlay h-3.5 w-3.5 cursor-pointer accent-current"
             />
-            <span>{{ t('quickAccess.iconFromGoogle') }}</span>
+            <span class="truncate">{{ t('quickAccess.iconFromGoogle') }}</span>
           </label>
           <label class="flex cursor-pointer items-center gap-1.5">
             <input
@@ -49,27 +65,15 @@
               value="unavatar"
               class="border-app bg-app-overlay h-3.5 w-3.5 cursor-pointer accent-current"
             />
-            <span>{{ t('quickAccess.iconFromUnavatar') }}</span>
+            <span class="truncate">{{ t('quickAccess.iconFromUnavatar') }}</span>
           </label>
         </div>
       </div>
-      <div
-        class="border-app bg-app-overlay text-app-secondary flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border text-xs font-medium md:col-span-1"
-      >
-        <img
-          v-if="previewSrc"
-          :src="previewSrc"
-          alt=""
-          class="h-full w-full object-contain p-1"
-          @error="previewBroken = true"
-          @load="previewBroken = false"
-        />
-        <span v-else class="px-0.5 text-center leading-none">—</span>
-      </div>
-      <div class="flex flex-wrap items-center justify-end gap-2 md:col-span-1">
+
+      <div class="flex flex-nowrap items-center justify-end gap-2 md:col-span-1">
         <button
           type="submit"
-          class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
+          class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium whitespace-nowrap transition disabled:opacity-60"
           :disabled="!formData.url.trim()"
         >
           {{ isEditing ? t('common.save') : t('common.add') }}
@@ -77,7 +81,7 @@
         <button
           v-if="isEditing"
           type="button"
-          class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium transition disabled:opacity-60"
+          class="border-app text-app bg-app-overlay bg-app-overlay-hover flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-5 py-2 text-xs font-medium whitespace-nowrap transition disabled:opacity-60"
           @click="$emit('cancel')"
         >
           {{ t('common.cancel') }}
@@ -170,7 +174,7 @@ watch(
       formData.value = {
         title: link.title,
         url: link.url,
-        icon: custom,
+        icon: link.favicon || custom,
       }
       isEditing.value = true
     } else if (props.editingLink === null) {

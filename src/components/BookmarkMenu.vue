@@ -62,7 +62,9 @@
           <div class="min-w-0 flex-1 text-left">
             <div class="flex items-center gap-2">
               <span class="min-w-0 truncate">{{ bookmark.title }}</span>
-              <span v-if="bookmark.added" class="text-app-tertiary shrink-0 whitespace-nowrap text-[11px]">{{ t('bookmarkMenu.added') }}</span>
+              <span v-if="bookmark.added" class="text-app-tertiary shrink-0 text-[11px] whitespace-nowrap">{{
+                t('bookmarkMenu.added')
+              }}</span>
             </div>
             <p class="text-app-tertiary truncate text-[11px]">{{ extractDomainFromUrl(bookmark.url) }}</p>
           </div>
@@ -77,7 +79,10 @@
           {{ bookmarks.length === 0 ? t('bookmarkMenu.noBookmarks') : t('bookmarkMenu.noMatches') }}
         </div>
       </div>
-      <div v-if="!hasAvailableBookmarks && !loading && bookmarks.length > 0" class="text-app-tertiary px-3 pb-3 text-[11px]">
+      <div
+        v-if="!hasAvailableBookmarks && !loading && bookmarks.length > 0"
+        class="text-app-tertiary px-3 pb-3 text-[11px]"
+      >
         {{ t('bookmarkMenu.allBookmarksAdded') }}
       </div>
     </div>
@@ -150,4 +155,3 @@ watch(
   }
 )
 </script>
-
