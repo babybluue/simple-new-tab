@@ -6,7 +6,6 @@ import {
   getSystemPrefersDark,
   getThemeDefaults,
   THEME_DARK_BG,
-  THEME_DARK_PRIMARY,
   THEME_LIGHT_BG,
   THEME_LIGHT_PRIMARY,
 } from './theme'
@@ -85,7 +84,6 @@ export const DEFAULT_SETTINGS: Settings = {
 
 // 常量
 const MAX_QUICK_LINKS = 30
-const DEFAULT_OPACITY = 1
 const DEFAULT_VISIT_COUNT = 1
 
 const FALLBACK_DEFAULT_QUICK_LINKS: QuickLink[] = [
@@ -395,9 +393,7 @@ export async function addQuickLink(link: QuickLink): Promise<QuickLink[]> {
   const links = await getQuickLinks()
   const normalized = normalizeQuickLink(link)
   const host = extractDomainFromUrl(normalized.url)
-  const existingIndex = links.findIndex(
-    item => extractDomainFromUrl(item.url) === host || item.url === normalized.url
-  )
+  const existingIndex = links.findIndex(item => extractDomainFromUrl(item.url) === host || item.url === normalized.url)
 
   let updated: QuickLink[]
   if (existingIndex !== -1) {
@@ -416,9 +412,7 @@ export async function addQuickLink(link: QuickLink): Promise<QuickLink[]> {
 export async function removeQuickLink(url: string): Promise<QuickLink[]> {
   const targetHost = extractDomainFromUrl(url)
   const links = await getQuickLinks()
-  const filtered = links.filter(
-    link => extractDomainFromUrl(link.url) !== targetHost && link.url !== url
-  )
+  const filtered = links.filter(link => extractDomainFromUrl(link.url) !== targetHost && link.url !== url)
   await saveQuickLinks(filtered)
   return filtered
 }
