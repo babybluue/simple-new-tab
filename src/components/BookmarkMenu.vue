@@ -24,19 +24,7 @@
         />
       </div>
       <div v-if="loading" class="flex items-center justify-center py-8">
-        <svg
-          class="text-app-tertiary h-5 w-5 animate-spin"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
+        <LoadingSpinnerIcon />
       </div>
       <div v-else class="overflow-auto p-1" :style="{ maxHeight: `${Math.max(position.maxHeight - 92, 160)}px` }">
         <button
@@ -48,8 +36,8 @@
           @click.stop="$emit('select', bookmark)"
         >
           <img
-            v-if="bookmark.logo || bookmark.favicon"
-            :src="bookmark.logo || bookmark.favicon"
+            v-if="bookmark.iconUrl"
+            :src="bookmark.iconUrl"
             :alt="bookmark.title"
             class="h-5 w-5 rounded transition group-hover:scale-105"
           />
@@ -57,14 +45,16 @@
             v-else
             class="bg-app-overlay text-app-secondary flex h-5 w-5 items-center justify-center rounded text-xs font-medium"
           >
-            {{ (bookmark.title || bookmark.domain || bookmark.url).charAt(0).toUpperCase() }}
+            {{ (bookmark.title || extractDomainFromUrl(bookmark.url) || bookmark.url).charAt(0).toUpperCase() }}
           </div>
           <div class="min-w-0 flex-1 text-left">
             <div class="flex items-center gap-2">
               <span class="min-w-0 truncate">{{ bookmark.title }}</span>
-              <span v-if="bookmark.added" class="text-app-tertiary shrink-0 whitespace-nowrap text-[11px]">{{ t('bookmarkMenu.added') }}</span>
+              <span v-if="bookmark.added" class="text-app-tertiary shrink-0 text-[11px] whitespace-nowrap">{{
+                t('bookmarkMenu.added')
+              }}</span>
             </div>
-            <p class="text-app-tertiary truncate text-[11px]">{{ bookmark.domain }}</p>
+            <p class="text-app-tertiary truncate text-[11px]">{{ extractDomainFromUrl(bookmark.url) }}</p>
           </div>
           <span
             v-if="!bookmark.added"
@@ -77,7 +67,10 @@
           {{ bookmarks.length === 0 ? t('bookmarkMenu.noBookmarks') : t('bookmarkMenu.noMatches') }}
         </div>
       </div>
-      <div v-if="!hasAvailableBookmarks && !loading && bookmarks.length > 0" class="text-app-tertiary px-3 pb-3 text-[11px]">
+      <div
+        v-if="!hasAvailableBookmarks && !loading && bookmarks.length > 0"
+        class="text-app-tertiary px-3 pb-3 text-[11px]"
+      >
         {{ t('bookmarkMenu.allBookmarksAdded') }}
       </div>
     </div>
@@ -89,7 +82,10 @@ import { computed, ref, watch } from 'vue'
 
 import { useI18n } from '@/i18n/composable'
 import { type BookmarkItem, getAllBookmarks } from '@/utils/bookmarks'
+import { resolveLinkIcon } from '@/utils/siteIcon'
 import { extractDomainFromUrl } from '@/utils/url'
+
+import LoadingSpinnerIcon from './LoadingSpinnerIcon.vue'
 
 const { t } = useI18n()
 
@@ -110,9 +106,10 @@ const loading = ref(false)
 const bookmarksWithAddedState = computed(() => {
   const existingDomains = props.existingUrls.map(url => extractDomainFromUrl(url))
   return bookmarks.value.map(bookmark => {
-    const domain = bookmark.domain || extractDomainFromUrl(bookmark.url)
-    const added = props.existingUrls.includes(bookmark.url) || existingDomains.includes(domain)
-    return { ...bookmark, added }
+    const host = extractDomainFromUrl(bookmark.url)
+    const added = props.existingUrls.includes(bookmark.url) || existingDomains.includes(host)
+    const iconUrl = resolveLinkIcon(bookmark).icon
+    return { ...bookmark, added, iconUrl }
   })
 })
 
@@ -124,15 +121,15 @@ const filteredBookmarks = computed(() => {
   if (!keyword) return list
   return list.filter(bookmark => {
     const title = (bookmark.title || '').toLowerCase()
-    const domain = (bookmark.domain || '').toLowerCase()
-    return title.includes(keyword) || domain.includes(keyword)
+    const host = extractDomainFromUrl(bookmark.url).toLowerCase()
+    return title.includes(keyword) || host.includes(keyword)
   })
 })
 
 const loadBookmarks = async () => {
   loading.value = true
   try {
-    bookmarks.value = await getAllBookmarks(false)
+    bookmarks.value = await getAllBookmarks()
   } finally {
     loading.value = false
   }
@@ -148,4 +145,3 @@ watch(
   }
 )
 </script>
-

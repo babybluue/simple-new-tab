@@ -207,12 +207,23 @@ export function parseAndSanitizeSettingsBackup(jsonText: string): ParseBackupRes
           })()
 
     const faviconRaw = asString(r.favicon, 4000)
-    const favicon = faviconRaw && (isHttpUrl(faviconRaw) || isSafeImageDataUrl(faviconRaw)) ? faviconRaw : undefined
+    const favicon =
+      faviconRaw && (isHttpUrl(faviconRaw) || isSafeImageDataUrl(faviconRaw) || faviconRaw.startsWith('chrome-extension:'))
+        ? faviconRaw
+        : undefined
 
-    const categoryRaw = asString(r.category, 30)
-    const category = categoryRaw && categoryRaw.trim() ? categoryRaw.trim() : undefined
+    const customFaviconRaw = asString(r.customFavicon, 4000)
+    const customFavicon =
+      customFaviconRaw && (isHttpUrl(customFaviconRaw) || isSafeImageDataUrl(customFaviconRaw))
+        ? customFaviconRaw
+        : undefined
 
-    sanitizedLinks.push({ title, url, ...(favicon ? { favicon } : {}), ...(category ? { category } : {}) })
+    sanitizedLinks.push({
+      title,
+      url,
+      ...(favicon ? { favicon } : {}),
+      ...(customFavicon ? { customFavicon } : {}),
+    })
     if (sanitizedLinks.length >= 30) break
   }
 

@@ -1,39 +1,202 @@
-import { getFaviconWithSettings, type FaviconItem } from './favicon'
-import { tryGetLogoForUrl } from './logo'
+/**
+ * 站点图标：统一解析与工具（customFavicon > 本地预设 > Chrome 缓存）
+ */
+import { extractDomainFromUrl, extractRootDomain } from './url'
 
-export interface SiteIconInput {
+const LOGOS = import.meta.glob('../assets/logo/*.svg', {
+  eager: true,
+  import: 'default',
+}) as Record<string, string>
+
+export interface SiteIconFields {
   url: string
-  domain?: string
-  /** 可选：已有的本地 logo（静态资源 URL） */
-  logo?: string
-  /** 可选：已有的 favicon（可能是自定义或在线） */
+  /** 预设图标（assets/logo 资源 URL），由存储或运行时解析 */
   favicon?: string
-  /** 是否使用本地缓存的 favicon（单个链接设置） */
-  useLocalFavicon?: boolean
+  /** 用户自定义图标 URL */
+  customFavicon?: string
+}
+
+function logoFileKeyFromHostname(hostname: string): string {
+  return hostname.toLowerCase().replace(/[^a-z0-9._-]/g, '_')
+}
+
+function logoFileKeyFromUrl(url: string): string {
+  return logoFileKeyFromHostname(extractDomainFromUrl(url))
+}
+
+/** 是否存在该域名的本地预设图标（不含 generic） */
+export function getPresetIconUrl(url: string): string | undefined {
+  const fullKey = logoFileKeyFromUrl(url)
+  const fullRel = `../assets/logo/${fullKey}.svg`
+  if (LOGOS[fullRel]) return LOGOS[fullRel]
+
+  const hostname = extractDomainFromUrl(url)
+  const root = extractRootDomain(hostname)
+  if (root && root !== hostname) {
+    const rootKey = logoFileKeyFromHostname(root)
+    const rootRel = `../assets/logo/${rootKey}.svg`
+    if (LOGOS[rootRel]) return LOGOS[rootRel]
+  }
+
+  return undefined
+}
+
+/** 获取图标 URL（含 generic 回退），用于搜索引擎等 */
+export function getLogoForUrl(url: string): string {
+  const key = logoFileKeyFromUrl(url)
+  const rel = `../assets/logo/${key}.svg`
+  return LOGOS[rel] || LOGOS['../assets/logo/generic.svg'] || ''
+}
+
+export interface FaviconContext {
+  domain?: string
+  url: string
+}
+
+export function extractDomainFromItem(item: FaviconContext | string): string | null {
+  const target = typeof item === 'string' ? item : item.domain || item.url
+  try {
+    const urlObj = new URL(target.startsWith('http') ? target : `https://${target}`)
+    return urlObj.hostname
+  } catch {
+    return null
+  }
+}
+
+export function isLocalAddress(item: FaviconContext | string): boolean {
+  const target = typeof item === 'string' ? item : item.domain || item.url
+  if (target.startsWith('file://')) return true
+
+  const domain = extractDomainFromItem(item)
+  if (!domain) return false
+
+  if (domain === 'localhost' || domain.endsWith('.localhost')) return true
+  if (domain === '[::1]' || domain === '::1') return true
+
+  const ipv4Regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/
+  const match = domain.match(ipv4Regex)
+  if (match) {
+    const [, a, b] = match.map(Number)
+    if (a === 127) return true
+    if (a === 10) return true
+    if (a === 172 && b >= 16 && b <= 31) return true
+    if (a === 192 && b === 168) return true
+    if (a === 169 && b === 254) return true
+    if (a === 0 && b === 0) return true
+  }
+
+  if (domain.endsWith('.local') || domain.endsWith('.test') || domain.endsWith('.dev.local')) return true
+
+  return false
+}
+
+/** 去掉 query/hash，供 Chrome favicon API 使用 */
+export function normalizePageUrlForFavicon(url: string): string {
+  try {
+    const u = new URL(url.startsWith('http') ? url : `https://${url}`)
+    u.search = ''
+    u.hash = ''
+    return u.href
+  } catch {
+    return url
+  }
+}
+
+export function getChromeCachedFaviconUrl(url: string, size: number = 32): string {
+  const pageUrl = normalizePageUrlForFavicon(url)
+  return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${size}`
+}
+
+export function getUnavatarFaviconUrl(item: FaviconContext): string | undefined {
+  if (isLocalAddress(item)) return undefined
+  const domain = extractDomainFromItem(item)
+  return domain ? `https://unavatar.io/${domain}` : undefined
+}
+
+export function getGoogleFaviconUrl(item: FaviconContext): string | undefined {
+  if (isLocalAddress(item)) return undefined
+  const domain = extractDomainFromItem(item)
+  if (!domain) return undefined
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`
+}
+
+export function getSiteFaviconIcoUrl(item: FaviconContext): string | undefined {
+  const domain = extractDomainFromItem(item)
+  if (!domain) return undefined
+  return `https://${domain}/favicon.ico`
 }
 
 /**
- * 统一的站点图标解析规则：
- * - 优先使用本地内置 logo（如果存在对应域名 svg）
- * - favicon 作为回退：优先用已有 favicon，否则计算默认在线 favicon（unavatar / /favicon.ico）
- *
- * 说明：
- * - 即使返回了 favicon，只要 logo 存在，`LinkCard` 初始也会先渲染 logo，不会触发 favicon 网络请求；
- *   只有当 logo 加载失败时，`LinkCard` 才会回退到 favicon。
- * @param input 站点图标输入
- * @param globalUseLocalFavicon 是否使用本地 favicon（已废弃，保留用于向后兼容）
+ * 判断是否为历史版本自动写入的 favicon（unavatar、/favicon.ico、Chrome 缓存、Google s2）。
+ * 注意：若用户曾把 Google s2 链接当作「自定义」仅存于旧 favicon 字段，迁移时会被丢弃（由预设/Chrome 重新解析）。
  */
-export function resolveSiteIcon(
-  input: SiteIconInput,
-  globalUseLocalFavicon: boolean = false
-): { logo?: string; favicon?: string } {
-  const logo = input.logo || tryGetLogoForUrl(input.url)
-  const faviconItem: FaviconItem = {
-    domain: input.domain,
-    url: input.url,
-    favicon: input.favicon,
-    useLocalFavicon: input.useLocalFavicon,
+export function isAutoGeneratedFavicon(item: FaviconContext, favicon?: string): boolean {
+  const candidate = favicon
+  if (!candidate) return false
+
+  if (candidate.includes('/_favicon/?pageUrl=')) return true
+
+  const domain = extractDomainFromItem(item)
+  if (!domain) return false
+
+  const unavatar = `https://unavatar.io/${domain}`
+  const siteHttps = `https://${domain}/favicon.ico`
+  const siteHttp = `http://${domain}/favicon.ico`
+
+  if (candidate === unavatar || candidate.startsWith(`${unavatar}?`)) return true
+  if (candidate === siteHttps || candidate === siteHttp) return true
+
+  if (candidate.startsWith('https://www.google.com/s2/favicons?')) return true
+
+  return false
+}
+
+/**
+ * 解析最终展示用图标：customFavicon > 预设 favicon > Chrome 缓存
+ * iconFallback：主图标加载失败时的下一候选（如自定义失败则回退预设或 Chrome）
+ */
+export function resolveLinkIcon(input: SiteIconFields): { icon?: string; iconFallback?: string } {
+  const url = input.url
+  const preset = getPresetIconUrl(url) || input.favicon
+  const custom = input.customFavicon?.trim()
+
+  if (custom) {
+    const fb = preset || getChromeCachedFaviconUrl(url)
+    return { icon: custom, iconFallback: fb && fb !== custom ? fb : undefined }
   }
-  const favicon = getFaviconWithSettings(faviconItem, globalUseLocalFavicon) || undefined
-  return { ...(logo ? { logo } : {}), ...(favicon ? { favicon } : {}) }
+
+  if (preset) {
+    const chrome = getChromeCachedFaviconUrl(url)
+    return { icon: preset, iconFallback: chrome !== preset ? chrome : undefined }
+  }
+
+  return { icon: getChromeCachedFaviconUrl(url) }
+}
+
+/** 历史记录仅按 URL 解析（不读存储里的旧在线 favicon） */
+export function resolveHistoryIcon(item: { url: string }): { icon?: string; iconFallback?: string } {
+  return resolveLinkIcon({ url: item.url })
+}
+
+/**
+ * LinkCard 在 icon / iconFallback 均失败后：尝试站点 /favicon.ico
+ */
+export function handleLinkIconError(url: string, event: Event, fallbackTried: Record<string, boolean>): void {
+  const img = event.target as HTMLImageElement
+  const key = url
+
+  if (fallbackTried[key]) {
+    img.style.display = 'none'
+    return
+  }
+
+  const site = getSiteFaviconIcoUrl({ url })
+  if (site && img.src !== site) {
+    fallbackTried[key] = true
+    img.src = site
+    return
+  }
+
+  fallbackTried[key] = true
+  img.style.display = 'none'
 }

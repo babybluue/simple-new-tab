@@ -1,4 +1,4 @@
-import { getLogoForUrl } from './logo'
+import { getLogoForUrl } from './siteIcon'
 
 // 搜索引擎配置
 export interface SearchEngine {

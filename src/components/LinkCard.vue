@@ -112,9 +112,10 @@ const { t } = useI18n()
 const props = defineProps<{
   title: string
   subtitle: string
-  /** 本地内置 logo（优先展示） */
-  logo?: string
-  favicon?: string
+  /** 主图标 URL */
+  icon?: string
+  /** 主图标失败时的回退 URL */
+  iconFallback?: string
   fallbackChar: string
   cardStyle?: Record<string, string>
   iconOnly?: boolean
@@ -125,11 +126,11 @@ const emit = defineEmits<{
   'icon-error': [event: Event]
 }>()
 
-const iconSrc = ref<string | undefined>(props.logo || props.favicon)
+const iconSrc = ref<string | undefined>(props.icon || props.iconFallback)
 watch(
-  () => [props.logo, props.favicon],
+  () => [props.icon, props.iconFallback],
   () => {
-    iconSrc.value = props.logo || props.favicon
+    iconSrc.value = props.icon || props.iconFallback
   }
 )
 
@@ -150,9 +151,8 @@ const iconOnlyBorderStyle = computed<Record<string, string>>(() => {
 })
 
 const handleIconError = (e: Event) => {
-  // 若本地 logo 加载失败且存在 favicon，则回退到 favicon；否则抛给外部继续处理
-  if (props.logo && props.favicon && iconSrc.value !== props.favicon) {
-    iconSrc.value = props.favicon
+  if (props.iconFallback && iconSrc.value !== props.iconFallback) {
+    iconSrc.value = props.iconFallback
     return
   }
   emit('icon-error', e)

@@ -1,12 +1,8 @@
 export interface QuickLink {
   title: string
   url: string
-  /** 本地内置站点 logo（优先于 favicon 渲染） */
-  logo?: string
+  /** 预设图标（assets/logo）或历史数据中的预设路径；展示时优先于 Chrome 缓存 */
   favicon?: string
-  domain?: string
-  category?: string
-  default?: boolean
-  /** 是否使用本地缓存的 favicon（而非在线服务） */
-  useLocalFavicon?: boolean
+  /** 用户自定义图标 URL（最高优先级） */
+  customFavicon?: string
 }

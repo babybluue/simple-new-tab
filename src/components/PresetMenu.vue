@@ -33,17 +33,23 @@
           @click.stop="$emit('select', preset)"
         >
           <img
-            v-if="preset.logo || preset.favicon"
-            :src="preset.logo || preset.favicon"
+            v-if="preset.favicon"
+            :src="preset.favicon"
             :alt="preset.title"
             class="h-5 w-5 rounded transition group-hover:scale-105"
           />
+          <div
+            v-else
+            class="bg-app-overlay text-app-secondary flex h-5 w-5 items-center justify-center rounded text-xs font-medium"
+          >
+            {{ (preset.title || extractDomainFromUrl(preset.url) || preset.url).charAt(0).toUpperCase() }}
+          </div>
           <div class="min-w-0 flex-1 text-left">
             <div class="flex items-center gap-2">
               <span class="min-w-0 truncate">{{ getLocalizedSiteTitle(preset.url, getLocale(), preset.title) }}</span>
               <span v-if="preset.added" class="text-app-tertiary shrink-0 whitespace-nowrap text-[11px]">{{ t('presetMenu.added') }}</span>
             </div>
-            <p class="text-app-tertiary truncate text-[11px]">{{ preset.domain }}</p>
+            <p class="text-app-tertiary truncate text-[11px]">{{ extractDomainFromUrl(preset.url) }}</p>
           </div>
           <span
             v-if="!preset.added"
@@ -70,6 +76,7 @@ import { getLocale } from '@/i18n'
 import { useI18n } from '@/i18n/composable'
 import { getLocalizedSiteTitle } from '@/utils/presets'
 import type { QuickLink } from '@/utils/types'
+import { extractDomainFromUrl } from '@/utils/url'
 
 const { t } = useI18n()
 
@@ -98,8 +105,8 @@ const filteredPresets = computed(() => {
   return props.presets.filter(preset => {
     const localizedTitle = getLocalizedSiteTitle(preset.url, currentLocale, preset.title)
     const title = localizedTitle.toLowerCase()
-    const domain = (preset.domain || '').toLowerCase()
-    return title.includes(keyword) || domain.includes(keyword)
+    const host = extractDomainFromUrl(preset.url).toLowerCase()
+    return title.includes(keyword) || host.includes(keyword)
   })
 })
 

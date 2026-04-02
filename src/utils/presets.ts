@@ -1,12 +1,28 @@
-import { getSiteFavicon, getUnavatarFavicon } from './favicon'
-import { tryGetLogoForUrl } from './logo'
+import { getPresetIconUrl } from './siteIcon'
 import type { QuickLink } from './types'
 import { extractDomainFromUrl } from './url'
 
-const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
+/** 仅用于预设表源数据；`default` 仅表示是否进入「首次安装默认快速访问」列表，不写入存储 */
+export type PresetSiteRow = {
+  title: string
+  url: string
+  category: string
+  default?: boolean
+}
+
+function presetRowToQuickLink(row: PresetSiteRow): QuickLink {
+  const favicon = getPresetIconUrl(row.url)
+  return {
+    title: row.title,
+    url: row.url,
+    ...(favicon ? { favicon } : {}),
+  }
+}
+
+const PRESET_QUICK_LINKS_RAW: PresetSiteRow[] = [
   // 按字母顺序排列
   { title: 'AbemaTV', url: 'https://abema.tv', category: '视频' },
-  { title: 'Amazon', url: 'https://www.amazon.com', category: '购物', default: true },
+  { title: 'Amazon', url: 'https://www.amazon.com', category: '购物' },
   { title: 'Apple Music', url: 'https://music.apple.com', category: '音乐' },
   { title: 'AWS 控制台', url: 'https://aws.amazon.com/console/', category: '云' },
   { title: 'Azure Portal', url: 'https://portal.azure.com', category: '云' },
@@ -16,7 +32,7 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'ChatGPT', url: 'https://chat.openai.com', category: 'AI', default: true },
   { title: 'Claude', url: 'https://claude.ai', category: 'AI' },
   { title: 'Cloudflare', url: 'https://dash.cloudflare.com', category: '云' },
-  { title: 'Coupang', url: 'https://www.coupang.com', category: '购物', default: true },
+  { title: 'Coupang', url: 'https://www.coupang.com', category: '购物' },
   { title: 'CSDN', url: 'https://www.csdn.net', category: '社区' },
   { title: 'Cdiscount', url: 'https://www.cdiscount.com', category: '购物' },
   { title: 'Daum', url: 'https://www.daum.net', category: '资讯' },
@@ -36,7 +52,6 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: '飞书', url: 'https://www.feishu.cn', category: '办公' },
   { title: 'Fnac', url: 'https://www.fnac.com', category: '购物' },
   { title: 'Gemini', url: 'https://gemini.google.com', category: 'AI', default: true },
-  { title: 'Genie Music', url: 'https://www.genie.co.kr', category: '音乐' },
   { title: 'Gitee', url: 'https://gitee.com', category: '开发' },
   { title: 'GitHub', url: 'https://github.com', category: '开发', default: true },
   { title: 'GitLab', url: 'https://gitlab.com', category: '开发' },
@@ -45,6 +60,7 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'Google Docs', url: 'https://docs.google.com', category: '办公' },
   { title: 'Google Drive', url: 'https://drive.google.com', category: '办公' },
   { title: 'Google Sheets', url: 'https://sheets.google.com', category: '办公' },
+  { title: 'Google 翻译', url: 'https://translate.google.com', category: '办公' },
   { title: 'Grok', url: 'https://grok.com', category: 'AI' },
   { title: 'Hacker News', url: 'https://news.ycombinator.com', category: '资讯' },
   { title: 'Hulu', url: 'https://www.hulu.com', category: '视频' },
@@ -52,11 +68,12 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: '爱奇艺', url: 'https://www.iqiyi.com', category: '视频' },
   { title: '京东', url: 'https://www.jd.com', category: '购物' },
   { title: '掘金', url: 'https://juejin.cn', category: '社区' },
-  { title: 'KakaoTalk', url: 'https://www.kakaocorp.com', category: '社交', default: true },
+  { title: 'KakaoTalk', url: 'https://www.kakaocorp.com', category: '社交' },
+  { title: 'Kimi', url: 'https://kimi.moonshot.cn', category: 'AI' },
   { title: '快手', url: 'https://www.kuaishou.com', category: '短视频' },
   { title: 'Le Figaro', url: 'https://www.lefigaro.fr', category: '资讯' },
   { title: 'Le Monde', url: 'https://www.lemonde.fr', category: '资讯' },
-  { title: 'LINE', url: 'https://line.me', category: '社交', default: true },
+  { title: 'LINE', url: 'https://line.me', category: '社交' },
   { title: 'LinkedIn', url: 'https://www.linkedin.com', category: '社交' },
   { title: 'Mastodon', url: 'https://mastodon.social', category: '社交' },
   { title: 'Max', url: 'https://www.max.com', category: '视频' },
@@ -66,8 +83,8 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'Mercari', url: 'https://www.mercari.com/jp', category: '购物' },
   { title: 'Microsoft Teams', url: 'https://teams.microsoft.com', category: '办公' },
   { title: 'Midjourney', url: 'https://www.midjourney.com', category: 'AI' },
-  { title: 'Naver', url: 'https://www.naver.com', category: '资讯', default: true },
-  { title: 'Netflix', url: 'https://www.netflix.com', category: '视频', default: true },
+  { title: 'Naver', url: 'https://www.naver.com', category: '资讯' },
+  { title: 'Netflix', url: 'https://www.netflix.com', category: '视频' },
   { title: 'Netlify', url: 'https://www.netlify.com', category: '开发' },
   { title: 'NHK', url: 'https://www.nhk.or.jp', category: '资讯' },
   { title: 'NicoNico', url: 'https://www.nicovideo.jp', category: '视频' },
@@ -96,6 +113,7 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'Steam', url: 'https://store.steampowered.com', category: '游戏' },
   { title: 'Telegram', url: 'https://web.telegram.org', category: '社交' },
   { title: 'Threads', url: 'https://www.threads.net', category: '社交' },
+  { title: 'TapTap', url: 'https://www.taptap.cn', category: '游戏' },
   { title: 'TikTok', url: 'https://www.tiktok.com', category: '社交' },
   { title: '天猫', url: 'https://www.tmall.com', category: '购物' },
   { title: 'Tumblr', url: 'https://www.tumblr.com', category: '社交' },
@@ -106,13 +124,13 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: 'VK', url: 'https://vk.com', category: '社交' },
   { title: 'X', url: 'https://x.com', category: '社交', default: true },
   { title: 'Xbox', url: 'https://www.xbox.com', category: '游戏' },
-  { title: 'Yahoo! Japan', url: 'https://www.yahoo.co.jp', category: '资讯', default: true },
+  { title: 'Yahoo! Japan', url: 'https://www.yahoo.co.jp', category: '资讯' },
   { title: 'Yandex', url: 'https://yandex.ru', category: '资讯' },
   { title: 'YouTube', url: 'https://www.youtube.com', category: '视频', default: true },
   { title: 'YouTube Music', url: 'https://music.youtube.com', category: '音乐' },
   { title: 'Zenn', url: 'https://zenn.dev', category: '开发' },
   { title: 'Zoom', url: 'https://zoom.us', category: '办公' },
-  { title: '淘宝', url: 'https://www.taobao.com', category: '购物', default: true },
+  { title: '淘宝', url: 'https://www.taobao.com', category: '购物' },
   { title: '腾讯视频', url: 'https://v.qq.com', category: '视频' },
   { title: '微博', url: 'https://weibo.com', category: '社交', default: true },
   { title: '网易云音乐', url: 'https://music.163.com', category: '音乐' },
@@ -120,32 +138,40 @@ const PRESET_QUICK_LINKS_RAW: QuickLink[] = [
   { title: '闲鱼', url: 'https://www.goofish.com', category: '购物' },
   { title: '小红书', url: 'https://www.xiaohongshu.com', category: '社区' },
   { title: '优酷', url: 'https://www.youku.com', category: '视频' },
-  { title: '知乎', url: 'https://www.zhihu.com', category: '社区', default: true },
+  { title: '知乎', url: 'https://www.zhihu.com', category: '社区' },
+  { title: '12306', url: 'https://www.12306.cn', category: '出行' },
+  { title: '36 氪', url: 'https://www.36kr.com', category: '资讯' },
+  { title: '4399', url: 'https://www.4399.com', category: '游戏' },
+  { title: 'IT 之家', url: 'https://www.ithome.com', category: '资讯' },
+  { title: '百度', url: 'https://www.baidu.com', category: '资讯' },
+  { title: '百度地图', url: 'https://map.baidu.com', category: '出行' },
+  { title: '钉钉', url: 'https://www.dingtalk.com', category: '办公' },
+  { title: '斗鱼', url: 'https://www.douyu.com', category: '直播' },
+  { title: '豆包', url: 'https://www.doubao.com', category: 'AI' },
+  { title: '酷安', url: 'https://www.coolapk.com', category: '社区' },
+  { title: '酷狗音乐', url: 'https://www.kugou.com', category: '音乐' },
+  { title: '虎牙', url: 'https://www.huya.com', category: '直播' },
+  { title: '虎嗅', url: 'https://www.huxiu.com', category: '资讯' },
+  { title: '芒果 TV', url: 'https://www.mgtv.com', category: '视频' },
+  { title: '拼多多', url: 'https://www.pinduoduo.com', category: '购物' },
+  { title: '起点中文网', url: 'https://www.qidian.com', category: '阅读' },
+  { title: '少数派', url: 'https://sspai.com', category: '社区' },
+  { title: '小众软件', url: 'https://www.appinn.com', category: '社区' },
+  { title: '什么值得买', url: 'https://www.smzdm.com', category: '购物' },
+  { title: '通义千问', url: 'https://tongyi.aliyun.com', category: 'AI' },
+  { title: '高德地图', url: 'https://www.amap.com', category: '出行' },
   { title: 'Wildberries', url: 'https://www.wildberries.ru', category: '购物' },
 ]
 
 /**
- * 预设站点：补齐本地 logo 或在线 favicon。
- * - 优先使用本地 logo（如果存在对应域名 svg）
- * - 如果没有本地 logo，则使用在线 favicon（unavatar 或站点 favicon.ico）
- * 说明：这不会在构建时引入网络请求；在线 favicon 会在运行时按需加载。
+ * 预设站点：为每个站点写入 assets/logo 下的图标路径到 favicon（若存在）。
  */
-export const PRESET_QUICK_LINKS: QuickLink[] = PRESET_QUICK_LINKS_RAW.map(link => {
-  const domain = link.domain || extractDomainFromUrl(link.url)
-  const logo = link.logo || tryGetLogoForUrl(link.url)
+export const PRESET_QUICK_LINKS: QuickLink[] = PRESET_QUICK_LINKS_RAW.map(presetRowToQuickLink)
 
-  // 如果没有本地 logo，使用在线 favicon
-  const favicon = logo
-    ? link.favicon // 如果有本地 logo，保留已有的 favicon（如果有）
-    : link.favicon || getUnavatarFavicon({ domain, url: link.url }) || getSiteFavicon({ domain, url: link.url })
-
-  return {
-    ...link,
-    domain,
-    ...(logo ? { logo } : {}),
-    ...(favicon ? { favicon } : {}),
-  }
-})
+/** 首次安装/无存储时的默认快速访问（由预设表中 `default: true` 的行生成） */
+export function getDefaultStarterQuickLinks(): QuickLink[] {
+  return PRESET_QUICK_LINKS_RAW.filter(row => row.default).map(presetRowToQuickLink)
+}
 
 // 网站标题的 i18n 映射（基于 URL）
 // 如果网站标题在多种语言下相同，则不需要添加
@@ -178,7 +204,6 @@ export const PRESET_SITE_TITLES: Record<
   'aws.amazon.com': { zh: 'AWS 控制台', en: 'AWS Console' },
   'juejin.cn': { zh: '掘金', en: 'Juejin' },
   'www.csdn.net': { zh: 'CSDN', en: 'CSDN' },
-  'segmentfault.com': { zh: 'SegmentFault', en: 'SegmentFault' },
   'www.v2ex.com': { zh: 'V2EX', en: 'V2EX' },
   'www.oschina.net': { zh: '开源中国', en: 'OSChina' },
   'www.taobao.com': { zh: '淘宝', en: 'Taobao' },
@@ -189,6 +214,29 @@ export const PRESET_SITE_TITLES: Record<
   'www.feishu.cn': { zh: '飞书', en: 'Feishu' },
   'mail.qq.com': { zh: 'QQ 邮箱', en: 'QQ Email' },
   'www.goofish.com': { zh: '闲鱼', en: 'Xianyu' },
+  'www.baidu.com': { zh: '百度', en: 'Baidu' },
+  'map.baidu.com': { zh: '百度地图', en: 'Baidu Maps' },
+  'translate.google.com': { zh: 'Google 翻译', en: 'Google Translate' },
+  'sspai.com': { zh: '少数派', en: 'sspai' },
+  'www.appinn.com': { zh: '小众软件', en: 'Appinn' },
+  'www.ithome.com': { zh: 'IT 之家', en: 'ITHome' },
+  'www.coolapk.com': { zh: '酷安', en: 'CoolApk' },
+  'www.smzdm.com': { zh: '什么值得买', en: 'SMZDM' },
+  'www.doubao.com': { zh: '豆包', en: 'Doubao' },
+  'tongyi.aliyun.com': { zh: '通义千问', en: 'Tongyi Qianwen' },
+  'kimi.moonshot.cn': { zh: 'Kimi', en: 'Kimi' },
+  'www.dingtalk.com': { zh: '钉钉', en: 'DingTalk' },
+  'www.mgtv.com': { zh: '芒果 TV', en: 'MGTV' },
+  'www.douyu.com': { zh: '斗鱼', en: 'Douyu' },
+  'www.huya.com': { zh: '虎牙', en: 'Huya' },
+  'www.kugou.com': { zh: '酷狗音乐', en: 'Kugou' },
+  'www.qidian.com': { zh: '起点中文网', en: 'Qidian' },
+  'www.amap.com': { zh: '高德地图', en: 'Amap' },
+  'www.12306.cn': { zh: '12306', en: '12306' },
+  'www.taptap.cn': { zh: 'TapTap', en: 'TapTap' },
+  'www.4399.com': { zh: '4399', en: '4399' },
+  'www.36kr.com': { zh: '36 氪', en: '36Kr' },
+  'www.huxiu.com': { zh: '虎嗅', en: 'Huxiu' },
   // 日本站点
   'www.rakuten.co.jp': { zh: '乐天', en: 'Rakuten', ja: '楽天' },
   'www.mercari.com': { zh: 'Mercari', en: 'Mercari', ja: 'メルカリ' },
@@ -253,6 +301,7 @@ export const PRESET_CATEGORIES: Record<string, { zh: string; en: string }> = {
   购物: { zh: '购物', en: 'Shopping' },
   AI: { zh: 'AI', en: 'AI' },
   阅读: { zh: '阅读', en: 'Reading' },
+  出行: { zh: '出行', en: 'Travel' },
 }
 
 /**

@@ -89,22 +89,22 @@
     >
       <li
         v-for="link in quickLinks"
-        :key="link.domain || link.url"
-        :data-quick-link-key="link.domain || link.url"
+        :key="link.url"
+        :data-quick-link-key="link.url"
         class="relative"
         :class="{
-          'opacity-60': draggingKey === (link.domain || link.url),
-          'ring-app/30 ring-2': dragOverKey === (link.domain || link.url) && draggingKey !== (link.domain || link.url),
+          'opacity-60': draggingKey === link.url,
+          'ring-app/30 ring-2': dragOverKey === link.url && draggingKey !== link.url,
         }"
         @dragenter.prevent="handleDragEnter(link)"
         @dragover.prevent="handleDragOver"
         @drop.prevent="handleDrop"
       >
         <LinkCard
-          :title="getLocalizedSiteTitle(link.url, getLocale(), link.title) || link.domain || link.url"
-          :subtitle="link.domain || link.url"
+          :title="getLocalizedSiteTitle(link.url, getLocale(), link.title) || extractDomainFromUrl(link.url) || link.url"
+          :subtitle="extractDomainFromUrl(link.url) || link.url"
           v-bind="getSiteIconProps(link)"
-          :fallback-char="(link.title || link.domain || link.url).charAt(0).toUpperCase()"
+          :fallback-char="(link.title || extractDomainFromUrl(link.url) || link.url).charAt(0).toUpperCase()"
           :card-style="cardStyle"
           :icon-only="settings?.iconOnlyLinkCards"
           @select="handleQuickLinkSelect(link)"
@@ -205,10 +205,9 @@ import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { getLocale } from '@/i18n'
 import { useI18n } from '@/i18n/composable'
 import type { BookmarkItem } from '@/utils/bookmarks'
-import { type FaviconItem, getSiteFavicon, getUnavatarFavicon, handleFaviconError } from '@/utils/favicon'
 import { getLocalizedSiteTitle, PRESET_QUICK_LINKS } from '@/utils/presets'
 import { performSearch } from '@/utils/search'
-import { resolveSiteIcon } from '@/utils/siteIcon'
+import { handleLinkIconError, resolveLinkIcon } from '@/utils/siteIcon'
 import {
   addQuickLink,
   getQuickLinks,
@@ -245,33 +244,20 @@ const dragOverKey = ref<string | null>(null)
 const hasDraggedOrderChange = ref(false)
 const isPersistingOrder = ref(false)
 
-const getSiteIconProps = (link: QuickLink): { logo?: string; favicon?: string } => {
-  return resolveSiteIcon(
-    {
-      url: link.url,
-      domain: link.domain,
-      logo: link.logo,
-      favicon: link.favicon,
-      useLocalFavicon: link.useLocalFavicon,
-    },
-    false
-  )
-}
-
-const buildPresetWithMeta = (preset: QuickLink): QuickLink => {
-  const domain = preset.domain || extractDomainFromUrl(preset.url)
-  const favicon = preset.logo
-    ? undefined
-    : preset.favicon || getUnavatarFavicon({ domain, url: preset.url }) || getSiteFavicon({ domain, url: preset.url })
-  return { ...preset, domain, favicon }
+const getSiteIconProps = (link: QuickLink): { icon?: string; iconFallback?: string } => {
+  return resolveLinkIcon({
+    url: link.url,
+    favicon: link.favicon,
+    customFavicon: link.customFavicon,
+  })
 }
 
 const presetOptions = computed<PresetOption[]>(() => {
-  const domains = quickLinks.value.map(link => link.domain || extractDomainFromUrl(link.url))
+  const hosts = new Set(quickLinks.value.map(link => extractDomainFromUrl(link.url)))
   const currentLocale = getLocale()
-  return PRESET_QUICK_LINKS.map(buildPresetWithMeta).map(preset => {
-    const domain = preset.domain || extractDomainFromUrl(preset.url)
-    const added = domains.includes(domain) || quickLinks.value.some(link => link.url === preset.url)
+  return PRESET_QUICK_LINKS.map(preset => {
+    const host = extractDomainFromUrl(preset.url)
+    const added = hosts.has(host) || quickLinks.value.some(link => link.url === preset.url)
     const localizedTitle = getLocalizedSiteTitle(preset.url, currentLocale, preset.title)
     return { ...preset, title: localizedTitle, added }
   })
@@ -381,7 +367,7 @@ const startEdit = (link: QuickLink) => {
   isFormVisible.value = true
 }
 
-const handleFormSubmit = async (data: { title: string; url: string; favicon?: string; useLocalFavicon?: boolean }) => {
+const handleFormSubmit = async (data: { title: string; url: string; customFavicon?: string }) => {
   const originalKey = editingLink.value?.url
   const originalDomain = originalKey ? extractDomainFromUrl(originalKey) : null
   const nextDomain = extractDomainFromUrl(data.url)
@@ -434,12 +420,10 @@ const resetForm = () => {
 }
 
 const handleFaviconErrorWrapper = (link: QuickLink, e: Event) => {
-  handleFaviconError(link as FaviconItem, e, faviconFallbackTried.value)
+  handleLinkIconError(link.url, e, faviconFallbackTried.value)
 }
 
-const getQuickLinkKey = (link: QuickLink): string => {
-  return link.domain || link.url
-}
+const getQuickLinkKey = (link: QuickLink): string => link.url
 
 const moveQuickLink = (fromIndex: number, toIndex: number) => {
   const list = [...quickLinks.value]
