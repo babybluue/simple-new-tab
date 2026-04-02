@@ -117,7 +117,7 @@ export function getGoogleFaviconUrl(item: FaviconContext): string | undefined {
   if (isLocalAddress(item)) return undefined
   const domain = extractDomainFromItem(item)
   if (!domain) return undefined
-  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`
 }
 
 export function getSiteFaviconIcoUrl(item: FaviconContext): string | undefined {

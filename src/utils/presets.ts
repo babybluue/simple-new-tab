@@ -52,7 +52,6 @@ const PRESET_QUICK_LINKS_RAW: PresetSiteRow[] = [
   { title: '飞书', url: 'https://www.feishu.cn', category: '办公' },
   { title: 'Fnac', url: 'https://www.fnac.com', category: '购物' },
   { title: 'Gemini', url: 'https://gemini.google.com', category: 'AI', default: true },
-  { title: 'Genie Music', url: 'https://www.genie.co.kr', category: '音乐' },
   { title: 'Gitee', url: 'https://gitee.com', category: '开发' },
   { title: 'GitHub', url: 'https://github.com', category: '开发', default: true },
   { title: 'GitLab', url: 'https://gitlab.com', category: '开发' },
