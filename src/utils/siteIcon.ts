@@ -90,20 +90,17 @@ export function isLocalAddress(item: FaviconContext | string): boolean {
   return false
 }
 
-/** 去掉 query/hash，供 Chrome favicon API 使用 */
-export function normalizePageUrlForFavicon(url: string): string {
+/**
+ * Chrome `_favicon` 按用户实际访问过的文档 URL 查库；去掉 query/hash 会改变查找键导致 miss。
+ * 仅做「无协议时补 https」与 URL 解析，保留路径与 query（hash 不参与请求，但留在字符串里也无妨）。
+ */
+export function getChromeCachedFaviconUrl(url: string, size: number = 64): string {
+  let pageUrl = url
   try {
-    const u = new URL(url.startsWith('http') ? url : `https://${url}`)
-    u.search = ''
-    u.hash = ''
-    return u.href
+    pageUrl = new URL(url.startsWith('http') ? url : `https://${url}`).href
   } catch {
-    return url
+    // 非法 URL 原样传入，由 Chrome 处理
   }
-}
-
-export function getChromeCachedFaviconUrl(url: string, size: number = 32): string {
-  const pageUrl = normalizePageUrlForFavicon(url)
   return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${size}`
 }
 

@@ -119,7 +119,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  submit: [data: { title: string; url: string; customFavicon?: string }]
+  /** customFavicon 可为空字符串，表示清除自定义图标（走预设 / Chrome 缓存） */
+  submit: [data: { title: string; url: string; customFavicon: string }]
   cancel: []
 }>()
 
@@ -210,7 +211,7 @@ const handleSubmit = () => {
 
   const normalizedUrl = normalizeURL(formData.value.url.trim())
   const title = formData.value.title.trim() || getTitleFromUrl(normalizedUrl)
-  const customFavicon = formData.value.icon.trim() || undefined
+  const customFavicon = formData.value.icon.trim()
 
   emit('submit', { title, url: normalizedUrl, customFavicon })
 }
@@ -244,8 +245,12 @@ watch(
 
 watch(
   () => formData.value.icon,
-  () => {
+  icon => {
     previewBroken.value = false
+    const t = icon.trim()
+    if (!t && (iconSource.value === 'google' || iconSource.value === 'unavatar')) {
+      iconSource.value = 'custom'
+    }
   }
 )
 

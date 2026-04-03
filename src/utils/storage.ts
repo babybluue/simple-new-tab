@@ -388,6 +388,14 @@ export async function saveQuickLinks(links: QuickLink[]): Promise<void> {
   await chrome.storage.local.set({ quickLinks: normalized })
 }
 
+/**
+ * 是否显式传入 customFavicon 且为空：用于合并时删除旧值。
+ * （仅省略属性时表示「未带该字段」，合并时应保留已有 customFavicon，如从历史/书签添加。）
+ */
+function shouldClearCustomFavicon(link: QuickLink): boolean {
+  return Object.prototype.hasOwnProperty.call(link, 'customFavicon') && !String(link.customFavicon ?? '').trim()
+}
+
 // 新增或更新快速访问站点（以域名/URL 去重）
 export async function addQuickLink(link: QuickLink): Promise<QuickLink[]> {
   const links = await getQuickLinks()
@@ -398,7 +406,11 @@ export async function addQuickLink(link: QuickLink): Promise<QuickLink[]> {
   let updated: QuickLink[]
   if (existingIndex !== -1) {
     updated = [...links]
-    updated[existingIndex] = { ...links[existingIndex], ...normalized }
+    const merged: QuickLink = { ...links[existingIndex], ...normalized }
+    if (shouldClearCustomFavicon(link)) {
+      delete merged.customFavicon
+    }
+    updated[existingIndex] = merged
   } else {
     updated = [normalized, ...links]
   }

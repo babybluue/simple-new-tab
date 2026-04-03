@@ -367,7 +367,7 @@ const startEdit = (link: QuickLink) => {
   isFormVisible.value = true
 }
 
-const handleFormSubmit = async (data: { title: string; url: string; customFavicon?: string }) => {
+const handleFormSubmit = async (data: { title: string; url: string; customFavicon: string }) => {
   const originalKey = editingLink.value?.url
   const originalDomain = originalKey ? extractDomainFromUrl(originalKey) : null
   const nextDomain = extractDomainFromUrl(data.url)
